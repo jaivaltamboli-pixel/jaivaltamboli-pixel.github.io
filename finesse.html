@@ -1,9 +1,218 @@
-<h2>Finesse Shot 🎯</h2>
-        <p>The Finesse Shot involves placing the ball with curve and precision, usually aiming for the far post. It prioritizes accuracy and deception over raw power, making it highly effective outside the box.</p>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Football Tactics Hub: Finesse Shot</title>
+    <!-- New Fonts: Oswald for strong titles, Roboto for clean body text -->
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        /* Define the color scheme */
+        :root {
+            --navy-blue: #001F5B; 
+            --gold-accent: #FFD700; 
+            --light-bg: #EAF0F6; /* Lighter, cooler background */
+            --text-color: #1A1A1A; 
+            --shadow-light: 0 4px 10px rgba(0, 0, 0, 0.1);
+            --shadow-deep: 0 15px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        /* 1. Base Styling and Typography */
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--light-bg);
+            background-image: linear-gradient(135deg, var(--light-bg) 0%, #d4e0eb 100%); /* Subtle gradient background */
+            color: var(--text-color);
+            line-height: 1.7;
+            padding-top: 85px; 
+        }
+
+        /* 2. Header and Navigation Bar */
+        .header {
+            background-color: var(--navy-blue);
+            padding: 18px 0; /* Slightly taller header */
+            box-shadow: var(--shadow-deep);
+            position: fixed; 
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-family: 'Oswald', sans-serif;
+            font-size: 2.5em;
+            text-align: center;
+            color: var(--gold-accent);
+            font-weight: 700; 
+            letter-spacing: 3px;
+            text-transform: uppercase;
+        }
+
+        /* Navigation Links (Pill Buttons) */
+        .nav-menu {
+            text-align: center;
+            margin-top: 10px;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .nav-menu a {
+            color: white;
+            text-decoration: none;
+            padding: 8px 15px;
+            margin: 5px 6px;
+            border-radius: 20px; 
+            transition: all 0.3s ease;
+            font-weight: 500;
+            font-family: 'Roboto', sans-serif;
+            font-size: 0.9em;
+            letter-spacing: 0.5px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .nav-menu a:hover {
+            background-color: var(--gold-accent);
+            color: var(--navy-blue);
+            transform: scale(1.05); /* Zoom effect on hover */
+            border-color: var(--gold-accent);
+            box-shadow: 0 4px 10px rgba(255, 215, 0, 0.6);
+        }
+
+        /* Highlight the active/current page link */
+        .nav-menu a[href$="finesse.html"] {
+             background-color: var(--gold-accent);
+             color: var(--navy-blue);
+             font-weight: 700;
+             box-shadow: 0 4px 10px rgba(255, 215, 0, 0.6);
+        }
+
+
+        /* 3. Main Content Card */
+        .container {
+            width: 90%; 
+            max-width: 1000px;
+            margin: 40px auto;
+            padding: 40px; 
+            background-color: white;
+            border-radius: 20px; 
+            box-shadow: var(--shadow-deep); 
+            border-top: 5px solid var(--gold-accent); 
+        }
+
+        .container h2 {
+            font-family: 'Oswald', sans-serif;
+            color: var(--navy-blue);
+            border-bottom: 4px solid var(--gold-accent);
+            padding-bottom: 15px;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .container h3 {
+            color: var(--gold-accent); 
+            margin-top: 35px;
+            border-left: 5px solid var(--navy-blue);
+            padding-left: 10px;
+            font-size: 1.5em;
+            font-family: 'Oswald', sans-serif;
+        }
+
+        .container p {
+            font-size: 1.05em;
+            margin-bottom: 1.5em;
+        }
+
+        /* List Styling */
+        .container ul {
+            list-style: none; /* Remove default bullets */
+            padding-left: 0;
+        }
+        .container ul li {
+            margin-bottom: 10px;
+            padding-left: 20px;
+            position: relative;
+            font-size: 1.05em;
+        }
+        .container ul li::before {
+            content: "•"; /* Custom bullet point */
+            color: var(--gold-accent);
+            font-weight: bold;
+            display: inline-block;
+            width: 1em;
+            margin-left: -1em;
+        }
+
+        /* Responsive Design for Mobile */
+        @media (max-width: 768px) {
+            body {
+                padding-top: 150px; 
+            }
+            .header h1 {
+                font-size: 2em;
+            }
+            .nav-menu a {
+                padding: 6px 10px;
+                font-size: 0.75em;
+            }
+            .container {
+                width: 95%;
+                padding: 20px;
+                margin-top: 20px;
+            }
+        }
+
+        /* Tactic Icon Styling for Sub-Pages */
+        .tactic-svg-icon {
+            float: right;
+            margin-left: 20px;
+            margin-bottom: 10px;
+            width: 100px; 
+            height: 100px;
+            color: var(--navy-blue); /* Color the icon navy */
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>TACTICS BOARD</h1>
         
+        <nav class="nav-menu">
+            <a href="index.html">HOME</a>
+            <a href="possession.html">POSSESSION</a>
+            <a href="finesse.html">FINESSE</a>
+            <a href="power-shot.html">POWER SHOT</a>
+            <a href="whip.html">WHIP CROSS</a>
+        </nav>
+    </div>
+
+    <div class="container">
+        <svg class="tactic-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <!-- SVG Icon: Bullseye/Target (for precision) -->
+            <circle cx="12" cy="12" r="10"></circle>
+            <circle cx="12" cy="12" r="6"></circle>
+            <circle cx="12" cy="12" r="2"></circle>
+        </svg>
+
+        <h2>Finesse Shot 🎯</h2>
+        <p>The Finesse Shot is the most elegant way to score. It involves striking the ball with the inside of the foot to impart maximum curl, aiming for placement in the corner of the goal rather than raw power. This shot is perfect from the edge of the box or slightly outside, where precision beats aggression.</p>
+        
+        <h3>When to Use Finesse</h3>
+        <p>It is best used when you have a clear shooting lane and the goalkeeper is slightly off-balance or positioned for a power shot. The curl can deceive keepers late.</p>
+
         <h3>Key Principles:</h3>
         <ul>
-            <li>**Body Shape:** Leaning slightly away from the ball at the point of contact.</li>
-            <li>**Inside Foot:** Using the inside of the foot for maximum curve.</li>
-            <li>**Targeting:** Aiming far post to beat the goalkeeper's dive.</li>
+            <li>Body Shape: Leaning slightly away from the ball at the point of contact to initiate the curving trajectory.</li>
+            <li>Inside Foot Contact: Using the inside of the foot for a clean, curling strike that maximizes rotation.</li>
+            <li>Targeting: Aiming for the absolute far corner, forcing the goalkeeper to cover a long distance with a difficult save.</li>
         </ul>
+    </div>
+
+</body>
+</html>
