@@ -4,214 +4,166 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Football Tactics Hub: Possession</title>
-    <!-- New Fonts: Oswald for strong titles, Roboto for clean body text -->
+
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+
     <style>
-        /* Define the color scheme */
         :root {
-            --navy-blue: #001F5B; 
-            --gold-accent: #FFD700; 
-            --light-bg: #EAF0F6; /* Lighter, cooler background */
-            --text-color: #1A1A1A; 
-            --shadow-light: 0 4px 10px rgba(0, 0, 0, 0.1);
-            --shadow-deep: 0 15px 30px rgba(0, 0, 0, 0.2);
+            --navy-blue: #001F5B;
+            --gold-accent: #FFD700;
+            --light-bg: #EAF0F6;
+            --text-color: #1A1A1A;
         }
 
-        /* 1. Base Styling and Typography */
         body {
             font-family: 'Roboto', sans-serif;
             margin: 0;
             padding: 0;
-            background-color: var(--light-bg);
-            background-image: linear-gradient(135deg, var(--light-bg) 0%, #d4e0eb 100%); /* Subtle gradient background */
+            background: linear-gradient(135deg, var(--light-bg), #d4e0eb);
             color: var(--text-color);
-            line-height: 1.7;
-            padding-top: 85px; 
+            padding-top: 85px;
         }
 
-        /* 2. Header and Navigation Bar */
         .header {
             background-color: var(--navy-blue);
-            padding: 18px 0; /* Slightly taller header */
-            box-shadow: var(--shadow-deep);
-            position: fixed; 
-            top: 0;
+            padding: 18px 0;
+            position: fixed;
             width: 100%;
-            z-index: 1000;
+            top: 0;
+            z-index: 10;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
         }
 
         .header h1 {
-            margin: 0;
-            font-family: 'Oswald', sans-serif;
-            font-size: 2.5em;
-            text-align: center;
             color: var(--gold-accent);
-            font-weight: 700; 
-            letter-spacing: 3px;
-            text-transform: uppercase;
+            text-align: center;
+            font-family: 'Oswald', sans-serif;
+            margin: 0;
+            font-size: 2.6rem;
+            letter-spacing: 2px;
         }
 
-        /* Navigation Links (Pill Buttons) */
         .nav-menu {
             text-align: center;
             margin-top: 10px;
-            display: flex;
-            justify-content: center;
-            flex-wrap: wrap;
         }
 
         .nav-menu a {
-            color: white;
             text-decoration: none;
+            color: white;
             padding: 8px 15px;
-            margin: 5px 6px;
-            border-radius: 20px; 
-            transition: all 0.3s ease;
+            margin: 4px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            transition: 0.2s;
             font-weight: 500;
-            font-family: 'Roboto', sans-serif;
-            font-size: 0.9em;
-            letter-spacing: 0.5px;
-            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .nav-menu a.active {
+            background: var(--gold-accent);
+            color: var(--navy-blue);
+            font-weight: 700;
         }
 
         .nav-menu a:hover {
-            background-color: var(--gold-accent);
+            background: var(--gold-accent);
             color: var(--navy-blue);
-            transform: scale(1.05); /* Zoom effect on hover */
-            border-color: var(--gold-accent);
-            box-shadow: 0 4px 10px rgba(255, 215, 0, 0.6);
+            transform: scale(1.05);
         }
 
-        /* Highlight the active/current page link */
-        .nav-menu a[href$="possession.html"] {
-             background-color: var(--gold-accent);
-             color: var(--navy-blue);
-             font-weight: 700;
-             box-shadow: 0 4px 10px rgba(255, 215, 0, 0.6);
-        }
-
-
-        /* 3. Main Content Card */
         .container {
-            width: 90%; 
-            max-width: 1000px;
-            margin: 40px auto;
-            padding: 40px; 
-            background-color: white;
-            border-radius: 20px; 
-            box-shadow: var(--shadow-deep); 
-            border-top: 5px solid var(--gold-accent); 
+            width: 90%;
+            max-width: 950px;
+            margin: auto;
+            background: white;
+            padding: 35px;
+            border-radius: 18px;
+            margin-top: 30px;
+            box-shadow: 0 12px 35px rgba(0,0,0,0.12);
+            border-top: 6px solid var(--gold-accent);
         }
 
-        .container h2 {
-            font-family: 'Oswald', sans-serif;
+        h2 {
+            font-family: 'Oswald';
+            font-size: 2.4em;
             color: var(--navy-blue);
+            margin-bottom: 15px;
             border-bottom: 4px solid var(--gold-accent);
-            padding-bottom: 15px;
-            margin-bottom: 30px;
-            font-size: 2.5em;
-            font-weight: 700;
-            text-transform: uppercase;
+            padding-bottom: 10px;
         }
 
-        .container h3 {
-            color: var(--gold-accent); 
-            margin-top: 35px;
-            border-left: 5px solid var(--navy-blue);
-            padding-left: 10px;
-            font-size: 1.5em;
-            font-family: 'Oswald', sans-serif;
-        }
-
-        .container p {
-            font-size: 1.05em;
-            margin-bottom: 1.5em;
-        }
-
-        /* List Styling */
-        .container ul {
-            list-style: none; /* Remove default bullets */
-            padding-left: 0;
-        }
-        .container ul li {
-            margin-bottom: 10px;
-            padding-left: 20px;
-            position: relative;
-            font-size: 1.05em;
-        }
-        .container ul li::before {
-            content: "•"; /* Custom bullet point */
+        h3 {
+            font-family: 'Oswald';
+            font-size: 1.7em;
             color: var(--gold-accent);
-            font-weight: bold;
-            display: inline-block;
-            width: 1em;
-            margin-left: -1em;
+            margin-top: 30px;
         }
 
-        /* Responsive Design for Mobile */
-        @media (max-width: 768px) {
-            body {
-                padding-top: 150px; 
-            }
-            .header h1 {
-                font-size: 2em;
-            }
-            .nav-menu a {
-                padding: 6px 10px;
-                font-size: 0.75em;
-            }
-            .container {
-                width: 95%;
-                padding: 20px;
-                margin-top: 20px;
-            }
+        ul {
+            padding-left: 20px;
         }
 
-        /* Tactic Icon Styling for Sub-Pages */
-        .tactic-svg-icon {
-            float: right;
-            margin-left: 20px;
-            margin-bottom: 10px;
-            width: 100px; 
-            height: 100px;
-            color: var(--navy-blue); /* Color the icon navy */
+        ul li {
+            margin-bottom: 12px;
+            font-size: 1.1em;
+        }
+
+        img.tactic-img {
+            width: 100%;
+            border-radius: 14px;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
         }
     </style>
 </head>
+
 <body>
 
-    <div class="header">
-        <h1>TACTICS BOARD</h1>
-        
-        <nav class="nav-menu">
-            <a href="index.html">HOME</a>
-            <a href="possession.html">POSSESSION</a>
-            <a href="finesse.html">FINESSE</a>
-            <a href="power-shot.html">POWER SHOT</a>
-            <a href="whip.html">WHIP CROSS</a>
-        </nav>
-    </div>
+<div class="header">
+    <h1>TACTICS BOARD</h1>
 
-    <div class="container">
-        <svg class="tactic-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <!-- SVG Icon: Shield (for control/defense) -->
-            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-            <polyline points="12 6 12 10 16 14"></polyline>
-        </svg>
+    <nav class="nav-menu">
+        <a href="index.html">HOME</a>
+        <a href="possession.html">POSSESSION</a>
+        <a href="finesse.html">FINESSE</a>
+        <a href="power-shot.html">POWER SHOT</a>
+        <a href="whip.html">WHIP CROSS</a>
+    </nav>
+</div>
 
-        <h2>Possession & Control 🛡️</h2>
-        <p>Possession is the art of controlling the tempo of the game. This philosophy, famously associated with teams like Barcelona and Spain, focuses on minimizing the opponent’s time with the ball to create openings through patient, calculated passing.</p>
-        
-        <h3>The Goal of Possession</h3>
-        <p>The primary goal is **control**, which inherently tires the opposition and limits their chances to attack. It is a defensive tactic achieved through offensive means.</p>
+<div class="container">
 
-        <h3>Key Principles:</h3>
-        <ul>
-            <li>**Patient Passing:** Short, quick passes (often one or two touches) to maintain rhythm and keep the ball moving horizontally until vertical space opens up.</li>
-            <li>**Creating Triangles:** Players constantly move to form passing triangles and diamonds, ensuring the player on the ball always has at least two passing options.</li>
-            <li>**Counter-Pressing:** Losing the ball is immediately followed by aggressive, coordinated pressure to win the ball back within 3-5 seconds.</li>
-        </ul>
-    </div>
+    <!-- ✅ Possession Image -->
+    <img src="images/Screenshot 2025-11-01 123422.png" 
+    alt="Tiki-Taka Possession Football"
+    class="tactic-img">
+
+    <h2>Possession & Control 🛡️</h2>
+
+    <p>Possession football controls the match by keeping the ball and forcing opponents to chase. 
+       It’s patient, intelligent, and designed to tire teams and create openings.</p>
+
+    <h3>Key Principles</h3>
+    <ul>
+        <li>Patient short passing</li>
+        <li>Constant triangles for support</li>
+        <li>Immediate counter-press when losing the ball</li>
+    </ul>
+
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    const links = document.querySelectorAll(".nav-menu a");
+    let current = window.location.pathname.split("/").pop() || "index.html";
+
+    links.forEach(link => {
+        if (link.getAttribute("href") === current) {
+            link.classList.add("active");
+        }
+    });
+});
+</script>
 
 </body>
 </html>
