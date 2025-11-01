@@ -1,74 +1,169 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Finesse Shot</title>
-<style>
-    body {
-        font-family: Arial, sans-serif;
-        background: #0d1117;
-        color: white;
-        padding: 20px;
-        text-align: center;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Football Tactics Hub: Finesse Shot</title>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
 
-    h1 {
-        font-size: 2rem;
-        margin-bottom: 10px;
-    }
+    <style>
+        :root {
+            --navy-blue: #001F5B;
+            --gold-accent: #FFD700;
+            --light-bg: #EAF0F6;
+            --text-color: #1A1A1A;
+            --shadow-deep: 0 15px 30px rgba(0, 0, 0, 0.2);
+        }
 
-    .image-container {
-        width: 100%;
-        max-width: 400px;
-        margin: 20px auto;
-    }
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-image: linear-gradient(135deg, var(--light-bg) 0%, #d4e0eb 100%);
+            color: var(--text-color);
+            padding-top: 85px;
+        }
 
-    .image-container img {
-        width: 100%;
-        border-radius: 12px;
-        display: block;
-        margin: 0 auto;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.4);
-    }
+        .header {
+            background-color: var(--navy-blue);
+            padding: 18px 0;
+            box-shadow: var(--shadow-deep);
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+        }
 
-    p {
-        font-size: 1.05rem;
-        line-height: 1.6;
-        margin-top: 15px;
-    }
+        .header h1 {
+            margin: 0;
+            font-family: 'Oswald', sans-serif;
+            font-size: 2.5em;
+            text-align: center;
+            color: var(--gold-accent);
+            font-weight: 700;
+            text-transform: uppercase;
+        }
 
-    .back-button {
-        margin-top: 20px;
-        display: inline-block;
-        padding: 10px 18px;
-        border-radius: 8px;
-        background: #238636;
-        color: white;
-        text-decoration: none;
-        transition: 0.25s;
-        font-weight: bold;
-    }
-    .back-button:hover {
-        background: #2ea043;
-    }
-</style>
+        .nav-menu {
+            text-align: center;
+            margin-top: 10px;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .nav-menu a {
+            color: white;
+            text-decoration: none;
+            padding: 8px 15px;
+            margin: 5px 6px;
+            border-radius: 20px;
+            transition: 0.3s;
+            font-weight: 500;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .nav-menu a:hover, 
+        .nav-menu a[href$="finesse.html"] {
+            background-color: var(--gold-accent);
+            color: var(--navy-blue);
+            box-shadow: 0 4px 10px rgba(255, 215, 0, 0.6);
+            font-weight: 700;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1000px;
+            margin: 40px auto;
+            padding: 35px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: var(--shadow-deep);
+            border-top: 5px solid var(--gold-accent);
+        }
+
+        h2 {
+            font-family: 'Oswald', sans-serif;
+            color: var(--navy-blue);
+            border-bottom: 4px solid var(--gold-accent);
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+            font-size: 2.5em;
+            text-transform: uppercase;
+        }
+
+        img.tactic-img {
+            display: block;
+            margin: 0 auto 25px auto;
+            width: 80%;
+            max-width: 550px;
+            border-radius: 15px;
+            box-shadow: var(--shadow-deep);
+        }
+
+        h3 {
+            color: var(--gold-accent);
+            margin-top: 30px;
+            font-size: 1.5em;
+            border-left: 5px solid var(--navy-blue);
+            padding-left: 10px;
+            font-family: 'Oswald', sans-serif;
+        }
+
+        p {
+            font-size: 1.05em;
+            line-height: 1.6;
+        }
+
+        ul {
+            padding-left: 20px;
+        }
+        ul li {
+            margin-bottom: 10px;
+            font-size: 1.05em;
+        }
+    </style>
 </head>
+
 <body>
+    <div class="header">
+        <h1>TACTICS BOARD</h1>
 
-<h1>Finesse Shot</h1>
+        <nav class="nav-menu">
+            <a href="index.html">HOME</a>
+            <a href="possession.html">POSSESSION</a>
+            <a href="finesse.html">FINESSE</a>
+            <a href="power-shot.html">POWER SHOT</a>
+            <a href="whip.html">WHIP CROSS</a>
+        </nav>
+    </div>
 
-<div class="image-container">
-    <img src="images/Screenshot 2025-11-01 123716.png" alt="Finesse Shot Image">
-</div>
+    <div class="container">
+        <h2>Finesse Shot 🎯</h2>
 
-<p>
-A finesse shot is all about **precision and curve**, not power.  
-Players use the inside of the foot to bend the ball around defenders and past the keeper.  
-It’s focused on **placement, curl, vision, and timing**.  
-</p>
+        <!-- Image -->
+        <img class="tactic-img" src="images/Screenshot 2025-11-01 123716.png" alt="Finesse shot technique">
 
-<a class="back-button" href="index.html">⬅ Back</a>
+        <p>
+            A finesse shot is all about precision over power — curving the ball around defenders and into the corner of the net.
+            It requires perfect body positioning, technique, and timing. This is a technique mastered by legendary creative attackers known
+            for bending the ball with grace and accuracy.
+        </p>
 
+        <h3>Key Principles</h3>
+        <ul>
+            <li>Open up body to curl the shot inside far post</li>
+            <li>Strike with inside of the foot for controlled spin</li>
+            <li>Target corners instead of raw power</li>
+            <li>Best used at edge of box or tight angles</li>
+        </ul>
+
+        <h3>When to Use</h3>
+        <p>
+            - When defenders block a straight shot  
+            - When you need accuracy over power  
+            - Perfect for 1v1 situations and tight angles
+        </p>
+    </div>
 </body>
 </html>
