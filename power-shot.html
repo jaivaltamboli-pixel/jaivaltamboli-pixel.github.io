@@ -3,186 +3,89 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Football Tactics Hub: Power Shot</title>
-
-<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+<title>Power Shot</title>
+<link rel="stylesheet" href="styles.css">
 
 <style>
-:root {
-    --navy-blue: #001F5B;
-    --gold-accent: #FFD700;
-    --light-bg: #EAF0F6;
-    --text-color: #1A1A1A;
-    --shadow-light: 0 4px 10px rgba(0, 0, 0, 0.1);
-    --shadow-deep: 0 15px 30px rgba(0, 0, 0, 0.2);
-}
-
 body {
-    font-family: 'Roboto', sans-serif;
-    margin: 0;
-    padding: 0;
-    background-color: var(--light-bg);
-    background-image: linear-gradient(135deg, var(--light-bg) 0%, #d4e0eb 100%);
-    line-height: 1.7;
-    padding-top: 85px;
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background: #0d0d0d;
+  color: white;
 }
-
-/* Header */
-.header {
-    background-color: var(--navy-blue);
-    padding: 18px 0;
-    box-shadow: var(--shadow-deep);
-    position: fixed;
-    top: 0;
-    width: 100%;
-    z-index: 1000;
-}
-
-.header h1 {
-    margin: 0;
-    font-family: 'Oswald', sans-serif;
-    font-size: 2.5em;
-    text-align: center;
-    color: var(--gold-accent);
-    text-transform: uppercase;
-    letter-spacing: 3px;
-}
-
-.nav-menu {
-    text-align: center;
-    margin-top: 10px;
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-}
-
-.nav-menu a {
-    color: white;
-    text-decoration: none;
-    padding: 8px 15px;
-    margin: 5px 6px;
-    border-radius: 20px;
-    transition: .3s;
-    border: 1px solid rgba(255,255,255,0.3);
-}
-
-.nav-menu a:hover {
-    background: var(--gold-accent);
-    color: var(--navy-blue);
-    transform: scale(1.05);
-    box-shadow: 0 4px 10px rgba(255,215,0,0.6);
-}
-
-.nav-menu a[href$="power-shot.html"] {
-    background: var(--gold-accent);
-    color: var(--navy-blue);
-    box-shadow: 0 4px 10px rgba(255,215,0,0.6);
-}
-
-/* Main Card */
 .container {
-    width: 90%;
-    max-width: 1000px;
-    background: white;
-    margin: 40px auto;
-    padding: 40px;
-    border-radius: 20px;
-    border-top: 5px solid var(--gold-accent);
-    box-shadow: var(--shadow-deep);
+  text-align: center;
+  padding: 40px 20px;
+  max-width: 900px;
+  margin: auto;
 }
-
-/* Header Style */
-.container h2 {
-    font-family: 'Oswald', sans-serif;
-    color: var(--navy-blue);
-    border-bottom: 4px solid var(--gold-accent);
-    padding-bottom: 15px;
-    margin-bottom: 30px;
-    font-size: 2.4em;
+h1 {
+  font-size: 42px;
+  margin-bottom: 20px;
+  font-weight: 800;
 }
-
-.container h3 {
-    color: var(--gold-accent);
-    margin-top: 35px;
-    border-left: 5px solid var(--navy-blue);
-    padding-left: 10px;
-    font-family: 'Oswald';
-    font-size: 1.5em;
+.description {
+  font-size: 20px;
+  line-height: 1.6;
+  margin-bottom: 40px;
+  opacity: 0.9;
 }
-
-/* Image Styling w/ Transition */
-.power-shot-img {
-    width: 90%;
-    max-width: 550px;
-    border-radius: 20px;
-    box-shadow: var(--shadow-deep);
-    margin: 0 auto 25px auto;
-    display: block;
-    opacity: 0;
-    transform: translateY(20px);
-    animation: fadeIn 1.3s ease-out 2s forwards;
+.image-wrapper {
+  width: 450px;
+  height: 450px;
+  margin: 20px auto;
+  border-radius: 50%;
+  overflow: hidden;
+  position: relative;
+  animation: fade-in 1.2s ease-in-out;
+  border: 4px solid #ffffff30;
 }
-
-@keyframes fadeIn {
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+.image-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
+@keyframes fade-in { from {opacity:0;} to {opacity:1;} }
 
-ul {
-    list-style: none;
-    padding: 0;
+.back-button {
+  display: inline-block;
+  margin-top: 35px;
+  padding: 12px 32px;
+  font-size: 18px;
+  background: white;
+  color: black;
+  font-weight: bold;
+  border-radius: 50px;
+  text-decoration: none;
+  transition: 0.2s;
 }
-
-ul li {
-    padding-left: 20px;
-    position: relative;
-}
-
-ul li::before {
-    content: "•";
-    color: var(--gold-accent);
-    font-weight: bold;
-    margin-left: -1em;
-    position: absolute;
+.back-button:hover {
+  background: #d4d4d4;
 }
 </style>
 </head>
 
 <body>
 
-<div class="header">
-    <h1>TACTICS BOARD</h1>
-    <nav class="nav-menu">
-        <a href="index.html">HOME</a>
-        <a href="possession.html">POSSESSION</a>
-        <a href="finesse.html">FINESSE</a>
-        <a href="power-shot.html">POWER SHOT</a>
-        <a href="whip.html">WHIP CROSS</a>
-    </nav>
-</div>
-
 <div class="container">
 
-    <h2>The Power Shot 💥</h2>
+  <h1>Power Shot</h1>
 
-    <img src="images
-/Screenshot 2025-11-01 123845.png
-    " alt="Power Shot Example" class="power-shot-img">
+  <div class="image-wrapper">
+    <img src="images/Screenshot 2025-11-01 123845.png" alt="Power Shot Image">
+  </div>
 
-    <p>The Power Shot is raw aggression — a strike hit with maximum force aiming to overpower the goalkeeper through pure speed and explosive power.</p>
+  <p class="description">
+    The power-shot is all about pure strength and explosiveness.  
+    This technique focuses on driving the ball with maximum force,  
+    usually with the laces, while planting the supporting foot strong and stable.  
+    It’s the weapon for long-range rockets, knuckleballs, and unstoppable strikes.
+  </p>
 
-    <h3>The Power Advantage</h3>
-    <p>Use this when the keeper has little reaction time or the box is crowded — the speed alone can break defenses.</p>
-
-    <h3>Key Principles:</h3>
-    <ul>
-        <li>Locked ankle for maximum power transfer</li>
-        <li>Laces strike for straight, driven power</li>
-        <li>Full body follow-through and momentum</li>
-    </ul>
+  <a class="back-button" href="index.html">⬅ Back</a>
 
 </div>
+
 </body>
 </html>
