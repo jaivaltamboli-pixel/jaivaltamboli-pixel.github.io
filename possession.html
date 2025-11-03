@@ -1,170 +1,299 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Football Tactics Hub: Possession</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Football Tactics Hub: Possession</title>
 
-    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
 
-    <style>
-        :root {
-            --navy-blue: #001F5B;
-            --gold-accent: #FFD700;
-            --light-bg: #EAF0F6;
-            --text-color: #1A1A1A;
-        }
+<style>
+:root {
+    --navy-blue: #001F5B;
+    --gold-accent: #FFD700;
+    --light-bg: #EAF0F6;
+    --text-color: #1A1A1A;
+}
 
-        body {
-            font-family: 'Roboto', sans-serif;
-            margin: 0;
-            padding: 0;
-            background: linear-gradient(135deg, var(--light-bg), #d4e0eb);
-            color: var(--text-color);
-            padding-top: 85px;
-        }
+/* Base UI */
+body {
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(135deg, var(--light-bg), #d4e0eb);
+    color: var(--text-color);
+    padding-top: 85px;
+}
 
-        .header {
-            background-color: var(--navy-blue);
-            padding: 18px 0;
-            position: fixed;
-            width: 100%;
-            top: 0;
-            z-index: 10;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-        }
+.header {
+    background-color: var(--navy-blue);
+    padding: 18px 0;
+    position: fixed;
+    width: 100%;
+    top: 0;
+    z-index: 10;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
 
-        .header h1 {
-            color: var(--gold-accent);
-            text-align: center;
-            font-family: 'Oswald', sans-serif;
-            margin: 0;
-            font-size: 2.6rem;
-            letter-spacing: 2px;
-        }
+.header h1 {
+    color: var(--gold-accent);
+    text-align: center;
+    font-family: 'Oswald', sans-serif;
+    margin: 0;
+    font-size: 2.6rem;
+    letter-spacing: 2px;
+}
 
-        .nav-menu {
-            text-align: center;
-            margin-top: 10px;
-        }
+.nav-menu {
+    text-align: center;
+    margin-top: 10px;
+}
 
-        .nav-menu a {
-            text-decoration: none;
-            color: white;
-            padding: 8px 15px;
-            margin: 4px;
-            border-radius: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.4);
-            transition: 0.2s;
-            font-weight: 500;
-        }
+.nav-menu a {
+    text-decoration: none;
+    color: white;
+    padding: 8px 15px;
+    margin: 4px;
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    transition: 0.2s;
+    font-weight: 500;
+}
 
-        .nav-menu a.active {
-            background: var(--gold-accent);
-            color: var(--navy-blue);
-            font-weight: 700;
-        }
+.nav-menu a.active,
+.nav-menu a:hover {
+    background: var(--gold-accent);
+    color: var(--navy-blue);
+    transform: scale(1.05);
+}
 
-        .nav-menu a:hover {
-            background: var(--gold-accent);
-            color: var(--navy-blue);
-            transform: scale(1.05);
-        }
+.container {
+    width: 90%;
+    max-width: 950px;
+    margin: auto;
+    background: white;
+    padding: 35px;
+    border-radius: 18px;
+    margin-top: 30px;
+    box-shadow: 0 12px 35px rgba(0,0,0,0.12);
+    border-top: 6px solid var(--gold-accent);
+}
 
-        .container {
-            width: 90%;
-            max-width: 950px;
-            margin: auto;
-            background: white;
-            padding: 35px;
-            border-radius: 18px;
-            margin-top: 30px;
-            box-shadow: 0 12px 35px rgba(0,0,0,0.12);
-            border-top: 6px solid var(--gold-accent);
-        }
+h2 {
+    font-family: 'Oswald';
+    font-size: 2.4em;
+    color: var(--navy-blue);
+    margin-bottom: 15px;
+    border-bottom: 4px solid var(--gold-accent);
+    padding-bottom: 10px;
+}
 
-        h2 {
-            font-family: 'Oswald';
-            font-size: 2.4em;
-            color: var(--navy-blue);
-            margin-bottom: 15px;
-            border-bottom: 4px solid var(--gold-accent);
-            padding-bottom: 10px;
-        }
+h3 {
+    font-family: 'Oswald';
+    font-size: 1.7em;
+    color: var(--gold-accent);
+    margin-top: 30px;
+}
 
-        h3 {
-            font-family: 'Oswald';
-            font-size: 1.7em;
-            color: var(--gold-accent);
-            margin-top: 30px;
-        }
+ul {
+    padding-left: 20px;
+}
 
-        ul {
-            padding-left: 20px;
-        }
+ul li {
+    margin-bottom: 12px;
+    font-size: 1.1em;
+}
 
-        ul li {
-            margin-bottom: 12px;
-            font-size: 1.1em;
-        }
+img.tactic-img {
+    width: 100%;
+    border-radius: 14px;
+    margin-bottom: 25px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+}
 
-        img.tactic-img {
-            width: 100%;
-            border-radius: 14px;
-            margin-bottom: 25px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-        }
-    </style>
+/* ----------- Formation Tool Styles ----------- */
+button#openFormationModal {
+    background:#FFD700;
+    border:none;
+    padding:12px 22px;
+    font-weight:bold;
+    border-radius:8px;
+    cursor:pointer;
+    font-size:1.1em;
+    margin-top:20px;
+    transition:0.2s;
+}
+button#openFormationModal:hover {
+    transform:scale(1.05);
+}
+
+.modal {
+    display:none;
+    position:fixed;
+    top:0; left:0;
+    width:100%; height:100%;
+    background:rgba(0,0,0,0.6);
+    z-index:2000;
+}
+
+.modal-content {
+    background:white;
+    margin:6% auto;
+    width:60%;
+    padding:20px;
+    border-radius:15px;
+    animation:popUp .4s ease;
+    box-shadow:0 10px 25px rgba(0,0,0,0.3);
+}
+
+@keyframes popUp {
+    0% {transform:scale(.8); opacity:0;}
+    100% {transform:scale(1); opacity:1;}
+}
+
+.close {
+    float:right;
+    font-size:28px;
+    cursor:pointer;
+}
+
+#pitch {
+    width:100%;
+    height:500px;
+    background:linear-gradient(#2d8b3b,#165b22);
+    border:5px solid white;
+    position:relative;
+    border-radius:15px;
+    margin-top:20px;
+}
+
+.player {
+    width:30px; height:30px;
+    background:#FFD700;
+    border-radius:50%;
+    position:absolute;
+    transform:translate(-50%,-50%);
+    border:3px solid #001F5B;
+    animation:fadeIn .5s ease-in;
+}
+
+@keyframes fadeIn { from {opacity:0;} to {opacity:1;} }
+
+.input-row label { margin-right:5px; }
+.input-row input { width:50px; text-align:center; }
+</style>
 </head>
 
 <body>
 
 <div class="header">
-    <h1>TACTICS BOARD</h1>
-
-    <nav class="nav-menu">
-        <a href="index.html">HOME</a>
-        <a href="possession.html">POSSESSION</a>
-        <a href="finesse.html">FINESSE</a>
-        <a href="power-shot.html">POWER SHOT</a>
-        <a href="whip.html">WHIP CROSS</a>
-    </nav>
+<h1>TACTICS BOARD</h1>
+<nav class="nav-menu">
+<a href="index.html">HOME</a>
+<a class="active" href="possession.html">POSSESSION</a>
+<a href="finesse.html">FINESSE</a>
+<a href="power-shot.html">POWER SHOT</a>
+<a href="whip.html">WHIP CROSS</a>
+</nav>
 </div>
 
 <div class="container">
 
-    <!-- ✅ Possession Image -->
-    <img src="images/Screenshot 2025-11-01 123422.png" 
-    alt="Tiki-Taka Possession Football"
-    class="tactic-img">
+<img src="images/Screenshot 2025-11-01 123422.png" class="tactic-img">
 
-    <h2>Possession & Control 🛡️</h2>
+<h2>Possession & Control 🛡️</h2>
+<p>Possession football controls the match by keeping the ball and forcing opponents to chase.</p>
 
-    <p>Possession football controls the match by keeping the ball and forcing opponents to chase. 
-       It’s patient, intelligent, and designed to tire teams and create openings.</p>
+<h3>Key Principles</h3>
+<ul>
+<li>Patient short passing</li>
+<li>Constant triangles for support</li>
+<li>Immediate counter-press when losing the ball</li>
+</ul>
 
-    <h3>Key Principles</h3>
-    <ul>
-        <li>Patient short passing</li>
-        <li>Constant triangles for support</li>
-        <li>Immediate counter-press when losing the ball</li>
-    </ul>
+<!-- ✅ Formation Builder Trigger Button -->
+<button id="openFormationModal">Build Team Formation</button>
 
+</div>
+
+<!-- ✅ Modal -->
+<div id="formationModal" class="modal">
+<div class="modal-content">
+<span class="close">&times;</span>
+<h2 style="text-align:center;color:#001F5B">Formation Builder</h2>
+
+<div class="input-row" style="text-align:center;">
+<label>Def:</label><input id="def" type="number" min="1" max="7">
+<label>Mid:</label><input id="mid" type="number" min="1" max="7">
+<label>Att:</label><input id="att" type="number" min="1" max="7">
+<button id="calcFormation">Suggest</button>
+</div>
+
+<h3 id="result" style="text-align:center;"></h3>
+
+<div id="pitch"></div>
+</div>
 </div>
 
 <script>
 document.addEventListener("DOMContentLoaded", () => {
     const links = document.querySelectorAll(".nav-menu a");
     let current = window.location.pathname.split("/").pop() || "index.html";
-
-    links.forEach(link => {
-        if (link.getAttribute("href") === current) {
-            link.classList.add("active");
-        }
-    });
+    links.forEach(link => { if (link.getAttribute("href") === current) link.classList.add("active"); });
 });
+
+const openBtn = document.getElementById("openFormationModal");
+const modal = document.getElementById("formationModal");
+const closeBtn = document.getElementsByClassName("close")[0];
+const pitch = document.getElementById("pitch");
+
+openBtn.onclick = () => modal.style.display = "block";
+closeBtn.onclick = () => modal.style.display = "none";
+window.onclick = (e) => { if (e.target == modal) modal.style.display = "none"; };
+
+const formations = {
+"4-3-3": [4,3,3],
+"4-4-2": [4,4,2],
+"3-5-2": [3,5,2],
+"3-4-3": [3,4,3],
+"5-3-2": [5,3,2],
+"5-4-1": [5,4,1]
+};
+
+function drawPlayers(def, mid, att) {
+pitch.innerHTML = "";
+let lines = [att, mid, def];
+let yPos = [10, 50, 90];
+
+lines.forEach((count, row) => {
+for(let i=1;i<=count;i++){
+let dot = document.createElement("div");
+dot.classList.add("player");
+dot.style.top = yPos[row] + "%";
+dot.style.left = (i/(count+1))*100 + "%";
+pitch.appendChild(dot);
+}
+});
+}
+
+document.getElementById("calcFormation").onclick = () => {
+let d = +document.getElementById("def").value;
+let m = +document.getElementById("mid").value;
+let a = +document.getElementById("att").value;
+
+let best = null, bestScore = 999;
+for(const f in formations) {
+let [fd,fm,fa] = formations[f];
+let score = Math.abs(fd-d)+Math.abs(fm-m)+Math.abs(fa-a);
+if(score<bestScore){bestScore=score;best=f;}
+}
+
+document.getElementById("result").innerHTML =
+`Recommended Formation: <b style="color:#FFD700">${best}</b>`;
+
+drawPlayers(...formations[best]);
+};
 </script>
 
 </body>
 </html>
-
