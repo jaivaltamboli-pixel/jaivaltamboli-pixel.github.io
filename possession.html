@@ -1,298 +1,410 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Football Tactics Hub: Possession</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
 
 <style>
-:root {
-    --navy-blue: #001F5B;
-    --gold-accent: #FFD700;
-    --light-bg: #EAF0F6;
-    --text-color: #1A1A1A;
+:root{
+  --navy-blue:#001F5B;
+  --gold:#FFD700;
+  --light-bg:#EAF0F6;
+  --text:#1A1A1A;
+  --pitch-dark:#1f7a2f;
+  --pitch-light:#3ea345;
 }
 
-/* Base UI */
-body {
-    font-family: 'Roboto', sans-serif;
-    margin: 0;
-    padding: 0;
-    background: linear-gradient(135deg, var(--light-bg), #d4e0eb);
-    color: var(--text-color);
-    padding-top: 85px;
+/* ---------- Base ---------- */
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:'Roboto',sans-serif;
+  background:linear-gradient(135deg,var(--light-bg),#d4e0eb);
+  color:var(--text);
+  padding-top:86px;
+  -webkit-font-smoothing:antialiased;
 }
 
-.header {
-    background-color: var(--navy-blue);
-    padding: 18px 0;
-    position: fixed;
-    width: 100%;
-    top: 0;
-    z-index: 10;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+/* Header */
+.header{
+  position:fixed;top:0;left:0;right:0;
+  background:var(--navy-blue);
+  padding:16px 0;
+  box-shadow:0 10px 25px rgba(0,0,0,.18);
+  z-index:1100;
+}
+.header h1{
+  margin:0;
+  color:var(--gold);
+  text-align:center;
+  font-family:'Oswald',sans-serif;
+  font-size:2rem;
+  letter-spacing:2px;
+}
+.nav-menu{display:flex;justify-content:center;gap:8px;margin-top:8px}
+.nav-menu a{
+  color:#fff;text-decoration:none;padding:7px 14px;border-radius:20px;border:1px solid rgba(255,255,255,.25);
+  font-weight:500;font-size:0.92rem; transition:.18s;
+}
+.nav-menu a:hover{background:var(--gold);color:var(--navy-blue);transform:scale(1.03)}
+.nav-menu a.active{background:var(--gold);color:var(--navy-blue);font-weight:700}
+
+/* Container */
+.container{
+  width:92%;max-width:980px;margin:34px auto;background:#fff;padding:34px;border-radius:16px;
+  box-shadow:0 12px 35px rgba(0,0,0,.12); border-top:6px solid var(--gold);
 }
 
-.header h1 {
-    color: var(--gold-accent);
-    text-align: center;
-    font-family: 'Oswald', sans-serif;
-    margin: 0;
-    font-size: 2.6rem;
-    letter-spacing: 2px;
-}
+/* Headings */
+h2{font-family:'Oswald',sans-serif;color:var(--navy-blue);font-size:2rem;margin:0 0 12px;border-bottom:4px solid var(--gold);padding-bottom:10px}
+h3{font-family:'Oswald',sans-serif;color:var(--gold);margin-top:26px;font-size:1.2rem}
 
-.nav-menu {
-    text-align: center;
-    margin-top: 10px;
-}
+/* text & list */
+p{font-size:1rem;line-height:1.6}
+ul{padding-left:20px}
+ul li{margin-bottom:10px}
 
-.nav-menu a {
-    text-decoration: none;
-    color: white;
-    padding: 8px 15px;
-    margin: 4px;
-    border-radius: 20px;
-    border: 1px solid rgba(255, 255, 255, 0.4);
-    transition: 0.2s;
-    font-weight: 500;
-}
+/* image */
+img.tactic-img{width:100%;border-radius:12px;margin-bottom:20px;box-shadow:0 10px 25px rgba(0,0,0,.12)}
 
-.nav-menu a.active,
-.nav-menu a:hover {
-    background: var(--gold-accent);
-    color: var(--navy-blue);
-    transform: scale(1.05);
+/* ---------- Formation Button ---------- */
+#openFormationModal{
+  background:var(--gold); color:var(--navy-blue); border:none; padding:11px 18px;
+  border-radius:10px; font-weight:700; cursor:pointer; margin-top:14px; transition:transform .15s;
 }
+#openFormationModal:hover{transform:translateY(-3px)}
 
-.container {
-    width: 90%;
-    max-width: 950px;
-    margin: auto;
-    background: white;
-    padding: 35px;
-    border-radius: 18px;
-    margin-top: 30px;
-    box-shadow: 0 12px 35px rgba(0,0,0,0.12);
-    border-top: 6px solid var(--gold-accent);
+/* ---------- Modal ---------- */
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:1300;align-items:center;justify-content:center;padding:20px}
+.modal-inner{
+  width:100%;max-width:1100px;background:#fff;border-radius:14px;padding:18px 20px 26px;position:relative;
+  animation:modalPop .32s cubic-bezier(.2,.9,.3,1);
 }
+@keyframes modalPop{from{transform:scale(.95);opacity:0}to{transform:scale(1);opacity:1}}
+.modal-close{position:absolute;right:16px;top:12px;font-size:22px;cursor:pointer;color:#222}
 
-h2 {
-    font-family: 'Oswald';
-    font-size: 2.4em;
-    color: var(--navy-blue);
-    margin-bottom: 15px;
-    border-bottom: 4px solid var(--gold-accent);
-    padding-bottom: 10px;
+/* Modal layout */
+.modal-row{display:flex;gap:18px;align-items:flex-start}
+.modal-left{flex:0 0 360px;padding:8px}
+.modal-right{flex:1;padding:8px}
+
+/* Input row */
+.input-row{display:flex;gap:10px;align-items:center;justify-content:center;flex-wrap:wrap}
+.input-row label{font-weight:700;margin-right:6px}
+.input-row input{width:60px;padding:8px;border-radius:6px;border:1px solid #ddd;text-align:center}
+
+/* Suggest button */
+#calcFormation{background:var(--navy-blue);color:#fff;padding:10px 12px;border-radius:8px;border:none;font-weight:700;cursor:pointer}
+#calcFormation:hover{opacity:.95;transform:translateY(-2px)}
+
+/* Result */
+#result{margin-top:12px;text-align:center;font-weight:800;font-size:1.35rem;color:var(--navy-blue)}
+
+/* ---------- Pitch ---------- */
+.pitch-card{background:linear-gradient(180deg,var(--pitch-light),var(--pitch-dark));border-radius:12px;padding:12px;border:5px solid #fff}
+#pitch{position:relative;width:100%;height:520px;border-radius:10px;overflow:hidden;background:
+  linear-gradient(180deg,#3ea345,#1f7a2f); box-shadow:inset 0 8px 20px rgba(0,0,0,.15);}
+
+/* pitch markings (simple) */
+.pitch-line{position:absolute;left:50%;transform:translateX(-50%);width:70%;height:2px;background:rgba(255,255,255,.12);top:50%}
+.center-circle{position:absolute;left:50%;top:50%;width:90px;height:90px;border-radius:50%;transform:translate(-50%,-50%);border:3px solid rgba(255,255,255,.12)}
+
+/* Player token */
+.player{
+  width:48px;height:48px;border-radius:50%;background:var(--gold);border:3px solid var(--navy-blue);
+  color:var(--navy-blue); font-weight:800; font-family:'Oswald',sans-serif; font-size:12px;
+  display:flex;align-items:center;justify-content:center; position:absolute; transform:translate(-50%,-50%) scale(.88);
+  box-shadow:0 6px 18px rgba(0,0,0,.18); opacity:0; animation:tokenIn .45s ease forwards;
 }
+@keyframes tokenIn{to{opacity:1; transform:translate(-50%,-50%) scale(1)}}
 
-h3 {
-    font-family: 'Oswald';
-    font-size: 1.7em;
-    color: var(--gold-accent);
-    margin-top: 30px;
+/* small role label below token */
+.token-label{position:absolute;left:50%;transform:translateX(-50%);margin-top:6px;font-size:11px;color:#fff;font-weight:700;text-shadow:0 2px 4px rgba(0,0,0,.4)}
+
+/* responsive */
+@media(max-width:980px){
+  .modal-row{flex-direction:column}
+  .modal-left{flex-basis:auto}
+  #pitch{height:420px}
+  .player{width:42px;height:42px;font-size:11px}
 }
-
-ul {
-    padding-left: 20px;
+@media(max-width:540px){
+  .container{padding:18px}
+  #pitch{height:360px}
 }
-
-ul li {
-    margin-bottom: 12px;
-    font-size: 1.1em;
-}
-
-img.tactic-img {
-    width: 100%;
-    border-radius: 14px;
-    margin-bottom: 25px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-}
-
-/* ----------- Formation Tool Styles ----------- */
-button#openFormationModal {
-    background:#FFD700;
-    border:none;
-    padding:12px 22px;
-    font-weight:bold;
-    border-radius:8px;
-    cursor:pointer;
-    font-size:1.1em;
-    margin-top:20px;
-    transition:0.2s;
-}
-button#openFormationModal:hover {
-    transform:scale(1.05);
-}
-
-.modal {
-    display:none;
-    position:fixed;
-    top:0; left:0;
-    width:100%; height:100%;
-    background:rgba(0,0,0,0.6);
-    z-index:2000;
-}
-
-.modal-content {
-    background:white;
-    margin:6% auto;
-    width:60%;
-    padding:20px;
-    border-radius:15px;
-    animation:popUp .4s ease;
-    box-shadow:0 10px 25px rgba(0,0,0,0.3);
-}
-
-@keyframes popUp {
-    0% {transform:scale(.8); opacity:0;}
-    100% {transform:scale(1); opacity:1;}
-}
-
-.close {
-    float:right;
-    font-size:28px;
-    cursor:pointer;
-}
-
-#pitch {
-    width:100%;
-    height:500px;
-    background:linear-gradient(#2d8b3b,#165b22);
-    border:5px solid white;
-    position:relative;
-    border-radius:15px;
-    margin-top:20px;
-}
-
-.player {
-    width:30px; height:30px;
-    background:#FFD700;
-    border-radius:50%;
-    position:absolute;
-    transform:translate(-50%,-50%);
-    border:3px solid #001F5B;
-    animation:fadeIn .5s ease-in;
-}
-
-@keyframes fadeIn { from {opacity:0;} to {opacity:1;} }
-
-.input-row label { margin-right:5px; }
-.input-row input { width:50px; text-align:center; }
 </style>
 </head>
-
 <body>
 
-<div class="header">
-<h1>TACTICS BOARD</h1>
-<nav class="nav-menu">
-<a href="index.html">HOME</a>
-<a class="active" href="possession.html">POSSESSION</a>
-<a href="finesse.html">FINESSE</a>
-<a href="power-shot.html">POWER SHOT</a>
-<a href="whip.html">WHIP CROSS</a>
-</nav>
+<!-- Header -->
+<div class="header" role="banner">
+  <h1>TACTICS BOARD</h1>
+  <nav class="nav-menu" role="navigation" aria-label="Main navigation">
+    <a href="index.html">HOME</a>
+    <a class="active" href="possession.html">POSSESSION</a>
+    <a href="finesse.html">FINESSE</a>
+    <a href="power-shot.html">POWER SHOT</a>
+    <a href="whip.html">WHIP CROSS</a>
+  </nav>
 </div>
 
-<div class="container">
+<!-- Main container -->
+<main class="container" role="main">
+  <img src="images/Screenshot 2025-11-01 123422.png" alt="illustration of tiki-taka possession" class="tactic-img">
 
-<img src="images/Screenshot 2025-11-01 123422.png" class="tactic-img">
+  <h2>Possession & Control 🛡️</h2>
+  <p>Possession football controls the match by keeping the ball and forcing opponents to chase. Patient passing, movement and structured triangles are key.</p>
 
-<h2>Possession & Control 🛡️</h2>
-<p>Possession football controls the match by keeping the ball and forcing opponents to chase.</p>
+  <h3>Key Principles</h3>
+  <ul>
+    <li>Patient short passing</li>
+    <li>Constant triangles for support</li>
+    <li>Immediate counter-press when losing the ball</li>
+  </ul>
 
-<h3>Key Principles</h3>
-<ul>
-<li>Patient short passing</li>
-<li>Constant triangles for support</li>
-<li>Immediate counter-press when losing the ball</li>
-</ul>
+  <!-- Trigger -->
+  <button id="openFormationModal" aria-haspopup="dialog" aria-controls="formationModal">Build Team Formation</button>
+</main>
 
-<!-- ✅ Formation Builder Trigger Button -->
-<button id="openFormationModal">Build Team Formation</button>
+<!-- Modal (hidden by default) -->
+<div id="formationModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="formationTitle">
+  <div class="modal-inner" role="document">
+    <div class="modal-close" aria-label="Close modal" title="Close">&times;</div>
 
+    <h2 id="formationTitle" style="text-align:center;color:var(--navy-blue);font-family:'Oswald';margin:8px 0 6px;">Formation Builder</h2>
+    <div style="height:4px;background:var(--gold);width:80%;margin:8px auto 18px;border-radius:4px"></div>
+
+    <div class="modal-row">
+      <!-- Left - controls -->
+      <div class="modal-left">
+        <div style="text-align:center;margin-bottom:8px;font-weight:700">Team Inputs</div>
+
+        <div style="padding:8px 6px;border-radius:8px;background:#fafafa;border:1px solid #eee">
+          <div style="display:flex;gap:8px;align-items:center;justify-content:center;margin-bottom:8px">
+            <label for="def">Def:</label>
+            <input id="def" type="number" min="1" max="7" value="4" />
+            <label for="mid" style="margin-left:6px">Mid:</label>
+            <input id="mid" type="number" min="0" max="7" value="3" />
+            <label for="att" style="margin-left:6px">Att:</label>
+            <input id="att" type="number" min="0" max="7" value="3" />
+          </div>
+
+          <div style="display:flex;justify-content:center;gap:10px;margin-top:8px">
+            <button id="calcFormation">Suggest</button>
+            <button id="applyFormation" style="background:#0066cc;color:#fff;border:none;padding:8px 12px;border-radius:8px;font-weight:700;cursor:pointer">Apply</button>
+          </div>
+
+          <div id="result" aria-live="polite" style="margin-top:12px;text-align:center;color:var(--navy-blue);font-weight:800"></div>
+        </div>
+
+        <h3 style="margin-top:16px">Supported Pro Formations</h3>
+        <ul style="font-size:0.95rem">
+          <li>4-3-3 (flat)</li>
+          <li>4-2-3-1 (double pivot + CAM)</li>
+          <li>4-1-2-1-2 (diamond)</li>
+          <li>3-5-2 (wingbacks + central mids)</li>
+          <li>3-4-3 (front three)</li>
+          <li>5-2-3 (defensive 5 but attacking width)</li>
+        </ul>
+      </div>
+
+      <!-- Right - pitch -->
+      <div class="modal-right">
+        <div class="pitch-card" aria-hidden="false">
+          <div id="pitch" role="img" aria-label="Tactical pitch with players"></div>
+          <div class="pitch-line" aria-hidden="true"></div>
+          <div class="center-circle" aria-hidden="true"></div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 
-<!-- ✅ Modal -->
-<div id="formationModal" class="modal">
-<div class="modal-content">
-<span class="close">&times;</span>
-<h2 style="text-align:center;color:#001F5B">Formation Builder</h2>
-
-<div class="input-row" style="text-align:center;">
-<label>Def:</label><input id="def" type="number" min="1" max="7">
-<label>Mid:</label><input id="mid" type="number" min="1" max="7">
-<label>Att:</label><input id="att" type="number" min="1" max="7">
-<button id="calcFormation">Suggest</button>
-</div>
-
-<h3 id="result" style="text-align:center;"></h3>
-
-<div id="pitch"></div>
-</div>
-</div>
-
+<!-- Script: formation engine + UI -->
 <script>
-document.addEventListener("DOMContentLoaded", () => {
-    const links = document.querySelectorAll(".nav-menu a");
-    let current = window.location.pathname.split("/").pop() || "index.html";
-    links.forEach(link => { if (link.getAttribute("href") === current) link.classList.add("active"); });
-});
+/* ---------- Utility / UI wiring ---------- */
+const openBtn = document.getElementById('openFormationModal');
+const modal = document.getElementById('formationModal');
+const closeBtn = document.querySelector('.modal-close');
+const calcBtn = document.getElementById('calcFormation');
+const applyBtn = document.getElementById('applyFormation');
+const pitch = document.getElementById('pitch');
+const resultEl = document.getElementById('result');
 
-const openBtn = document.getElementById("openFormationModal");
-const modal = document.getElementById("formationModal");
-const closeBtn = document.getElementsByClassName("close")[0];
-const pitch = document.getElementById("pitch");
+openBtn.addEventListener('click', ()=> modal.style.display='flex');
+closeBtn.addEventListener('click', ()=> modal.style.display='none');
+window.addEventListener('keydown', e=> { if(e.key==='Escape') modal.style.display='none'; });
+window.addEventListener('click', e=> { if(e.target===modal) modal.style.display='none'; });
 
-openBtn.onclick = () => modal.style.display = "block";
-closeBtn.onclick = () => modal.style.display = "none";
-window.onclick = (e) => { if (e.target == modal) modal.style.display = "none"; };
-
-const formations = {
-"4-3-3": [4,3,3],
-"4-4-2": [4,4,2],
-"3-5-2": [3,5,2],
-"3-4-3": [3,4,3],
-"5-3-2": [5,3,2],
-"5-4-1": [5,4,1]
+/* ---------- Formation definitions (Pro Pack) ----------
+ Each formation is a list of players with:
+  - pos: short role label (for display)
+  - x,y: coordinates in percent across pitch (left=0 top=0)
+*/
+const FORMATIONS = {
+  "4-3-3": [
+    {pos:"GK", x:50, y:92},
+    {pos:"LB", x:12, y:76}, {pos:"LCB", x:34, y:72}, {pos:"RCB", x:66, y:72}, {pos:"RB", x:88, y:76},
+    {pos:"CM", x:36, y:52}, {pos:"CDM", x:50, y:60}, {pos:"CM", x:64, y:52},
+    {pos:"LW", x:12, y:28}, {pos:"ST", x:50, y:20}, {pos:"RW", x:88, y:28}
+  ],
+  "4-2-3-1": [
+    {pos:"GK", x:50, y:92},
+    {pos:"LB", x:12, y:76}, {pos:"LCB", x:34, y:72}, {pos:"RCB", x:66, y:72}, {pos:"RB", x:88, y:76},
+    {pos:"CDM", x:38, y:60}, {pos:"CDM", x:62, y:60},
+    {pos:"LW", x:18, y:38}, {pos:"CAM", x:50, y:45}, {pos:"RW", x:82, y:38},
+    {pos:"ST", x:50, y:20}
+  ],
+  "4-1-2-1-2": [ /* diamond narrow midfield */
+    {pos:"GK", x:50, y:92},
+    {pos:"LB", x:12, y:76}, {pos:"LCB", x:34, y:72}, {pos:"RCB", x:66, y:72}, {pos:"RB", x:88, y:76},
+    {pos:"CDM", x:50, y:64},
+    {pos:"CM", x:38, y:52}, {pos:"CM", x:62, y:52},
+    {pos:"CAM", x:50, y:40},
+    {pos:"ST", x:42, y:24}, {pos:"ST", x:58, y:24}
+  ],
+  "3-5-2": [
+    {pos:"GK", x:50, y:92},
+    {pos:"LCB", x:28, y:74}, {pos:"CB", x:50, y:70}, {pos:"RCB", x:72, y:74},
+    {pos:"LWB", x:12, y:60}, {pos:"CM", x:34, y:54}, {pos:"CDM", x:50, y:62}, {pos:"CM", x:66, y:54}, {pos:"RWB", x:88, y:60},
+    {pos:"ST", x:42, y:22}, {pos:"ST", x:58, y:22}
+  ],
+  "3-4-3": [
+    {pos:"GK", x:50, y:92},
+    {pos:"LCB", x:28, y:74}, {pos:"CB", x:50, y:70}, {pos:"RCB", x:72, y:74},
+    {pos:"LM", x:20, y:52}, {pos:"CM", x:40, y:52}, {pos:"CM", x:60, y:52}, {pos:"RM", x:80, y:52},
+    {pos:"LW", x:20, y:26}, {pos:"ST", x:50, y:20}, {pos:"RW", x:80, y:26}
+  ],
+  "5-2-3": [
+    {pos:"GK", x:50, y:92},
+    {pos:"LB", x:10, y:74}, {pos:"LCB", x:30, y:72}, {pos:"CB", x:50, y:70}, {pos:"RCB", x:70, y:72}, {pos:"RB", x:90, y:74},
+    {pos:"CM", x:42, y:54}, {pos:"CM", x:58, y:54},
+    {pos:"LW", x:18, y:28}, {pos:"ST", x:50, y:20}, {pos:"RW", x:82, y:28}
+  ]
 };
 
-function drawPlayers(def, mid, att) {
-pitch.innerHTML = "";
-let lines = [att, mid, def];
-let yPos = [10, 50, 90];
+/* List of formation keys for scoring */
+const FORM_KEYS = Object.keys(FORMATIONS);
 
-lines.forEach((count, row) => {
-for(let i=1;i<=count;i++){
-let dot = document.createElement("div");
-dot.classList.add("player");
-dot.style.top = yPos[row] + "%";
-dot.style.left = (i/(count+1))*100 + "%";
-pitch.appendChild(dot);
+/* ---------- helper: clear pitch ---------- */
+function clearPitch(){
+  pitch.innerHTML = '';
 }
+
+/* ---------- helper: create token ---------- */
+function makeToken(role, xPct, yPct, index){
+  const token = document.createElement('div');
+  token.className = 'player';
+  token.setAttribute('role','img');
+  token.setAttribute('aria-label', role);
+  token.style.left = xPct + '%';
+  token.style.top = yPct + '%';
+  token.style.animationDelay = (0.05 * index) + 's';
+  token.textContent = role;
+  pitch.appendChild(token);
+
+  // add a small visible label below token for clarity (on smaller screens it may overlap)
+  const label = document.createElement('div');
+  label.className = 'token-label';
+  label.style.left = xPct + '%';
+  label.style.top = (yPct + 6) + '%';
+  label.textContent = role;
+  pitch.appendChild(label);
+}
+
+/* ---------- draw a formation by key ---------- */
+function drawFormation(key){
+  clearPitch();
+  const roster = FORMATIONS[key];
+  roster.forEach((p,idx)=>{
+    makeToken(p.pos, p.x, p.y, idx);
+  });
+}
+
+/* ---------- scoring: choose best formation by D-M-A counts ---------- */
+function suggestByCounts(d,m,a){
+  // We map each formation to its (def,mid,att) totals by counting roles
+  let best = null, bestScore = Infinity;
+  FORM_KEYS.forEach(key=>{
+    const roster = FORMATIONS[key];
+    // count defenders (roles with LB, RB, CB, LCB, RCB), mids (CDM, CM, CAM, LM, RM, LWB, RWB), attackers (ST, LW, RW)
+    let defCount=0, midCount=0, attCount=0;
+    roster.forEach(r=>{
+      const p = r.pos.toUpperCase();
+      if(['GK'].includes(p)) return;
+      if(p.includes('B')) defCount++;           // LB, RB, CB, LCB, RCB
+      else if(['CDM','CM','CAM','LM','RM','LWB','RWB'].includes(p)) midCount++;
+      else if(['ST','LW','RW'].includes(p)) attCount++;
+      else midCount++; // fallback to midfield
+    });
+    // compute simple distance
+    const score = Math.abs(defCount - d) + Math.abs(midCount - m) + Math.abs(attCount - a);
+    if(score < bestScore){ bestScore = score; best = {key,defCount,midCount,attCount}; }
+  });
+  return best;
+}
+
+/* ---------- UI actions ---------- */
+calcBtn.addEventListener('click', ()=>{
+  const d = parseInt(document.getElementById('def').value) || 0;
+  const m = parseInt(document.getElementById('mid').value) || 0;
+  const a = parseInt(document.getElementById('att').value) || 0;
+  if(d + m + a < 5){ resultEl.innerHTML = 'Please enter realistic counts (total ≥ 5)'; return; }
+
+  const best = suggestByCounts(d,m,a);
+  if(!best) { resultEl.textContent = 'No suggestion available'; return; }
+  resultEl.innerHTML = `Recommended Formation: <span style="color:${getComputedStyle(document.documentElement).getPropertyValue('--gold')||'#FFD700'}">${best.key}</span>`;
+  // draw preview automatically
+  drawFormation(best.key);
 });
-}
 
-document.getElementById("calcFormation").onclick = () => {
-let d = +document.getElementById("def").value;
-let m = +document.getElementById("mid").value;
-let a = +document.getElementById("att").value;
+applyBtn.addEventListener('click', ()=>{
+  // read result text to find recommended key or fallback to suggestion
+  const text = resultEl.textContent || '';
+  let found = null;
+  FORM_KEYS.forEach(k => { if(text.includes(k)) found = k; });
+  if(!found){
+    // if none shown, auto suggest from inputs and use that
+    const d = parseInt(document.getElementById('def').value) || 0;
+    const m = parseInt(document.getElementById('mid').value) || 0;
+    const a = parseInt(document.getElementById('att').value) || 0;
+    const best = suggestByCounts(d,m,a);
+    found = best ? best.key : FORM_KEYS[0];
+  }
+  drawFormation(found);
+  // keep modal open so user can view; optionally close modal after small delay:
+  setTimeout(()=> { modal.style.display = 'none'; }, 700);
+});
 
-let best = null, bestScore = 999;
-for(const f in formations) {
-let [fd,fm,fa] = formations[f];
-let score = Math.abs(fd-d)+Math.abs(fm-m)+Math.abs(fa-a);
-if(score<bestScore){bestScore=score;best=f;}
-}
+/* ---------- when modal opens, draw default formation ---------- */
+openBtn.addEventListener('click', ()=>{
+  // draw default 4-3-3
+  resultEl.innerHTML = 'Recommended Formation: <span style="color:#FFD700">4-3-3</span>';
+  drawFormation('4-3-3');
+});
 
-document.getElementById("result").innerHTML =
-`Recommended Formation: <b style="color:#FFD700">${best}</b>`;
+/* ---------- ensure accessible focus trap (light) ---------- */
+document.addEventListener('keydown', (e)=>{
+  if(e.key === 'Tab' && modal.style.display === 'flex'){
+    // basic focus trap: keep focus within modal
+    const focusables = modal.querySelectorAll('button, [href], input, [tabindex]:not([tabindex="-1"])');
+    if(focusables.length){
+      const first = focusables[0], last = focusables[focusables.length-1];
+      if(e.shiftKey && document.activeElement === first){ last.focus(); e.preventDefault(); }
+      else if(!e.shiftKey && document.activeElement === last){ first.focus(); e.preventDefault(); }
+    }
+  }
+});
 
-drawPlayers(...formations[best]);
-};
+/* ---------- small: mark nav active based on page (same logic as earlier) ---------- */
+document.addEventListener('DOMContentLoaded', ()=>{
+  const links = document.querySelectorAll('.nav-menu a');
+  const current = window.location.pathname.split('/').pop() || 'index.html';
+  links.forEach(l => { if(l.getAttribute('href') === current) l.classList.add('active'); });
+});
 </script>
 
 </body>
