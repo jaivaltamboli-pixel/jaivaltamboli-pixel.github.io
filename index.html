@@ -1,131 +1,203 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Football Tactics</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Football Tactics Hub: Home</title>
 
-<style>
-    body {
-        font-family: Arial, sans-serif;
-        background-color: #f6f6f6;
-        margin: 0;
-        padding: 0;
-    }
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
 
-    header {
-        background-color: #ff7f32;
-        padding: 18px;
-        text-align: center;
-        color: white;
-        font-size: 28px;
-        font-weight: bold;
-    }
+    <style>
+        :root {
+            --navy-blue: #001F5B;
+            --gold-accent: #FFD700;
+            --light-bg: #EAF0F6;
+            --text-color: #1A1A1A;
+            --shadow-light: 0 4px 10px rgba(0, 0, 0, 0.1);
+            --shadow-deep: 0 15px 30px rgba(0, 0, 0, 0.2);
+        }
 
-    nav {
-        background-color: white;
-        padding: 12px;
-        display: flex;
-        justify-content: center;
-        gap: 18px;
-        border-bottom: 2px solid #ececec;
-    }
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            background-color: var(--light-bg);
+            background-image: linear-gradient(135deg, var(--light-bg), #d4e0eb);
+            color: var(--text-color);
+            line-height: 1.7;
+            padding-top: 85px;
+        }
 
-    nav a {
-        text-decoration: none;
-        font-weight: bold;
-        color: #ff7f32;
-        font-size: 18px;
-        padding: 6px 12px;
-        border-radius: 8px;
-        transition: 0.25s;
-    }
+        /* Header */
+        .header {
+            background-color: var(--navy-blue);
+            padding: 18px 0;
+            box-shadow: var(--shadow-deep);
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            text-align: center;
+        }
 
-    nav a:hover {
-        background-color: #ffe1c9;
-    }
+        .header h1 {
+            font-family: 'Oswald', sans-serif;
+            font-size: 2.5em;
+            color: var(--gold-accent);
+            font-weight: 700;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+        }
 
-    .container {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
-        gap: 26px;
-        padding: 28px;
-        max-width: 1100px;
-        margin: auto;
-    }
+        /* Nav */
+        .nav-menu a {
+            color: white;
+            text-decoration: none;
+            padding: 8px 15px;
+            margin: 5px 6px;
+            border-radius: 20px;
+            transition: 0.25s;
+            font-weight: 500;
+            font-size: 0.9em;
+            border: 1px solid rgba(255,255,255,0.3);
+        }
 
-    .card {
-        background: white;
-        border-radius: 14px;
-        padding: 22px;
-        box-shadow: 0px 4px 10px rgba(0,0,0,0.08);
-        text-align: center;
-        transition: 0.3s ease;
-        opacity: 0;
-        transform: translateY(12px);
-        animation: fadeUp 0.7s forwards;
-    }
+        .nav-menu a:hover {
+            background: var(--gold-accent);
+            color: var(--navy-blue);
+            transform: scale(1.07);
+            border-color: var(--gold-accent);
+            box-shadow: 0 4px 10px rgba(255, 215, 0, 0.6);
+        }
 
-    .card:hover {
-        transform: scale(1.03);
-        box-shadow: 0px 6px 14px rgba(0,0,0,0.10);
-    }
+        .nav-menu a[href$="index.html"] {
+            background-color: var(--gold-accent);
+            color: var(--navy-blue);
+            font-weight: 700;
+        }
 
-    @keyframes fadeUp {
-        to { opacity: 1; transform: translateY(0px); }
-    }
+        /* Main container */
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 40px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: var(--shadow-deep);
+        }
 
-    .card h2 {
-        color: #ff7f32;
-        margin-bottom: 12px;
-        font-size: 22px;
-        font-weight: bold;
-    }
+        .container h2 {
+            font-family: 'Oswald', sans-serif;
+            color: var(--navy-blue);
+            border-bottom: 5px solid var(--gold-accent);
+            padding-bottom: 15px;
+            margin-bottom: 30px;
+            font-size: 2.4em;
+            text-transform: uppercase;
+        }
 
-    .card p {
-        font-size: 15px;
-        line-height: 1.5;
-    }
+        .tactic-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+        }
 
-    img {
-        width: 100%;
-        border-radius: 12px;
-        margin-bottom: 12px;
-    }
-</style>
+        .tactic-card {
+            padding: 25px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: var(--shadow-light);
+            text-align: center;
+            text-decoration: none;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            border: 2px solid transparent;
+            transition: 0.25s;
+        }
+
+        .tactic-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 10px 18px rgba(0,31,91,0.3);
+            border: 2px solid var(--gold-accent);
+        }
+
+        .tactic-icon {
+            font-size: 3em;
+            color: var(--gold-accent);
+            margin-bottom: 10px;
+        }
+
+        .tactic-card h3 {
+            font-family: 'Oswald', sans-serif;
+            color: var(--navy-blue);
+            font-size: 1.5em;
+            margin-top: 10px;
+        }
+
+        .tactic-card p {
+            color: #666;
+            font-size: 0.95em;
+        }
+
+        @media (max-width: 768px) {
+            body { padding-top: 150px; }
+            .container { width: 95%; padding: 20px; }
+            .nav-menu a { padding: 6px 10px; font-size: 0.75em; }
+        }
+    </style>
 </head>
 
 <body>
-<header>Football Tactics & Strategies</header>
 
-<nav>
-    <a href="index.html">Home</a>
-    <a href="defending.html">Defending</a>
-</nav>
+<div class="header">
+    <h1>TACTICS BOARD</h1>
+    <nav class="nav-menu">
+        <a href="index.html">HOME</a>
+        <a href="possession.html">POSSESSION</a>
+        <a href="finesse.html">FINESSE</a>
+        <a href="power-shot.html">POWER SHOT</a>
+        <a href="whip.html">WHIP CROSS</a>
+        <a href="defense.html">DEFENDING</a>
+    </nav>
+</div>
 
 <div class="container">
+    <h2>Master the Modern Football Meta</h2>
+    <p>Elite guides to real tactical principles used in pro football & FC.</p>
 
-    <!-- Whip -->
-    <div class="card">
-        <h2>Whip Play</h2>
-        <img src="images/whip1.png">
-        <p>Fast wide switch + driven cross into box. Fullbacks overlap, wingers stretch width.</p>
+    <div class="tactic-grid">
+        <a href="possession.html" class="tactic-card">
+            <span class="tactic-icon">🛡️</span>
+            <h3>Possession & Control</h3>
+            <p>Tiki-taka, triangles, tempo control & overloads.</p>
+        </a>
+
+        <a href="finesse.html" class="tactic-card">
+            <span class="tactic-icon">🎯</span>
+            <h3>Finesse Shot</h3>
+            <p>Curving, angles, precision finishing.</p>
+        </a>
+
+        <a href="power-shot.html" class="tactic-card">
+            <span class="tactic-icon">💥</span>
+            <h3>Power Shot</h3>
+            <p>Velocity mechanics & striker finishing power.</p>
+        </a>
+
+        <a href="whip.html" class="tactic-card">
+            <span class="tactic-icon">🌪️</span>
+            <h3>Whip Cross</h3>
+            <p>Dipping, curling crosses into danger zones.</p>
+        </a>
+
+        <a href="defense.html" class="tactic-card">
+            <span class="tactic-icon">🧱</span>
+            <h3>Defending & Pressing</h3>
+            <p>Low block, high pressing triggers & compact shape.</p>
+        </a>
     </div>
-
-    <!-- Possession -->
-    <div class="card">
-        <h2>Possession</h2>
-        <img src="images/possession1.png">
-        <p>Controlled tempo, short passes, triangles, midfield dominance.</p>
-    </div>
-
-    <!-- Power Shot -->
-    <div class="card">
-        <h2>Power Shot</h2>
-        <img src="images/Screenshot 2025-11-01 123845.png">
-        <p>Direct attack, long shots, high-power finishers near edge of box.</p>
-    </div>
-
 </div>
 
 </body>
