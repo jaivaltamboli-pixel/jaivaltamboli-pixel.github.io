@@ -3,1020 +3,882 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Tactics Console — Tactical Board</title>
+<title>Tactics Console — Interactive</title>
 
-<!--
-  TACTICS_CONSOLE.HTML
-  Save as tactics_console.html
-  A client-side tactical board app (SVG + JS).
-  Features:
-  - Pitch drawing (SVG)
-  - Player placement (draggable)
-  - Draw arrows, lines, circles, freehand
-  - Add labels
-  - Simple timeline recording & playback (keyframes)
-  - Save/Load JSON
-  - Export PNG
-  - Undo/Redo
-  - Layer management
-  - Keyboard shortcuts
--->
-
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
 
 <style>
   :root{
-    --bg:#0e1620;
-    --panel:#0f1720;
-    --accent:#FFD24D;
-    --muted:#A7B0BD;
-    --white:#ffffff;
-    --card:#f7fbff;
-    --shadow: 0 8px 28px rgba(2,6,23,0.5);
+    --navy:#001F5B;
+    --accent:#FFA500;
+    --bg:#eaf0f6;
+    --tile:#ffffff;
+    --muted:#666;
   }
-  html,body{height:100%;margin:0;background:linear-gradient(180deg,#08101a 0%, #0b1722 100%);font-family:Inter,system-ui,Arial,Helvetica,sans-serif;color:var(--white)}
+  html,body{height:100%;margin:0;font-family:Roboto,system-ui,-apple-system; background:linear-gradient(135deg,var(--bg),#d4e0eb); color:#111}
+  /* Fullscreen app container */
+  .app {
+    position:fixed; inset:0; display:flex; flex-direction:column;
+  }
+
+  /* Top bar */
   .topbar{
-    height:72px;
-    background:linear-gradient(90deg, rgba(0,20,50,0.98), rgba(0,10,30,0.98));
-    display:flex;align-items:center;padding:8px 18px;gap:18px;box-shadow:var(--shadow);
-    position:fixed;left:0;right:0;top:0;z-index:1000;
+    height:72px; background:var(--navy); color:var(--accent); display:flex; align-items:center; gap:14px;
+    padding:12px 20px; box-shadow:0 6px 20px rgba(0,0,0,0.25);
   }
-  .brand{
-    display:flex;align-items:center;gap:12px;color:var(--white)
-  }
-  .brand .logo{
-    width:48px;height:48px;border-radius:8px;background:linear-gradient(180deg,#003b6b,#001f3a);display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--accent);font-family:Oswald;font-size:18px;
-    box-shadow: 0 3px 10px rgba(0,0,0,0.4);
-  }
-  .brand h1{margin:0;font-family:Oswald;font-size:18px;color:var(--white)}
-  .toolbar{
-    display:flex;gap:8px;margin-left:16px;
-  }
-  .btn{
-    background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.04);color:var(--white);padding:8px 12px;border-radius:8px;cursor:pointer;font-weight:600;display:inline-flex;align-items:center;gap:8px;
-  }
-  .btn:hover{transform:translateY(-2px);background:rgba(255,255,255,0.06)}
-  .btn.active{background:var(--accent);color:#00223a}
-  .right-controls{margin-left:auto;display:flex;gap:8px;align-items:center}
-  .small{font-size:13px;padding:6px 10px;border-radius:7px}
+  .topbar h1{font-family:Oswald;margin:0;font-size:1.25rem; letter-spacing:2px}
+  .topbar .subtitle{color:#e9c88a; font-size:0.9rem; margin-left:8px}
+  .topbar .actions{margin-left:auto; display:flex; gap:10px; align-items:center}
 
-  /* Layout */
-  .wrap{display:flex;gap:12px;padding:92px 18px 18px;min-height:calc(100% - 92px);}
-  .left{
-    width:76px;display:flex;flex-direction:column;gap:8px;
+  /* Buttons */
+  .btn {
+    background:var(--accent); color:var(--navy); border:none; padding:8px 12px; border-radius:8px; font-weight:700; cursor:pointer;
+    box-shadow:0 6px 14px rgba(0,0,0,0.12);
   }
-  .left .tool{
-    width:76px;height:76px;border-radius:10px;background:rgba(255,255,255,0.03);display:flex;align-items:center;justify-content:center;cursor:pointer;border:1px solid rgba(255,255,255,0.03);color:var(--white);font-size:20px;
-  }
-  .left .tool.active{background:var(--accent);color:#00223a;border:1px solid rgba(0,0,0,0.06)}
-  .sidebar{
-    width:320px;background:linear-gradient(180deg,#07111a,#021018);border-radius:12px;padding:14px;color:var(--white);box-shadow:var(--shadow);display:flex;flex-direction:column;gap:12px;
+  .btn.ghost{background:transparent;color:white;border:1px solid rgba(255,255,255,0.12)}
+  .btn.small{padding:6px 10px;font-size:0.9rem}
+  .icon-btn {background:transparent;border:1px solid rgba(255,255,255,0.08); color: #fff; padding:6px;border-radius:8px;cursor:pointer}
+
+  /* Main area */
+  .main {
+    display:flex; gap:18px; padding:18px; height:calc(100% - 72px);
   }
 
-  .canvas-wrap{
-    flex:1;display:flex;flex-direction:column;gap:12px;
+  /* Left toolbar */
+  .toolbar {
+    width:260px; background:var(--tile); border-radius:12px; padding:14px; box-shadow:0 6px 20px rgba(0,0,0,0.08);
+    display:flex; flex-direction:column; gap:12px;
+  }
+  .toolbar h3{font-family:Oswald;margin:0 0 6px 0; color:var(--navy); font-size:1.05rem}
+  .tool-row{display:flex; gap:8px; flex-wrap:wrap}
+  .tool-row label{font-size:0.85rem; color:var(--muted)}
+  .formation-select{width:100%; padding:8px; border-radius:8px; border:1px solid #ddd}
+
+  /* Center pitch area */
+  .canvas-wrap {
+    flex:1; display:flex; align-items:center; justify-content:center; position:relative;
+  }
+  .pitch {
+    width:1100px; max-width:calc(100vw - 360px); height:640px; background:linear-gradient(#2d8b3b,#1f7a33); border-radius:10px; position:relative;
+    border:6px solid #fff; box-shadow:0 20px 40px rgba(0,0,0,0.25); overflow:hidden;
+    transform-origin:center center;
+  }
+  /* center lines and markings with pseudo elements */
+  .pitch .markings{position:absolute; inset:0; pointer-events:none}
+  .pitch .markings svg{width:100%;height:100%;display:block}
+
+  /* Players */
+  .player {
+    width:44px;height:44px;border-radius:50%;position:absolute;display:flex;align-items:center;justify-content:center;
+    font-weight:700;color:#001F5B;border:3px solid #fff; cursor:grab; user-select:none; box-shadow:0 6px 14px rgba(0,0,0,0.25);
+    transition:transform .08s linear;
+  }
+  .player.home{background:var(--accent)}
+  .player.away{background:#ffffff;color:var(--navy);border:3px solid var(--accent)}
+  .player.dragging{transform:scale(1.08); cursor:grabbing}
+
+  /* Ball */
+  .ball {
+    width:22px;height:22px;border-radius:50%; background:#fff;border:3px solid #111; position:absolute; display:flex;align-items:center;justify-content:center;box-shadow:0 8px 18px rgba(0,0,0,0.25); cursor:grab;
   }
 
-  /* Pitch box */
-  .pitch-card{
-    background:linear-gradient(180deg,#0b2f1a,#053518);border:4px solid rgba(255,255,255,0.02);border-radius:12px;padding:12px;box-shadow:var(--shadow);display:flex;gap:12px;align-items:flex-start;
-  }
-  .pitch-area{
-    flex:1;background:transparent;border-radius:8px;padding:6px;display:flex;align-items:center;justify-content:center;
-  }
+  /* SVG arrows layer */
+  #arrowLayer { position:absolute; inset:0; pointer-events:none; }
 
-  /* Right bottom panel */
-  .panel{
-    background:linear-gradient(180deg,#ffffff05,#00000005);padding:10px;border-radius:10px;color:var(--white);display:flex;flex-direction:column;gap:8px;
-  }
+  /* Toolbar controls style */
+  .tool-block { background:#fbfbfb;border-radius:8px;padding:10px;border:1px solid #eee }
+  label { display:block; font-size:0.85rem; color:#444; margin-bottom:6px }
 
-  /* Layers */
-  .layers{background:rgba(255,255,255,0.03);padding:8px;border-radius:8px;max-height:260px;overflow:auto}
-  .layer-row{display:flex;justify-content:space-between;align-items:center;padding:6px 8px;border-radius:6px;cursor:pointer}
-  .layer-row:hover{background:rgba(255,255,255,0.02)}
-  .layer-name{font-size:13px;color:var(--muted)}
+  /* Small text */
+  .muted { color:#666; font-size:0.9rem }
 
-  /* timeline */
-  .timeline{display:flex;gap:6px;align-items:center}
-  .timeline .chip{background:rgba(255,255,255,0.04);padding:6px 8px;border-radius:8px;cursor:pointer}
-  .timeline .chip.active{background:var(--accent);color:#00223a}
+  /* Right panel */
+  .rightpanel { width:240px; display:flex; flex-direction:column; gap:12px }
+  .rightpanel .panel { background:var(--tile); padding:12px; border-radius:10px; box-shadow:0 6px 18px rgba(0,0,0,0.06) }
 
-  /* inputs */
-  input[type="number"], input[type="text"], select {
-    background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.04);color:var(--white);padding:6px 8px;border-radius:6px;font-size:13px
-  }
-
-  /* footer tips */
-  .tips{font-size:13px;color:var(--muted)}
-
-  /* small helpers for icons */
-  .icon{opacity:0.95}
-  .muted{color:var(--muted)}
-  .kbd{background:#071826;padding:3px 6px;border-radius:6px;font-size:12px;border:1px solid rgba(255,255,255,0.03);}
+  /* footnote */
+  .hint { font-size:0.85rem; color:#555 }
 
   /* responsive */
-  @media(max-width:1000px){
-    .sidebar{display:none}
-    .left{display:none}
-    .wrap{padding:92px 8px 8px}
+  @media(max-width:1100px){
+    .toolbar{display:none}
+    .rightpanel{display:none}
+    .pitch{max-width:calc(100vw - 40px);height:60vh}
   }
 </style>
 </head>
 <body>
 
-<div class="topbar">
-  <div class="brand">
-    <div class="logo">TC</div>
-    <div>
-      <h1 style="margin:0">Tactics Console</h1>
-      <div style="font-size:12px;color:var(--muted)">Interactive tactical board • SVG editor</div>
+<div class="app">
+
+  <!-- TOP -->
+  <div class="topbar">
+    <h1>TACTICS CONSOLE</h1>
+    <div class="subtitle">Build formations • draw runs • save setups</div>
+
+    <div class="actions">
+      <button id="exitBtn" class="btn small ghost">Back</button>
+      <button id="undoBtn" class="btn small">Undo</button>
+      <button id="clearArrowsBtn" class="btn small">Clear Arrows</button>
+      <button id="saveBtn" class="btn small">Save</button>
+      <button id="downloadBtn" class="btn small">Download JSON</button>
     </div>
   </div>
 
-  <div class="toolbar" role="toolbar" aria-label="Main Tools">
-    <button class="btn" id="tool-select" title="Select (V)">Select</button>
-    <button class="btn" id="tool-player" title="Add Player (P)">Player</button>
-    <button class="btn" id="tool-attacker" title="Add Attacker (A)">Attack</button>
-    <button class="btn" id="tool-defender" title="Add Defender (D)">Defend</button>
-    <button class="btn" id="tool-gk" title="Add Goalkeeper (G)">GK</button>
-    <button class="btn" id="tool-arrow" title="Draw Arrow (L)">Arrow</button>
-    <button class="btn" id="tool-line" title="Line">Line</button>
-    <button class="btn" id="tool-circle" title="Circle (C)">Circle</button>
-    <button class="btn" id="tool-free" title="Freehand">Pencil</button>
-    <button class="btn" id="tool-text" title="Text (T)">Text</button>
-    <button class="btn" id="tool-erase" title="Delete (Del)">Erase</button>
-  </div>
+  <!-- MAIN -->
+  <div class="main">
+    <!-- LEFT toolbar -->
+    <aside class="toolbar" aria-label="Toolbox">
+      <h3>Tools</h3>
 
-  <div class="right-controls">
-    <button class="btn small" id="undoBtn" title="Undo (Ctrl+Z)">Undo</button>
-    <button class="btn small" id="redoBtn" title="Redo (Ctrl+Y)">Redo</button>
-    <button class="btn small" id="saveBtn" title="Save JSON">Save</button>
-    <button class="btn small" id="loadBtn" title="Load JSON">Load</button>
-    <button class="btn small" id="exportBtn" title="Export PNG">Export PNG</button>
+      <div class="tool-row">
+        <button id="selectTool" class="btn small">Select</button>
+        <button id="drawTool" class="btn small">Draw</button>
+        <button id="eraseTool" class="btn small">Erase</button>
+      </div>
+
+      <div class="tool-block">
+        <label>Add entity</label>
+        <div class="tool-row">
+          <button id="addHome" class="btn">Add Home</button>
+          <button id="addAway" class="btn ghost">Add Away</button>
+        </div>
+        <div style="height:8px"></div>
+        <button id="addBall" class="btn">Add Ball</button>
+        <div style="height:8px"></div>
+        <button id="removeSelected" class="btn ghost">Remove Selected</button>
+      </div>
+
+      <div class="tool-block">
+        <label>Formations</label>
+        <select id="formationSelect" class="formation-select">
+          <option value="">— choose preset —</option>
+          <option value="4-3-3">4 - 3 - 3</option>
+          <option value="4-4-2">4 - 4 - 2</option>
+          <option value="3-5-2">3 - 5 - 2</option>
+        </select>
+        <div style="height:10px"></div>
+        <button id="applyFormation" class="btn">Apply Formation</button>
+      </div>
+
+      <div class="tool-block">
+        <label>Zoom</label>
+        <input id="zoomRange" type="range" min="0.6" max="1.4" step="0.05" value="1" />
+        <div class="muted">Scale field</div>
+      </div>
+
+      <div class="tool-block">
+        <label>Record Movement</label>
+        <div style="display:flex;gap:8px">
+          <button id="startRec" class="btn">Record</button>
+          <button id="stopRec" class="btn ghost">Stop</button>
+        </div>
+        <div class="muted">Recording saves frames to download</div>
+      </div>
+
+      <div style="flex:1"></div>
+
+      <div class="muted" style="font-size:0.85rem">Tip: hold and drag players. Use Draw for runs. Save layouts to local storage.</div>
+    </aside>
+
+    <!-- CENTER pitch -->
+    <div class="canvas-wrap" role="main">
+      <div id="pitch" class="pitch" tabindex="0">
+        <!-- arrows (SVG) -->
+        <svg id="arrowLayer" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+              <path d="M0,0 L10,3.5 L0,7 Z" fill="#FFA500"/>
+            </marker>
+          </defs>
+        </svg>
+
+        <!-- markings layer -->
+        <div class="markings" aria-hidden="true">
+          <svg viewBox="0 0 1100 640" preserveAspectRatio="none">
+            <rect x="40" y="40" width="1020" height="560" rx="6" fill="none" stroke="rgba(255,255,255,0.85)" stroke-width="2"/>
+            <!-- halfway -->
+            <line x1="600" y1="40" x2="600" y2="600" stroke="rgba(255,255,255,0.5)" stroke-width="1"/>
+            <circle cx="600" cy="320" r="60" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="1.5"/>
+            <!-- penalty boxes -->
+            <rect x="40" y="160" width="160" height="320" rx="4" fill="none" stroke="rgba(255,255,255,0.5)"/>
+            <rect x="980" y="160" width="160" height="320" rx="4" fill="none" stroke="rgba(255,255,255,0.5)"/>
+            <circle cx="150" cy="320" r="6" fill="rgba(255,255,255,0.9)"/>
+            <circle cx="1050" cy="320" r="6" fill="rgba(255,255,255,0.9)"/>
+          </svg>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- RIGHT panel -->
+    <aside class="rightpanel">
+      <div class="panel">
+        <strong>Selection</strong>
+        <div id="selectedInfo" style="margin-top:8px" class="muted">None selected</div>
+      </div>
+
+      <div class="panel">
+        <strong>Saved layouts</strong>
+        <div style="display:flex;gap:8px;margin-top:8px">
+          <button id="loadLocal" class="btn ghost small">Load</button>
+          <button id="clearLocal" class="btn small">Clear</button>
+        </div>
+        <div style="height:8px"></div>
+        <div class="muted">Local saves are stored in your browser.</div>
+      </div>
+
+      <div class="panel">
+        <strong>Export / Import</strong>
+        <div style="display:flex;gap:8px;margin-top:8px">
+          <input id="importInput" type="file" accept="application/json" style="flex:1"/>
+        </div>
+      </div>
+    </aside>
   </div>
 </div>
 
-<div class="wrap">
-  <!-- left tools (mobile hidden) -->
-  <div class="left" aria-hidden="true">
-    <div class="tool" id="toolSelectLeft" title="Select">✦</div>
-    <div class="tool" id="toolPlayerLeft" title="Player">🔵</div>
-    <div class="tool" id="toolArrowLeft" title="Arrow">➤</div>
-    <div class="tool" id="toolFreeLeft" title="Pencil">✎</div>
-  </div>
-
-  <!-- main canvas -->
-  <div class="canvas-wrap">
-    <div class="pitch-card" role="application" aria-label="Tactical Pitch">
-      <div style="width:100%;display:flex;gap:12px;">
-        <div class="pitch-area">
-          <!-- SVG pitch -->
-          <div id="svgContainer" style="width:920px;max-width:calc(100vw - 420px);background:linear-gradient(180deg,#0b2f1a,#053518);padding:10px;border-radius:8px;">
-            <!-- SVG injected here by JS -->
-            <svg id="pitchSVG" viewBox="0 0 1000 600" style="width:100%;height:auto;display:block;border-radius:6px;">
-              <!-- Group structure:
-                   <rect> background pitch
-                   <g id="lines"> pitch lines
-                   <g id="objects"> all players, shapes, arrows, texts
-              -->
-              <rect x="0" y="0" width="1000" height="600" fill="#0b8f2c" rx="6" ry="6"></rect>
-
-              <!-- grass stripes -->
-              <g id="stripes">
-                <!-- create stripes via JS for crispness -->
-              </g>
-
-              <!-- pitch markings -->
-              <g id="markings" stroke="#fff" stroke-width="4" fill="none">
-                <rect x="60" y="30" width="880" height="540" rx="12" ry="12"></rect>
-                <circle cx="500" cy="300" r="60"></circle>
-                <rect x="60" y="220" width="180" height="160" rx="8" ry="8"></rect>
-                <rect x="760" y="220" width="180" height="160" rx="8" ry="8"></rect>
-                <line x1="500" y1="30" x2="500" y2="570"></line>
-                <circle cx="500" cy="300" r="4" fill="#fff"></circle>
-                <!-- small arcs/penalty points -->
-                <circle cx="170" cy="300" r="4" fill="#fff"></circle>
-                <circle cx="830" cy="300" r="4" fill="#fff"></circle>
-              </g>
-
-              <!-- container for dynamic objects -->
-              <g id="objects"></g>
-
-              <!-- temporary drawing layer -->
-              <g id="temp"></g>
-
-            </svg>
-          </div>
-        </div>
-
-        <!-- right panel -->
-        <div style="width:320px;display:flex;flex-direction:column;gap:12px;">
-          <div class="sidebar">
-            <div style="display:flex;justify-content:space-between;align-items:center">
-              <div style="font-weight:700">Layers</div>
-              <div class="muted" style="font-size:12px">Drag to reorder</div>
-            </div>
-
-            <div class="layers" id="layerList"></div>
-
-            <div style="display:flex;gap:8px;align-items:center;justify-content:space-between">
-              <div style="display:flex;gap:6px;align-items:center">
-                <label style="font-size:13px;color:var(--muted)">Snap</label>
-                <input type="checkbox" id="snapToggle" checked>
-              </div>
-              <div style="display:flex;gap:6px">
-                <button class="btn small" id="addFrame">+ Keyframe</button>
-                <button class="btn small" id="clearAll">Clear</button>
-              </div>
-            </div>
-
-            <div style="margin-top:6px">
-              <div style="font-weight:700">Timeline</div>
-              <div class="timeline" id="timeline"></div>
-              <div style="display:flex;gap:6px;margin-top:8px">
-                <button class="btn small" id="playBtn">Play</button>
-                <button class="btn small" id="stopBtn">Stop</button>
-                <button class="btn small" id="stepBtn">Step</button>
-              </div>
-            </div>
-
-            <div>
-              <div style="font-weight:700">Selected</div>
-              <div id="selectedProps" style="display:flex;flex-direction:column;gap:8px;padding-top:6px;">
-                <div class="muted">No object selected</div>
-              </div>
-            </div>
-
-            <div style="margin-top:6px">
-              <div style="font-weight:700">Quick Tips</div>
-              <div class="tips">
-                • Drag players to position.<br>
-                • Use Arrow tool to show passes/movements.<br>
-                • Click "+ Keyframe" to record positions, then "Play".<br>
-                • Save JSON and reload to continue working.
-              </div>
-            </div>
-
-          </div>
-
-          <div class="panel">
-            <div style="display:flex;justify-content:space-between;align-items:center">
-              <div style="font-weight:700">Export / Share</div>
-            </div>
-
-            <div style="display:flex;gap:8px;margin-top:8px">
-              <input type="text" id="projectName" placeholder="project-name.json" style="flex:1" />
-              <button class="btn small" id="quickSave">Save File</button>
-            </div>
-
-            <div style="display:flex;gap:8px;margin-top:8px">
-              <button class="btn small" id="downloadPNG">Export PNG</button>
-              <button class="btn small" id="downloadSVG">Export SVG</button>
-            </div>
-
-            <div style="margin-top:8px;display:flex;gap:8px">
-              <input type="file" id="fileLoad" />
-            </div>
-
-            <div style="margin-top:8px">
-              <div style="font-size:12px;color:var(--muted)">Shortcuts: V=Select · P=Player · A=Attacker · D=Defender · G=GK · L=Arrow · C=Circle · T=Text · Del=Delete · Ctrl+Z Undo</div>
-            </div>
-
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- additional lower section for help or notes -->
-    <div style="display:flex;gap:12px">
-      <div style="flex:1;background:linear-gradient(180deg,#071018,#001018);padding:14px;border-radius:10px;box-shadow:var(--shadow);">
-        <div style="font-weight:700;color:var(--gold-accent)">Console Notes</div>
-        <div style="color:var(--muted);margin-top:6px;font-size:13px;line-height:1.5">
-          - This canvas uses SVG for crisp vector output. <br>
-          - Use layers to toggle visibility. <br>
-          - The timeline stores keyframes — click +Keyframe to capture current positions. <br>
-          - Export PNG to share images.
-        </div>
-      </div>
-
-      <div style="width:320px;background:linear-gradient(180deg,#071018,#001018);padding:14px;border-radius:10px;box-shadow:var(--shadow)">
-        <div style="font-weight:700;color:var(--gold-accent)">Object Library</div>
-        <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px">
-          <button class="btn small" id="libPlayer">Player</button>
-          <button class="btn small" id="libAttacker">Attacker</button>
-          <button class="btn small" id="libDefender">Defender</button>
-          <button class="btn small" id="libGK">Goalkeeper</button>
-          <button class="btn small" id="libArrow">Arrow</button>
-          <button class="btn small" id="libCircle">Circle</button>
-        </div>
-      </div>
-    </div>
-
-  </div>
-
-  <!-- right panel visible on wide screens -->
-  <div class="sidebar" style="min-width:300px;">
-    <div style="font-weight:700">Properties</div>
-    <div id="propPanel" style="display:flex;flex-direction:column;gap:8px;padding-top:8px;">
-      <div class="muted">Select an object to edit its properties</div>
-    </div>
-  </div>
-
-</div>
-
+<!-- SCRIPT -->
 <script>
-/* =========================
-   TACTICS CONSOLE JS
-   Core objects:
-     - SVG pitch: #pitchSVG
-     - Group for objects: #objects
-     - Temporary shapes: #temp
-   Tools:
-     select, player, attacker, defender, gk, arrow, line, circle, freehand, text, erase
-   Timeline: array of frames [{id:timestamp, snapshot:serializedObjects}]
-   Undo/Redo via simple stack
-   Save/Load JSON for project
-============================= */
+/* -------------------------
+  Tactics Console JS
+   - drag/drop players & ball
+   - draw arrows (SVG)
+   - erase arrows
+   - add/remove entities
+   - formations
+   - save/load JSON (localStorage + download)
+   - record frames (download JSON)
+   - zoom (scale)
+---------------------------*/
 
-(function(){
-  // Utilities
-  const svgNS = "http://www.w3.org/2000/svg";
-  const pitch = document.getElementById('pitchSVG');
-  const objectsGroup = document.getElementById('objects');
-  const tempGroup = document.getElementById('temp');
-  const stripesGroup = document.getElementById('stripes');
+(() => {
+  const pitch = document.getElementById('pitch');
+  const arrowLayer = document.getElementById('arrowLayer');
+  const selectTool = document.getElementById('selectTool');
+  const drawTool = document.getElementById('drawTool');
+  const eraseTool = document.getElementById('eraseTool');
+  const addHome = document.getElementById('addHome');
+  const addAway = document.getElementById('addAway');
+  const addBall = document.getElementById('addBall');
+  const removeSelected = document.getElementById('removeSelected');
+  const formationSelect = document.getElementById('formationSelect');
+  const applyFormation = document.getElementById('applyFormation');
+  const zoomRange = document.getElementById('zoomRange');
+  const saveBtn = document.getElementById('saveBtn');
+  const loadLocal = document.getElementById('loadLocal');
+  const clearLocal = document.getElementById('clearLocal');
+  const downloadBtn = document.getElementById('downloadBtn');
+  const importInput = document.getElementById('importInput');
+  const selectedInfo = document.getElementById('selectedInfo');
+  const undoBtn = document.getElementById('undoBtn');
+  const clearArrowsBtn = document.getElementById('clearArrowsBtn');
+  const startRec = document.getElementById('startRec');
+  const stopRec = document.getElementById('stopRec');
+  const exitBtn = document.getElementById('exitBtn');
 
-  // Build stripes for pitch (subtle)
-  (function buildStripes(){
-    const stripeCount = 12;
-    for(let i=0;i<stripeCount;i++){
-      let g = document.createElementNS(svgNS,'rect');
-      const w = 1000/stripeCount;
-      g.setAttribute('x', Math.round(i*w));
-      g.setAttribute('y', 0);
-      g.setAttribute('width', Math.ceil(w));
-      g.setAttribute('height', 600);
-      g.setAttribute('fill', i%2===0 ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0)');
-      stripesGroup.appendChild(g);
-    }
-  })();
-
-  // State
-  let state = {
-    tool: 'select',
-    selected: null,
-    objects: [], // array of {id, type, ...}
-    undoStack: [],
-    redoStack: [],
-    timeline: [],
-    currentFrameIndex: -1,
-    snap: true
-  };
-
-  // ID generator
-  function uid(prefix='o'){
-    return prefix + '_' + Math.random().toString(36).slice(2,9);
-  }
-
-  // Basic create functions
-  function createPlayer(x,y,role='player',label=''){
-    const id = uid('p');
-    // circle + text group
-    const g = document.createElementNS(svgNS,'g');
-    g.setAttribute('data-id', id);
-    g.setAttribute('class','obj player-group');
-    g.setAttribute('cursor','move');
-
-    const circle = document.createElementNS(svgNS,'circle');
-    circle.setAttribute('cx', x);
-    circle.setAttribute('cy', y);
-    circle.setAttribute('r', 14);
-
-    let fill='#ffffff';
-    if(role==='attacker') fill='#ff6b6b';
-    if(role==='defender') fill='#2ec4b6';
-    if(role==='gk') fill='#ffd24d';
-
-    circle.setAttribute('fill', fill);
-    circle.setAttribute('stroke', '#002233');
-    circle.setAttribute('stroke-width','2');
-    circle.setAttribute('class','player-circle');
-
-    const txt = document.createElementNS(svgNS,'text');
-    txt.setAttribute('x', x);
-    txt.setAttribute('y', y+4);
-    txt.setAttribute('text-anchor','middle');
-    txt.setAttribute('font-size','12');
-    txt.setAttribute('font-family','Inter,Arial');
-    txt.setAttribute('fill','#002233');
-    txt.textContent = label || '';
-
-    g.appendChild(circle);
-    g.appendChild(txt);
-    objectsGroup.appendChild(g);
-
-    // store object
-    const obj = { id, type: 'player', role, x, y, r:14, label };
-    state.objects.push(obj);
-    attachDragHandlers(g,obj);
-    pushUndo();
-    refreshLayers();
-    return obj;
-  }
-
-  function createArrow(x1,y1,x2,y2,stroke='#ffd24d'){
-    const id = uid('a');
-    const g = document.createElementNS(svgNS,'g');
-    g.setAttribute('data-id', id);
-    g.setAttribute('class','obj arrow-group');
-
-    const line = document.createElementNS(svgNS,'line');
-    line.setAttribute('x1', x1);
-    line.setAttribute('y1', y1);
-    line.setAttribute('x2', x2);
-    line.setAttribute('y2', y2);
-    line.setAttribute('stroke', stroke);
-    line.setAttribute('stroke-width','6');
-    line.setAttribute('stroke-linecap','round');
-    line.setAttribute('marker-end', 'url(#arrowHead)');
-
-    g.appendChild(line);
-    objectsGroup.appendChild(g);
-
-    const obj = { id, type:'arrow', x1,y1,x2,y2, stroke, width:6 };
-    state.objects.push(obj);
-    attachArrowHandlers(g,obj);
-    pushUndo();
-    refreshLayers();
-    return obj;
-  }
-
-  function createCircle(cx,cy,r,stroke='#fff'){
-    const id = uid('c');
-    const g = document.createElementNS(svgNS,'g');
-    g.setAttribute('data-id', id);
-    g.setAttribute('class','obj circle-group');
-
-    const circ = document.createElementNS(svgNS,'circle');
-    circ.setAttribute('cx', cx);
-    circ.setAttribute('cy', cy);
-    circ.setAttribute('r', r);
-    circ.setAttribute('stroke', stroke);
-    circ.setAttribute('stroke-width','4');
-    circ.setAttribute('fill','rgba(255,255,255,0.03)');
-
-    g.appendChild(circ);
-    objectsGroup.appendChild(g);
-
-    const obj = { id, type:'circle', cx,cy,r, stroke };
-    state.objects.push(obj);
-    attachCircleHandlers(g,obj);
-    pushUndo();
-    refreshLayers();
-    return obj;
-  }
-
-  function createText(x,y,content='Text'){
-    const id = uid('t');
-    const g = document.createElementNS(svgNS,'g');
-    g.setAttribute('data-id', id);
-    g.setAttribute('class','obj text-group');
-
-    const txt = document.createElementNS(svgNS,'text');
-    txt.setAttribute('x', x);
-    txt.setAttribute('y', y);
-    txt.setAttribute('font-size','16');
-    txt.setAttribute('font-family','Inter,Arial');
-    txt.setAttribute('fill','#fff');
-    txt.textContent = content;
-    g.appendChild(txt);
-    objectsGroup.appendChild(g);
-
-    const obj = { id, type:'text', x,y,content, size:16 };
-    state.objects.push(obj);
-    attachTextHandlers(g,obj);
-    pushUndo();
-    refreshLayers();
-    return obj;
-  }
-
-  // Add marker definition for arrowheads
-  (function addDefs(){
-    const defs = document.createElementNS(svgNS,'defs');
-    const marker = document.createElementNS(svgNS,'marker');
-    marker.setAttribute('id','arrowHead');
-    marker.setAttribute('markerWidth','10');
-    marker.setAttribute('markerHeight','10');
-    marker.setAttribute('refX','6');
-    marker.setAttribute('refY','5');
-    marker.setAttribute('orient','auto');
-    const path = document.createElementNS(svgNS,'path');
-    path.setAttribute('d','M0,0 L10,5 L0,10 z');
-    path.setAttribute('fill','#ffd24d');
-    marker.appendChild(path);
-    defs.appendChild(marker);
-    pitch.appendChild(defs);
-  })();
-
-  // Selection & dragging
+  // state
+  let tool = 'select'; // select, draw, erase
   let dragging = null;
   let dragOffset = {x:0,y:0};
+  let selected = null;
+  let arrows = []; // {el, x1,y1,x2,y2}
+  let undoStack = [];
+  let recordFrames = [];
+  let recording = false;
+  let drawTempLine = null;
+  let arrowIdCounter = 0;
 
-  function attachDragHandlers(group,obj){
-    group.addEventListener('mousedown', function(e){
-      if(state.tool !== 'select') return;
-      e.stopPropagation();
-      selectObject(obj.id);
-      dragging = { obj, group, type:'player' };
-      const pt = screenToSvg(e.clientX,e.clientY);
-      dragOffset.x = pt.x - obj.x;
-      dragOffset.y = pt.y - obj.y;
+  // pitch coordinate helpers (we use pitch client coordinates)
+  function bounds(el){
+    const r = el.getBoundingClientRect();
+    return {left:r.left, top:r.top, width:r.width, height:r.height};
+  }
+
+  /* ------- utilities ------- */
+  function makePlayer(team='home', label='') {
+    const el = document.createElement('div');
+    el.className = 'player ' + (team==='home' ? 'home' : 'away');
+    el.dataset.type = 'player';
+    el.dataset.team = team;
+    el.dataset.label = label || (team==='home' ? 'H' : 'A');
+    el.textContent = el.dataset.label;
+    // center by default
+    el.style.left = (pitch.clientWidth/2 - 22) + 'px';
+    el.style.top = (pitch.clientHeight/2 - 22) + 'px';
+    appendEntity(el);
+    return el;
+  }
+
+  function makeBall() {
+    const el = document.createElement('div');
+    el.className = 'ball';
+    el.dataset.type = 'ball';
+    el.style.left = (pitch.clientWidth/2 - 11) + 'px';
+    el.style.top = (pitch.clientHeight/2 - 11) + 'px';
+    appendEntity(el);
+    el.textContent = '';
+    return el;
+  }
+
+  function appendEntity(el) {
+    pitch.appendChild(el);
+    attachEntityEvents(el);
+    pushUndo({op:'add', node:el});
+    if(recording) captureFrame();
+  }
+
+  function attachEntityEvents(el){
+    el.addEventListener('mousedown', e => {
+      if(tool !== 'select') return;
+      dragging = el;
+      el.classList.add('dragging');
+      const br = pitch.getBoundingClientRect();
+      dragOffset.x = e.clientX - el.offsetLeft - br.left;
+      dragOffset.y = e.clientY - el.offsetTop - br.top;
+      selected = el;
+      updateSelectedInfo();
+      e.preventDefault();
+    });
+
+    el.addEventListener('click', e => {
+      if(tool === 'erase' && el.dataset.type === 'player') {
+        el.remove();
+        pushUndo({op:'remove', node:el});
+        selected = null; updateSelectedInfo();
+      } else if(tool === 'select') {
+        selected = el; updateSelectedInfo();
+      }
     });
   }
 
-  function attachArrowHandlers(group,obj){
-    group.addEventListener('mousedown', function(e){
-      if(state.tool !== 'select') return;
-      e.stopPropagation();
-      selectObject(obj.id);
-      dragging = { obj, group, type:'arrow' };
-      const pt = screenToSvg(e.clientX,e.clientY);
-      dragOffset.x = pt.x - obj.x1;
-      dragOffset.y = pt.y - obj.y1;
-    });
-  }
-
-  function attachCircleHandlers(group,obj){
-    group.addEventListener('mousedown', function(e){
-      if(state.tool !== 'select') return;
-      e.stopPropagation();
-      selectObject(obj.id);
-      dragging = { obj, group, type:'circle' };
-      const pt = screenToSvg(e.clientX,e.clientY);
-      dragOffset.x = pt.x - obj.cx;
-      dragOffset.y = pt.y - obj.cy;
-    });
-  }
-
-  function attachTextHandlers(group,obj){
-    group.addEventListener('mousedown', function(e){
-      if(state.tool !== 'select') return;
-      e.stopPropagation();
-      selectObject(obj.id);
-      dragging = { obj, group, type:'text' };
-      const pt = screenToSvg(e.clientX,e.clientY);
-      dragOffset.x = pt.x - obj.x;
-      dragOffset.y = pt.y - obj.y;
-    });
-  }
-
-  // Select
-  function selectObject(id){
-    clearSelection();
-    state.selected = state.objects.find(o => o.id === id);
-    if(!state.selected) return;
-    // highlight in SVG
-    const g = objectsGroup.querySelector('[data-id="'+id+'"]');
-    if(g){
-      g.classList.add('selected');
-      g.style.filter = 'drop-shadow(0 6px 10px rgba(0,0,0,0.45))';
-    }
-    updateSelectedPanel();
-  }
-
-  function clearSelection(){
-    const prev = objectsGroup.querySelectorAll('.selected');
-    prev.forEach(n => { n.classList.remove('selected'); n.style.filter=''; });
-    state.selected = null;
-    updateSelectedPanel();
-  }
-
-  // Screen to svg coords
-  function screenToSvg(clientX,clientY){
-    const pt = pitch.createSVGPoint();
-    pt.x = clientX; pt.y = clientY;
-    const screenCTM = pitch.getScreenCTM();
-    return pt.matrixTransform(screenCTM.inverse());
-  }
-
-  // Mouse move/ up handlers for drag
-  document.addEventListener('mousemove', function(e){
+  // mouse move on document for dragging players
+  document.addEventListener('mousemove', e => {
     if(!dragging) return;
-    const pt = screenToSvg(e.clientX,e.clientY);
-    if(dragging.type === 'player'){
-      let nx = pt.x - dragOffset.x;
-      let ny = pt.y - dragOffset.y;
-      if(state.snap){
-        nx = Math.round(nx/5)*5;
-        ny = Math.round(ny/5)*5;
-      }
-      dragging.obj.x = nx;
-      dragging.obj.y = ny;
-      const g = objectsGroup.querySelector('[data-id="'+dragging.obj.id+'"]');
-      if(g){
-        const circ = g.querySelector('circle');
-        const txt = g.querySelector('text');
-        circ.setAttribute('cx', nx);
-        circ.setAttribute('cy', ny);
-        txt.setAttribute('x', nx);
-        txt.setAttribute('y', ny+4);
-      }
-    } else if(dragging.type === 'arrow'){
-      const dx = pt.x - dragOffset.x;
-      const dy = pt.y - dragOffset.y;
-      // move both x1,y1 and x2,y2 by difference? We'll allow moving start point
-      dragging.obj.x1 = dx;
-      dragging.obj.y1 = dy;
-      // update in DOM
-      const g = objectsGroup.querySelector('[data-id="'+dragging.obj.id+'"]');
-      if(g){
-        const line = g.querySelector('line');
-        line.setAttribute('x1', dragging.obj.x1);
-        line.setAttribute('y1', dragging.obj.y1);
-      }
-    } else if(dragging.type === 'circle'){
-      const nx = pt.x - dragOffset.x;
-      const ny = pt.y - dragOffset.y;
-      dragging.obj.cx = nx;
-      dragging.obj.cy = ny;
-      const g = objectsGroup.querySelector('[data-id="'+dragging.obj.id+'"]');
-      if(g){ const c = g.querySelector('circle'); c.setAttribute('cx', nx); c.setAttribute('cy', ny); }
-    } else if(dragging.type === 'text'){
-      const nx = pt.x - dragOffset.x;
-      const ny = pt.y - dragOffset.y;
-      dragging.obj.x = nx; dragging.obj.y = ny;
-      const g = objectsGroup.querySelector('[data-id="'+dragging.obj.id+'"]');
-      if(g){ const t = g.querySelector('text'); t.setAttribute('x', nx); t.setAttribute('y', ny); }
+    const br = pitch.getBoundingClientRect();
+    const x = e.clientX - br.left - dragOffset.x;
+    const y = e.clientY - br.top - dragOffset.y;
+    // clamp inside pitch
+    const w = dragging.offsetWidth, h = dragging.offsetHeight;
+    const nx = Math.max(0, Math.min(br.width - w, x));
+    const ny = Math.max(0, Math.min(br.height - h, y));
+    dragging.style.left = nx + 'px';
+    dragging.style.top = ny + 'px';
+    if(recording) captureFrame();
+  });
+
+  document.addEventListener('mouseup', e => {
+    if(dragging) {
+      dragging.classList.remove('dragging');
+      pushUndo({op:'move', node:dragging, x:dragging.style.left, y:dragging.style.top});
+      dragging = null;
+    }
+    if(tool === 'draw' && drawTempLine) {
+      // finalize line on mouseup if released inside pitch
+      removeTempLine();
     }
   });
 
-  document.addEventListener('mouseup', function(e){
-    if(dragging){ pushUndo(); dragging = null; }
+  // clicking on pitch when drawing arrows
+  pitch.addEventListener('mousedown', (e) => {
+    const br = pitch.getBoundingClientRect();
+    const px = e.clientX - br.left;
+    const py = e.clientY - br.top;
+    if(tool === 'draw') {
+      startDraw(px,py);
+    } else if (tool === 'erase') {
+      // erase nearest arrow if clicked
+      eraseNearestArrow(px,py);
+    } else {
+      // select none if clicked on empty pitch
+      if(e.target === pitch || e.target.classList.contains('markings')){
+        selected = null; updateSelectedInfo();
+      }
+    }
   });
 
-  // Add object handlers (tools)
-  document.getElementById('tool-player').addEventListener('click', ()=> setTool('player'));
-  document.getElementById('tool-attacker').addEventListener('click', ()=> setTool('attacker'));
-  document.getElementById('tool-defender').addEventListener('click', ()=> setTool('defender'));
-  document.getElementById('tool-gk').addEventListener('click', ()=> setTool('gk'));
-  document.getElementById('tool-select').addEventListener('click', ()=> setTool('select'));
-  document.getElementById('tool-arrow').addEventListener('click', ()=> setTool('arrow'));
-  document.getElementById('tool-circle').addEventListener('click', ()=> setTool('circle'));
-  document.getElementById('tool-free').addEventListener('click', ()=> setTool('free'));
-  document.getElementById('tool-text').addEventListener('click', ()=> setTool('text'));
-  document.getElementById('tool-erase').addEventListener('click', ()=> setTool('erase'));
+  // drawing helpers
+  function startDraw(x,y){
+    // create a temporary line element under arrowLayer
+    drawTempLine = document.createElementNS('http://www.w3.org/2000/svg','line');
+    drawTempLine.setAttribute('x1', x);
+    drawTempLine.setAttribute('y1', y);
+    drawTempLine.setAttribute('x2', x);
+    drawTempLine.setAttribute('y2', y);
+    drawTempLine.setAttribute('stroke', '#FFA500');
+    drawTempLine.setAttribute('stroke-width','6');
+    drawTempLine.setAttribute('stroke-linecap','round');
+    drawTempLine.setAttribute('opacity','0.95');
+    arrowLayer.appendChild(drawTempLine);
+    // listen for mousemove to update
+    function move(e){
+      const br = pitch.getBoundingClientRect();
+      const nx = e.clientX - br.left;
+      const ny = e.clientY - br.top;
+      drawTempLine.setAttribute('x2', nx);
+      drawTempLine.setAttribute('y2', ny);
+    }
+    function up(e){
+      document.removeEventListener('mousemove', move);
+      document.removeEventListener('mouseup', up);
+      const br = pitch.getBoundingClientRect();
+      const x2 = parseFloat(drawTempLine.getAttribute('x2'));
+      const y2 = parseFloat(drawTempLine.getAttribute('y2'));
+      // create final arrow element
+      const final = document.createElementNS('http://www.w3.org/2000/svg','line');
+      final.setAttribute('x1', drawTempLine.getAttribute('x1'));
+      final.setAttribute('y1', drawTempLine.getAttribute('y1'));
+      final.setAttribute('x2', x2);
+      final.setAttribute('y2', y2);
+      final.setAttribute('stroke', '#FFA500');
+      final.setAttribute('stroke-width','6');
+      final.setAttribute('stroke-linecap','round');
+      final.setAttribute('marker-end','url(#arrowhead)');
+      final.dataset.arrowId = 'a'+(++arrowIdCounter);
+      final.style.cursor = 'pointer';
+      arrowLayer.appendChild(final);
+      arrows.push(final);
+      pushUndo({op:'add-arrow', node:final});
+      // make arrow clickable/selectable for erase
+      final.addEventListener('click', (evt) => {
+        if(tool === 'erase') {
+          final.remove();
+          arrows = arrows.filter(a=>a!==final);
+        } else {
+          // select arrow (shows info)
+          selected = final;
+          updateSelectedInfo();
+        }
+        evt.stopPropagation();
+      });
+      drawTempLine.remove();
+      drawTempLine = null;
+      if(recording) captureFrame();
+    }
+    document.addEventListener('mousemove', move);
+    document.addEventListener('mouseup', up);
+  }
 
-  // Left small tools
-  document.getElementById('toolSelectLeft').addEventListener('click', ()=> setTool('select'));
-  document.getElementById('toolPlayerLeft').addEventListener('click', ()=> setTool('player'));
-  document.getElementById('toolArrowLeft').addEventListener('click', ()=> setTool('arrow'));
-  document.getElementById('toolFreeLeft').addEventListener('click', ()=> setTool('free'));
+  function removeTempLine(){
+    if(drawTempLine){ drawTempLine.remove(); drawTempLine=null; }
+  }
 
-  // helper to set active tool UI
+  function eraseNearestArrow(px,py){
+    if(arrows.length===0) return;
+    let best=null, bestDist=1e9;
+    arrows.forEach(a=>{
+      const x1 = +a.getAttribute('x1'), y1 = +a.getAttribute('y1');
+      const x2 = +a.getAttribute('x2'), y2 = +a.getAttribute('y2');
+      // closest distance to segment
+      const t = Math.max(0, Math.min(1, ((px-x1)*(x2-x1)+(py-y1)*(y2-y1))/((x2-x1)**2+(y2-y1)**2||1)));
+      const cx = x1 + t*(x2-x1), cy = y1 + t*(y2-y1);
+      const d = Math.hypot(px-cx,py-cy);
+      if(d < bestDist){ bestDist = d; best = a; }
+    });
+    if(best && bestDist < 20){
+      best.remove();
+      arrows = arrows.filter(a=>a!==best);
+      pushUndo({op:'remove-arrow', node:best});
+    }
+  }
+
+  /* ------- tool switching ------- */
   function setTool(t){
-    state.tool = t;
-    document.querySelectorAll('.btn').forEach(b => b.classList.remove('active'));
-    document.querySelectorAll('.tool').forEach(b => b.classList.remove('active'));
-    // map to ids
-    const map = {
-      select:['tool-select','toolSelectLeft'],
-      player:['tool-player','toolPlayerLeft'],
-      attacker:['tool-attacker'],
-      defender:['tool-defender'],
-      gk:['tool-gk'],
-      arrow:['tool-arrow','toolArrowLeft'],
-      line:['tool-line'],
-      circle:['tool-circle'],
-      free:['tool-free','toolFreeLeft'],
-      text:['tool-text'],
-      erase:['tool-erase']
-    };
-    (map[t]||[]).forEach(id=>{ const el=document.getElementById(id); if(el) el.classList.add('active')});
-  }
-
-  // click on pitch to place items for some tools
-  pitch.addEventListener('mousedown', function(e){
-    const pt = screenToSvg(e.clientX,e.clientY);
-    if(state.tool === 'player'){
-      createPlayer(pt.x,pt.y,'player','');
-    } else if(state.tool === 'attacker'){
-      createPlayer(pt.x,pt.y,'attacker','');
-    } else if(state.tool === 'defender'){
-      createPlayer(pt.x,pt.y,'defender','');
-    } else if(state.tool === 'gk'){
-      createPlayer(pt.x,pt.y,'gk','GK');
-    } else if(state.tool === 'arrow'){
-      // start drawing arrow
-      beginTemporaryArrow(pt.x,pt.y);
-    } else if(state.tool === 'circle'){
-      beginTempCircle(pt.x,pt.y);
-    } else if(state.tool === 'free'){
-      beginFreehand(pt.x,pt.y);
-    } else if(state.tool === 'text'){
-      const txt = prompt('Text:','');
-      if(txt !== null && txt.trim() !== '') createText(pt.x,pt.y,txt);
-    } else if(state.tool === 'erase'){
-      // hit-test: find object at point
-      const hit = findObjectAt(pt.x,pt.y);
-      if(hit) removeObjectById(hit.id);
-    } else if(state.tool === 'select'){
-      const hit = findObjectAt(pt.x,pt.y);
-      if(hit) selectObject(hit.id); else clearSelection();
-    }
-  });
-
-  // temp drawing state
-  let tempData = { mode: null, start: null, element: null, points: [] };
-
-  function beginTemporaryArrow(x,y){
-    tempData.mode = 'arrow';
-    tempData.start = {x,y};
-    const g = document.createElementNS(svgNS,'g');
-    g.setAttribute('id','tempArrow');
-    const line = document.createElementNS(svgNS,'line');
-    line.setAttribute('x1', x); line.setAttribute('y1', y);
-    line.setAttribute('x2', x); line.setAttribute('y2', y);
-    line.setAttribute('stroke','#ffd24d'); line.setAttribute('stroke-width','6'); line.setAttribute('stroke-linecap','round');
-    line.setAttribute('marker-end', 'url(#arrowHead)');
-    g.appendChild(line);
-    tempGroup.appendChild(g);
-    tempData.element = g;
-    // listen global mouse move / up
-  }
-
-  function updateTemporaryArrow(x,y){
-    const g = tempData.element;
-    if(!g) return;
-    const line = g.querySelector('line');
-    line.setAttribute('x2', x); line.setAttribute('y2', y);
-  }
-  function finishTemporaryArrow(x,y){
-    if(!tempData.element) return;
-    const st = tempData.start;
-    createArrow(st.x, st.y, x, y);
-    tempGroup.innerHTML = '';
-    tempData = { mode:null, start:null, element:null, points:[] };
-  }
-
-  function beginTempCircle(cx,cy){
-    tempData.mode = 'circle';
-    tempData.start = {cx,cy};
-    const g = document.createElementNS(svgNS,'g');
-    g.setAttribute('id','tempCircle');
-    const c = document.createElementNS(svgNS,'circle');
-    c.setAttribute('cx', cx); c.setAttribute('cy', cy); c.setAttribute('r', 2); c.setAttribute('stroke','#fff'); c.setAttribute('stroke-width',3); c.setAttribute('fill','rgba(255,255,255,0.03)');
-    g.appendChild(c); tempGroup.appendChild(g);
-    tempData.element = g;
-  }
-
-  function updateTempCircle(cx,cy){
-    const g = tempData.element; if(!g) return;
-    const c = g.querySelector('circle');
-    const dx = cx - tempData.start.cx; const dy = cy - tempData.start.cy;
-    const r = Math.sqrt(dx*dx + dy*dy);
-    c.setAttribute('r', r);
-  }
-  function finishTempCircle(cx,cy){
-    const dx = cx - tempData.start.cx; const dy = cy - tempData.start.cy;
-    const r = Math.sqrt(dx*dx + dy*dy);
-    createCircle(tempData.start.cx, tempData.start.cy, r);
-    tempGroup.innerHTML = '';
-    tempData = { mode:null, start:null, element:null, points:[] };
-  }
-
-  // freehand: build path
-  function beginFreehand(x,y){
-    tempData.mode = 'free';
-    tempData.points = [{x,y}];
-    const g = document.createElementNS(svgNS,'g'); g.setAttribute('id','tempFree');
-    const path = document.createElementNS(svgNS,'path');
-    path.setAttribute('d', `M ${x} ${y}`);
-    path.setAttribute('stroke','#fff'); path.setAttribute('stroke-width',3); path.setAttribute('fill','none'); path.setAttribute('stroke-linecap','round'); path.setAttribute('stroke-linejoin','round');
-    g.appendChild(path); tempGroup.appendChild(g); tempData.element = g;
-  }
-  function updateFreehand(x,y){
-    tempData.points.push({x,y});
-    const d = tempData.points.map((p,i)=> i===0? `M ${p.x} ${p.y}` : `L ${p.x} ${p.y}`).join(' ');
-    const path = tempData.element.querySelector('path');
-    path.setAttribute('d', d);
-  }
-  function finishFreehand(){
-    const pts = tempData.points;
-    if(pts.length < 2){ tempGroup.innerHTML=''; tempData={mode:null}; return; }
-    // create path
-    const id = uid('f');
-    const g = document.createElementNS(svgNS,'g'); g.setAttribute('data-id', id); g.setAttribute('class','obj freehand-group');
-    const path = document.createElementNS(svgNS,'path');
-    const d = pts.map((p,i)=> i===0? `M ${p.x} ${p.y}` : `L ${p.x} ${p.y}`).join(' ');
-    path.setAttribute('d', d); path.setAttribute('stroke','#fff'); path.setAttribute('stroke-width',3); path.setAttribute('fill','none'); path.setAttribute('stroke-linecap','round'); path.setAttribute('stroke-linejoin','round');
-    g.appendChild(path); objectsGroup.appendChild(g);
-    state.objects.push({id, type:'freehand', d});
-    tempGroup.innerHTML=''; tempData={mode:null,points:[]};
-    pushUndo(); refreshLayers();
-  }
-
-  // find object at point (simple bounding-box check)
-  function findObjectAt(x,y){
-    // iterate top-down to find last object that contains point
-    const list = Array.from(objectsGroup.children).reverse();
-    for(const g of list){
-      const id = g.getAttribute('data-id');
-      const obj = state.objects.find(o=> o.id === id);
-      if(!obj) continue;
-      if(obj.type === 'player'){
-        const dx = x - obj.x; const dy = y - obj.y; if(Math.sqrt(dx*dx + dy*dy) <= obj.r + 4) return obj;
-      } else if(obj.type === 'arrow'){
-        // approximate with distance to line
-        const d = distPointToSegment(x,y,obj.x1,obj.y1,obj.x2,obj.y2);
-        if(d < 10) return obj;
-      } else if(obj.type === 'circle'){
-        const dx = x - obj.cx; const dy = y - obj.cy; const d = Math.sqrt(dx*dx + dy*dy);
-        if(Math.abs(d - obj.r) < 10) return obj;
-      } else if(obj.type === 'text'){
-        // bbox test
-        if(Math.abs(x - obj.x) < 80 && Math.abs(y - obj.y) < 20) return obj;
-      } else if(obj.type === 'freehand'){
-        // rough hit by bounding box - find the path bbox
-        const el = objectsGroup.querySelector('[data-id="'+id+'"]');
-        try{
-          const bbox = el.getBBox();
-          if(x>=bbox.x && x<=bbox.x+bbox.width && y>=bbox.y && y<=bbox.y+bbox.height) return obj;
-        }catch(e){}
-      } else if(obj.type === 'circle'){
-        // done above
-      }
-    }
-    return null;
-  }
-
-  // geometry helper: distance point to segment
-  function distPointToSegment(px,py,x1,y1,x2,y2){
-    const A = px - x1; const B = py - y1; const C = x2 - x1; const D = y2 - y1;
-    const dot = A * C + B * D;
-    const len_sq = C * C + D * D;
-    let param = -1;
-    if (len_sq !== 0) param = dot / len_sq;
-    let xx, yy;
-    if (param < 0) { xx = x1; yy = y1; }
-    else if (param > 1) { xx = x2; yy = y2; }
-    else { xx = x1 + param * C; yy = y1 + param * D; }
-    const dx = px - xx; const dy = py - yy;
-    return Math.sqrt(dx * dx + dy * dy);
-  }
-
-  // remove object and DOM
-  function removeObjectById(id){
-    const idx = state.objects.findIndex(o=>o.id===id);
-    if(idx >= 0){
-      state.objects.splice(idx,1);
-      const el = objectsGroup.querySelector('[data-id="'+id+'"]');
-      if(el) el.remove();
-      pushUndo();
-      refreshLayers();
-      clearSelection();
-    }
-  }
-
-  // Undo / Redo
-  function snapshot(){
-    // deep copy state.objects
-    return JSON.parse(JSON.stringify(state.objects));
-  }
-  function restoreSnapshot(arr){
-    // remove DOM objects, re-render from arr
-    objectsGroup.innerHTML = '';
-    state.objects = JSON.parse(JSON.stringify(arr));
-    for(const o of state.objects) renderObjectToDOM(o);
-    refreshLayers();
-  }
-  function pushUndo(){
-    state.undoStack.push(snapshot());
-    if(state.undoStack.length > 100) state.undoStack.shift();
-    state.redoStack = [];
-    updateUndoRedoUI();
-  }
-  function undo(){
-    if(state.undoStack.length === 0) return;
-    const last = state.undoStack.pop();
-    state.redoStack.push(snapshot());
-    restoreSnapshot(last);
-    updateUndoRedoUI();
-  }
-  function redo(){
-    if(state.redoStack.length === 0) return;
-    const last = state.redoStack.pop();
-    state.undoStack.push(snapshot());
-    restoreSnapshot(last);
-    updateUndoRedoUI();
-  }
-  function updateUndoRedoUI(){
-    document.getElementById('undoBtn').disabled = state.undoStack.length === 0;
-    document.getElementById('redoBtn').disabled = state.redoStack.length === 0;
-  }
-  document.getElementById('undoBtn').addEventListener('click', undo);
-  document.getElementById('redoBtn').addEventListener('click', redo);
-
-  // render object to DOM
-  function renderObjectToDOM(o){
-    if(o.type === 'player'){
-      const g = document.createElementNS(svgNS,'g');
-      g.setAttribute('data-id', o.id);
-      g.setAttribute('class','obj player-group');
-      g.setAttribute('cursor','move');
-      const circle = document.createElementNS(svgNS,'circle');
-      circle.setAttribute('cx', o.x); circle.setAttribute('cy', o.y); circle.setAttribute('r', o.r);
-      let fill = '#fff';
-      if(o.role==='defender') fill='#2ec4b6';
-      if(o.role==='attacker') fill='#ff6b6b';
-      if(o.role==='gk') fill='#ffd24d';
-      circle.setAttribute('fill', fill);
-      circle.setAttribute('stroke','#002233'); circle.setAttribute('stroke-width','2');
-      const txt = document.createElementNS(svgNS,'text');
-      txt.setAttribute('x', o.x); txt.setAttribute('y', o.y+4); txt.setAttribute('text-anchor','middle'); txt.setAttribute('font-size','12');
-      txt.setAttribute('fill','#002233'); txt.textContent = o.label || '';
-      g.appendChild(circle); g.appendChild(txt);
-      objectsGroup.appendChild(g);
-      attachDragHandlers(g,o);
-    } else if(o.type === 'arrow'){
-      const g = document.createElementNS(svgNS,'g');
-      g.setAttribute('data-id', o.id);
-      g.setAttribute('class','obj arrow-group');
-      const line = document.createElementNS(svgNS,'line');
-      line.setAttribute('x1', o.x1); line.setAttribute('y1', o.y1);
-      line.setAttribute('x2', o.x2); line.setAttribute('y2', o.y2);
-      line.setAttribute('stroke', o.stroke || '#ffd24d'); line.setAttribute('stroke-width', o.width || 6);
-      line.setAttribute('stroke-linecap','round'); line.setAttribute('marker-end','url(#arrowHead)');
-      g.appendChild(line); objectsGroup.appendChild(g);
-      attachArrowHandlers(g,o);
-    } else if(o.type === 'circle'){
-      const g = document.createElementNS(svgNS,'g'); g.setAttribute('data-id', o.id); g.setAttribute('class','obj circle-group');
-      const c = document.createElementNS(svgNS,'circle'); c.setAttribute('cx', o.cx); c.setAttribute('cy', o.cy); c.setAttribute('r', o.r);
-      c.setAttribute('stroke', o.stroke || '#fff'); c.setAttribute('stroke-width',4); c.setAttribute('fill','rgba(255,255,255,0.03)');
-      g.appendChild(c); objectsGroup.appendChild(g);
-      attachCircleHandlers(g,o);
-    } else if(o.type === 'text'){
-      const g = document.createElementNS(svgNS,'g'); g.setAttribute('data-id', o.id); g.setAttribute('class','obj text-group');
-      const t = document.createElementNS(svgNS,'text'); t.setAttribute('x', o.x); t.setAttribute('y', o.y); t.setAttribute('font-size', o.size || 16);
-      t.setAttribute('font-family','Inter,Arial'); t.setAttribute('fill','#fff'); t.textContent = o.content;
-      g.appendChild(t); objectsGroup.appendChild(g);
-      attachTextHandlers(g,o);
-    } else if(o.type === 'freehand'){
-      const g = document.createElementNS(svgNS,'g'); g.setAttribute('data-id', o.id); g.setAttribute('class','obj freehand-group');
-      const p = document.createElementNS(svgNS,'path'); p.setAttribute('d', o.d); p.setAttribute('stroke','#fff'); p.setAttribute('stroke-width',3);
-      p.setAttribute('fill','none'); g.appendChild(p); objectsGroup.appendChild(g);
-    }
-  }
-
-  // Clear / refresh layers list
-  function refreshLayers(){
-    const container = document.getElementById('layerList');
-    container.innerHTML = '';
-    // reverse order: topmost first
-    [...state.objects].slice().reverse().forEach(o=>{
-      const row = document.createElement('div'); row.className='layer-row';
-      const left = document.createElement('div'); left.style.display='flex'; left.style.gap='8px'; left.style.alignItems='center';
-      const dot = document.createElement('div'); dot.style.width='10'; dot.style.height='10';
-      dot.style.borderRadius='50%'; dot.style.background = (o.type==='player'? '#ffd24d' : (o.type==='arrow'? '#ffd24d' : '#ccc'));
-      dot.style.opacity='0.9';
-      const name = document.createElement('div'); name.className='layer-name'; name.textContent = (o.type + ' ' + o.id);
-      left.appendChild(dot); left.appendChild(name);
-      const right = document.createElement('div');
-      const btn = document.createElement('button'); btn.textContent='⇅'; btn.className='btn small'; btn.title='Bring to front';
-      btn.onclick = ()=>{ bringToFront(o.id); };
-      const del = document.createElement('button'); del.textContent='🗑'; del.className='btn small'; del.onclick = ()=>{ removeObjectById(o.id); };
-      right.appendChild(btn); right.appendChild(del);
-      row.appendChild(left); row.appendChild(right);
-      container.appendChild(row);
+    tool = t;
+    selectTool.classList.toggle('active', t==='select');
+    drawTool.classList.toggle('active', t==='draw');
+    eraseTool.classList.toggle('active', t==='erase');
+    // visual feedback
+    [selectTool, drawTool, eraseTool].forEach(btn=>{
+      btn.style.opacity = (btn === document.getElementById(btn.id) ? '1' : '0.95');
     });
   }
 
-  function bringToFront(id){
-    // move object to end of array
-    const idx = state.objects.findIndex(o=>o.id===id);
-    if(idx<0) return;
-    const [o] = state.objects.splice(idx,1);
-    state.objects.push(o);
-    const el = objectsGroup.querySelector('[data-id="'+id+'"]');
-    if(el){ objectsGroup.appendChild(el); }
-    pushUndo(); refreshLayers();
-  }
+  selectTool.addEventListener('click', ()=> setTool('select'));
+  drawTool.addEventListener('click', ()=> setTool('draw'));
+  eraseTool.addEventListener('click', ()=> setTool('erase'));
+  setTool('select');
 
-  // Buttons: add frame (store keyframe), play, stop
-  document.getElementById('addFrame').addEventListener('click', function(){
-    const snap = captureSnapshot();
-    const frame = { id: Date.now(), snapshot: snap };
-    state.timeline.push(frame);
-    state.currentFrameIndex = state.timeline.length - 1;
-    renderTimeline();
-    pushUndo(); // record adding a keyframe
+  /* ------- add/remove ------- */
+  addHome.addEventListener('click', ()=> makePlayer('home', 'H'));
+  addAway.addEventListener('click', ()=> makePlayer('away', 'A'));
+  addBall.addEventListener('click', ()=> makeBall());
+
+  removeSelected.addEventListener('click', ()=>{
+    if(!selected) return alert('No selection');
+    if(selected instanceof SVGElement){
+      selected.remove();
+      arrows = arrows.filter(a=>a!==selected);
+    } else selected.remove();
+    pushUndo({op:'remove', node:selected});
+    selected = null; updateSelectedInfo();
   });
 
-  function captureSnapshot(){
-    // record simple positions of players & other objects
-    return JSON.parse(JSON.stringify(state.objects));
+  function makePlayer(team,label){
+    const el = document.createElement('div');
+    el.className = 'player ' + (team==='home'?'home':'away');
+    el.dataset.type = 'player';
+    el.dataset.team = team;
+    el.dataset.label = label || (team==='home'?'H':'A');
+    el.textContent = el.dataset.label;
+    // random pos (not overlapping top-left)
+    const x = Math.random()*(pitch.clientWidth-60)+30;
+    const y = Math.random()*(pitch.clientHeight-120)+60;
+    el.style.left = x+'px'; el.style.top = y+'px';
+    pitch.appendChild(el);
+    attachEntityEvents(el);
+    pushUndo({op:'add', node:el});
+    if(recording) captureFrame();
+    return el;
   }
 
-  function renderTimeline(){
-    const el = document.getElementById('timeline'); el.innerHTML='';
-    state.timeline.forEach((f,i)=>{
-      const chip = document.createElement('div'); chip.className='chip'; chip.textContent = 'Frame ' + (i+1
+  function makeBall(){
+    const el = document.createElement('div');
+    el.className = 'ball';
+    el.dataset.type = 'ball';
+    const x = Math.random()*(pitch.clientWidth-60)+30;
+    const y = Math.random()*(pitch.clientHeight-60)+30;
+    el.style.left = x+'px'; el.style.top = y+'px';
+    pitch.appendChild(el);
+    attachEntityEvents(el);
+    pushUndo({op:'add', node:el});
+    if(recording) captureFrame();
+    return el;
+  }
+
+  /* attach events for players/ball on initial load */
+  function attachEntityEvents(el){
+    // only allow dragging inside pitch via mousedown
+    el.addEventListener('mousedown', e => {
+      if(tool !== 'select') return;
+      dragging = el;
+      el.classList.add('dragging');
+      const br = pitch.getBoundingClientRect();
+      dragOffset.x = e.clientX - br.left - el.offsetLeft;
+      dragOffset.y = e.clientY - br.top - el.offsetTop;
+      selected = el; updateSelectedInfo();
+      e.preventDefault();
+    });
+    el.addEventListener('click', (ev) => {
+      ev.stopPropagation();
+      if(tool === 'erase'){
+        // remove entity
+        const node = el;
+        node.remove();
+        pushUndo({op:'remove', node});
+        selected = null; updateSelectedInfo();
+      } else {
+        selected = el; updateSelectedInfo();
+      }
+    });
+  }
+
+  /* ------- formations ------- */
+  const formations = {
+    "4-3-3": [
+      {team:'home', label:'GK', xPct:50, yPct:87},
+      {team:'home', label:'LB', xPct:18, yPct:68},
+      {team:'home', label:'CB', xPct:40, yPct:68},
+      {team:'home', label:'CB2', xPct:60, yPct:68},
+      {team:'home', label:'RB', xPct:82, yPct:68},
+      {team:'home', label:'CM', xPct:36, yPct:50},
+      {team:'home', label:'CM2', xPct:50, yPct:52},
+      {team:'home', label:'CM3', xPct:64, yPct:50},
+      {team:'home', label:'LW', xPct:22, yPct:30},
+      {team:'home', label:'ST', xPct:50, yPct:24},
+      {team:'home', label:'RW', xPct:78, yPct:30}
+    ],
+    "4-4-2": [
+      {team:'home', label:'GK', xPct:50, yPct:87},
+      {team:'home', label:'LB', xPct:18, yPct:68},
+      {team:'home', label:'CB', xPct:40, yPct:68},
+      {team:'home', label:'CB2', xPct:60, yPct:68},
+      {team:'home', label:'RB', xPct:82, yPct:68},
+      {team:'home', label:'LM', xPct:20, yPct:44},
+      {team:'home', label:'CM', xPct:40, yPct:44},
+      {team:'home', label:'CM2', xPct:60, yPct:44},
+      {team:'home', label:'RM', xPct:80, yPct:44},
+      {team:'home', label:'ST1', xPct:42, yPct:24},
+      {team:'home', label:'ST2', xPct:58, yPct:24}
+    ],
+    "3-5-2": [
+      {team:'home', label:'GK', xPct:50, yPct:87},
+      {team:'home', label:'CB1', xPct:30, yPct:68},
+      {team:'home', label:'CB2', xPct:50, yPct:68},
+      {team:'home', label:'CB3', xPct:70, yPct:68},
+      {team:'home', label:'LM', xPct:20, yPct:48},
+      {team:'home', label:'CM1', xPct:35, yPct:48},
+      {team:'home', label:'CM2', xPct:50, yPct:42},
+      {team:'home', label:'CM3', xPct:65, yPct:48},
+      {team:'home', label:'RM', xPct:80, yPct:48},
+      {team:'home', label:'ST1', xPct:42, yPct:24},
+      {team:'home', label:'ST2', xPct:58, yPct:24}
+    ]
+  };
+
+  applyFormation.addEventListener('click', ()=>{
+    const v = formationSelect.value;
+    if(!v || !formations[v]) { alert('Pick a formation'); return; }
+    // remove existing home players
+    const existing = Array.from(pitch.querySelectorAll('.player')).filter(p=>p.dataset.team==='home');
+    existing.forEach(n=>n.remove());
+    formations[v].forEach(item=>{
+      const el = document.createElement('div');
+      el.className = 'player home';
+      el.dataset.type = 'player';
+      el.dataset.team = 'home';
+      el.dataset.label = item.label;
+      el.textContent = item.label;
+      // place by percent
+      const nx = (item.xPct/100) * pitch.clientWidth;
+      const ny = (item.yPct/100) * pitch.clientHeight;
+      el.style.left = (nx - 22) + 'px';
+      el.style.top = (ny - 22) + 'px';
+      pitch.appendChild(el);
+      attachEntityEvents(el);
+    });
+    pushUndo({op:'apply-formation', formation:v});
+    if(recording) captureFrame();
+  });
+
+  /* ------- zoom ------- */
+  zoomRange.addEventListener('input', () => {
+    const s = parseFloat(zoomRange.value);
+    pitch.style.transform = 'scale(' + s + ')';
+  });
+
+  /* ------- save/load ------- */
+  function snapshot(){
+    // collect players, ball, arrows
+    const entities = [];
+    pitch.querySelectorAll('[data-type]').forEach(n=>{
+      const r = {
+        type: n.dataset.type,
+        team: n.dataset.team,
+        label: n.dataset.label,
+        left: parseFloat(n.style.left||0),
+        top: parseFloat(n.style.top||0),
+        html: n.outerHTML
+      };
+      entities.push(r);
+    });
+    const arr = arrows.map(a => ({
+      x1:+a.getAttribute('x1'), y1:+a.getAttribute('y1'),
+      x2:+a.getAttribute('x2'), y2:+a.getAttribute('y2')
+    }));
+    return {entities, arrows:arr, time:Date.now()};
+  }
+
+  saveBtn.addEventListener('click', () => {
+    const data = snapshot();
+    localStorage.setItem('tactics-console-save', JSON.stringify(data));
+    alert('Saved to local storage.');
+  });
+
+  loadLocal.addEventListener('click', () => {
+    const raw = localStorage.getItem('tactics-console-save');
+    if(!raw) return alert('No saved layout in this browser.');
+    loadFromJSON(JSON.parse(raw));
+  });
+
+  clearLocal.addEventListener('click', ()=>{
+    if(confirm('Clear saved layout from this browser?')) localStorage.removeItem('tactics-console-save');
+  });
+
+  downloadBtn.addEventListener('click', ()=>{
+    const data = snapshot();
+    const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'tactics-layout.json';
+    a.click(); URL.revokeObjectURL(url);
+  });
+
+  importInput.addEventListener('change', (e)=>{
+    const f = e.target.files[0]; if(!f) return;
+    const r = new FileReader();
+    r.onload = () => {
+      try {
+        const obj = JSON.parse(r.result);
+        loadFromJSON(obj);
+      } catch(err){ alert('Invalid file'); }
+    };
+    r.readAsText(f);
+  });
+
+  function loadFromJSON(obj){
+    // clear pitch entities and arrows
+    Array.from(pitch.querySelectorAll('[data-type]')).forEach(n=>n.remove());
+    Array.from(arrowLayer.querySelectorAll('line')).forEach(n=>n.remove());
+    arrows = [];
+    // recreate entities
+    (obj.entities||[]).forEach(e=>{
+      if(e.type === 'player'){
+        const el = document.createElement('div');
+        el.className = 'player ' + (e.team||'home');
+        el.dataset.type = 'player';
+        el.dataset.team = e.team||'home';
+        el.dataset.label = e.label || '';
+        el.textContent = el.dataset.label;
+        el.style.left = (e.left||0)+'px';
+        el.style.top = (e.top||0)+'px';
+        pitch.appendChild(el);
+        attachEntityEvents(el);
+      } else if(e.type === 'ball'){
+        const el = document.createElement('div');
+        el.className = 'ball';
+        el.dataset.type = 'ball';
+        el.style.left = (e.left||0)+'px';
+        el.style.top = (e.top||0)+'px';
+        pitch.appendChild(el);
+        attachEntityEvents(el);
+      }
+    });
+    (obj.arrows||[]).forEach(a=>{
+      const final = document.createElementNS('http://www.w3.org/2000/svg','line');
+      final.setAttribute('x1',a.x1); final.setAttribute('y1',a.y1);
+      final.setAttribute('x2',a.x2); final.setAttribute('y2',a.y2);
+      final.setAttribute('stroke','#FFA500'); final.setAttribute('stroke-width','6');
+      final.setAttribute('marker-end','url(#arrowhead)');
+      arrowLayer.appendChild(final);
+      arrows.push(final);
+    });
+    alert('Loaded layout');
+  }
+
+  /* ------- undo ------- */
+  function pushUndo(op){
+    undoStack.push(op);
+    if(undoStack.length>80) undoStack.shift();
+  }
+  undoBtn.addEventListener('click', ()=>{
+    const last = undoStack.pop();
+    if(!last) return alert('Nothing to undo');
+    if(last.op === 'add'){
+      last.node.remove();
+    } else if(last.op === 'remove'){
+      pitch.appendChild(last.node);
+      attachEntityEvents(last.node);
+    } else if(last.op === 'add-arrow'){
+      last.node.remove();
+      arrows = arrows.filter(a=>a!==last.node);
+    } else if(last.op === 'remove-arrow'){
+      arrowLayer.appendChild(last.node);
+      arrows.push(last.node);
+    } else if(last.op === 'move'){
+      // cannot fully restore older pos easily; skip
+      alert('Undo move is limited — try save/load for safety');
+    } else if(last.op === 'apply-formation'){
+      alert('Undo formation not supported (re-load saved layout if needed)');
+    }
+  });
+
+  /* ------- selected info ------- */
+  function updateSelectedInfo(){
+    if(!selected){ selectedInfo.textContent = 'None selected'; return; }
+    if(selected instanceof SVGElement){
+      selectedInfo.innerHTML = 'Arrow — coords: ' + 
+        Math.round(selected.getAttribute('x1'))+','+Math.round(selected.getAttribute('y1')) +
+        ' → ' + Math.round(selected.getAttribute('x2'))+','+Math.round(selected.getAttribute('y2'));
+    } else {
+      selectedInfo.innerHTML = 'Type: ' + selected.dataset.type + '<br> Team: ' + (selected.dataset.team||'-') + '<br> Label: ' + (selected.dataset.label||'-');
+    }
+  }
+
+  /* ------- clear arrows ------- */
+  clearArrowsBtn.addEventListener('click', ()=>{
+    arrows.forEach(a=>a.remove());
+    arrows = [];
+    pushUndo({op:'clear-arrows'});
+  });
+
+  /* ------- recording frames ------- */
+  startRec.addEventListener('click', ()=>{
+    recording = true; recordFrames = [];
+    startRec.disabled = true; stopRec.disabled = false;
+    captureFrame(); // first
+    alert('Recording started — move players to create frames. Click Stop when finished.');
+  });
+  stopRec.addEventListener('click', ()=>{
+    if(!recording) return;
+    recording = false; startRec.disabled = false; stopRec.disabled = true;
+    if(recordFrames.length === 0) return alert('No frames recorded');
+    // offer download
+    const blob = new Blob([JSON.stringify(recordFrames,null,2)], {type:'application/json'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href = url; a.download = 'tactics-recording.json'; a.click(); URL.revokeObjectURL(url);
+    alert('Recording downloaded (JSON frames). You can later implement playback from this file.');
+  });
+
+  function captureFrame(){
+    const frame = {time:Date.now(), entities:[], arrows:[]};
+    pitch.querySelectorAll('[data-type]').forEach(n=>{
+      frame.entities.push({
+        type: n.dataset.type,
+        team: n.dataset.team,
+        label: n.dataset.label,
+        left: parseFloat(n.style.left||0),
+        top: parseFloat(n.style.top||0)
+      });
+    });
+    arrows.forEach(a=>{
+      frame.arrows.push({x1:+a.getAttribute('x1'), y1:+a.getAttribute('y1'), x2:+a.getAttribute('x2'), y2:+a.getAttribute('y2')});
+    });
+    recordFrames.push(frame);
+  }
+
+  /* ------- exit back to index (simple link) ------- */
+  exitBtn.addEventListener('click', ()=> {
+    window.location.href = 'index.html';
+  });
+
+  /* ---- initial demo content ---- */
+  // add default home formation
+  (function seedDemo(){
+    // two teams and ball
+    const demo = [
+      {team:'home', label:'GK', left: (pitch.clientWidth*0.5 - 22), top: (pitch.clientHeight*0.85 - 22)},
+      {team:'home', label:'LB', left: (pitch.clientWidth*0.18 - 22), top: (pitch.clientHeight*0.66 - 22)},
+      {team:'home', label:'CB', left: (pitch.clientWidth*0.40 - 22), top: (pitch.clientHeight*0.66 - 22)},
+      {team:'home', label:'CB2', left: (pitch.clientWidth*0.60 - 22), top: (pitch.clientHeight*0.66 - 22)},
+      {team:'home', label:'RB', left: (pitch.clientWidth*0.82 - 22), top: (pitch.clientHeight*0.66 - 22)},
+      {team:'home', label:'ST', left: (pitch.clientWidth*0.5 - 22), top: (pitch.clientHeight*0.24 - 22)},
+      {team:'away', label:'GK', left: (pitch.clientWidth*0.5 - 22), top: (pitch.clientHeight*0.12 - 22)}
+    ];
+    demo.forEach(d=>{
+      const el = document.createElement('div');
+      el.className = 'player ' + (d.team==='home'?'home':'away');
+      el.dataset.type = 'player';
+      el.dataset.team = d.team;
+      el.dataset.label = d.label;
+      el.textContent = d.label;
+      el.style.left = d.left+'px'; el.style.top = d.top+'px';
+      pitch.appendChild(el);
+      attachEntityEvents(el);
+    });
+    // ball
+    const b = document.createElement('div');
+    b.className = 'ball'; b.dataset.type='ball';
+    b.style.left = (pitch.clientWidth*0.5 - 11) + 'px';
+    b.style.top = (pitch.clientHeight*0.48 - 11) + 'px';
+    pitch.appendChild(b); attachEntityEvents(b);
+  })();
+
+  // helper: click on arrow to select when tool=select
+  arrowLayer.addEventListener('click', e=>{
+    if(e.target.tagName === 'line' && tool !== 'erase'){
+      selected = e.target; updateSelectedInfo();
+      e.stopPropagation();
+    }
+  });
+
+  // clicking outside resets selection
+  pitch.addEventListener('click', ()=> {
+    // no-op handled earlier
+  });
+
+})();
+</script>
+</body>
+</html>
