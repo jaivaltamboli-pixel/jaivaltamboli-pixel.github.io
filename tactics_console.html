@@ -1,884 +1,697 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Tactics Console — Interactive</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>ProTactix — Cleaner Tactics Console</title>
+  <style>
+    :root{
+      --bg-0:#071426;
+      --bg-1:#0a2a3d;
+      --panel:#0d2636;
+      --accent:#1282a2;
+      --accent-2:#ffd166;
+      --danger:#e63946;
+      --muted:#9fc7d3;
+      --text:#ecf6f8;
+      --glass:rgba(255,255,255,0.03);
+      --shadow:0 12px 40px rgba(0,0,0,0.6);
+      --radius:12px;
+      --transition:200ms cubic-bezier(.2,.9,.3,1);
+    }
 
-<!-- Fonts -->
-<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    /* reset */
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial;color:var(--text);background:linear-gradient(180deg,var(--bg-0),var(--bg-1));-webkit-font-smoothing:antialiased}
 
-<style>
-  :root{
-    --navy:#001F5B;
-    --accent:#FFA500;
-    --bg:#eaf0f6;
-    --tile:#ffffff;
-    --muted:#666;
-  }
-  html,body{height:100%;margin:0;font-family:Roboto,system-ui,-apple-system; background:linear-gradient(135deg,var(--bg),#d4e0eb); color:#111}
-  /* Fullscreen app container */
-  .app {
-    position:fixed; inset:0; display:flex; flex-direction:column;
-  }
+    /* layout */
+    .app{
+      display:grid;
+      grid-template-columns:280px 1fr 320px;
+      grid-template-rows:72px 1fr;
+      gap:18px;
+      height:100vh;
+      padding:16px;
+    }
 
-  /* Top bar */
-  .topbar{
-    height:72px; background:var(--navy); color:var(--accent); display:flex; align-items:center; gap:14px;
-    padding:12px 20px; box-shadow:0 6px 20px rgba(0,0,0,0.25);
-  }
-  .topbar h1{font-family:Oswald;margin:0;font-size:1.25rem; letter-spacing:2px}
-  .topbar .subtitle{color:#e9c88a; font-size:0.9rem; margin-left:8px}
-  .topbar .actions{margin-left:auto; display:flex; gap:10px; align-items:center}
+    header.topbar{
+      grid-column:1/-1;
+      display:flex;
+      align-items:center;
+      gap:18px;
+      padding:12px 18px;
+      background:linear-gradient(90deg,rgba(255,255,255,0.02),transparent);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      border:1px solid rgba(255,255,255,0.03);
+    }
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{
+      width:44px;height:44px;border-radius:10px;background:linear-gradient(180deg,var(--accent),#0a6b77);
+      display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;font-family:Oswald,Segoe UI,sans-serif
+    }
+    .title{font-weight:700;font-size:16px;color:var(--accent-2)}
+    .subtitle{font-size:12px;color:var(--muted)}
 
-  /* Buttons */
-  .btn {
-    background:var(--accent); color:var(--navy); border:none; padding:8px 12px; border-radius:8px; font-weight:700; cursor:pointer;
-    box-shadow:0 6px 14px rgba(0,0,0,0.12);
-  }
-  .btn.ghost{background:transparent;color:white;border:1px solid rgba(255,255,255,0.12)}
-  .btn.small{padding:6px 10px;font-size:0.9rem}
-  .icon-btn {background:transparent;border:1px solid rgba(255,255,255,0.08); color: #fff; padding:6px;border-radius:8px;cursor:pointer}
+    .toolbar{margin-left:auto;display:flex;gap:8px;align-items:center}
+    .btn{background:linear-gradient(180deg,#0f3a47,#09252f);border:1px solid rgba(255,255,255,0.03);color:var(--text);padding:8px 12px;border-radius:10px;cursor:pointer;transition:var(--transition);font-weight:600}
+    .btn.ghost{background:transparent;border:1px solid rgba(255,255,255,0.04)}
+    .btn.primary{background:linear-gradient(90deg,var(--accent),#0f9fb0);box-shadow:0 8px 30px rgba(18,130,162,0.12)}
+    .btn.warn{background:linear-gradient(90deg,#e07a5f,#d4503a)}
 
-  /* Main area */
-  .main {
-    display:flex; gap:18px; padding:18px; height:calc(100% - 72px);
-  }
+    /* left panel */
+    aside.left{
+      background:var(--panel);border-radius:var(--radius);padding:16px;border:1px solid rgba(255,255,255,0.02);box-shadow:var(--shadow);overflow:auto;
+    }
+    .sectionTitle{font-weight:700;color:var(--text);margin-bottom:8px}
+    .muted{color:var(--muted);font-size:13px}
 
-  /* Left toolbar */
-  .toolbar {
-    width:260px; background:var(--tile); border-radius:12px; padding:14px; box-shadow:0 6px 20px rgba(0,0,0,0.08);
-    display:flex; flex-direction:column; gap:12px;
-  }
-  .toolbar h3{font-family:Oswald;margin:0 0 6px 0; color:var(--navy); font-size:1.05rem}
-  .tool-row{display:flex; gap:8px; flex-wrap:wrap}
-  .tool-row label{font-size:0.85rem; color:var(--muted)}
-  .formation-select{width:100%; padding:8px; border-radius:8px; border:1px solid #ddd}
+    .controls{display:flex;flex-direction:column;gap:12px}
 
-  /* Center pitch area */
-  .canvas-wrap {
-    flex:1; display:flex; align-items:center; justify-content:center; position:relative;
-  }
-  .pitch {
-    width:1100px; max-width:calc(100vw - 360px); height:640px; background:linear-gradient(#2d8b3b,#1f7a33); border-radius:10px; position:relative;
-    border:6px solid #fff; box-shadow:0 20px 40px rgba(0,0,0,0.25); overflow:hidden;
-    transform-origin:center center;
-  }
-  /* center lines and markings with pseudo elements */
-  .pitch .markings{position:absolute; inset:0; pointer-events:none}
-  .pitch .markings svg{width:100%;height:100%;display:block}
+    .modes{display:flex;gap:8px;flex-wrap:wrap}
+    .chip{padding:8px 10px;background:var(--glass);border-radius:8px;border:1px solid rgba(255,255,255,0.02);cursor:pointer}
+    .chip.active{background:linear-gradient(90deg,var(--accent),#0f9fb0);color:#062428;font-weight:700}
 
-  /* Players */
-  .player {
-    width:44px;height:44px;border-radius:50%;position:absolute;display:flex;align-items:center;justify-content:center;
-    font-weight:700;color:#001F5B;border:3px solid #fff; cursor:grab; user-select:none; box-shadow:0 6px 14px rgba(0,0,0,0.25);
-    transition:transform .08s linear;
-  }
-  .player.home{background:var(--accent)}
-  .player.away{background:#ffffff;color:var(--navy);border:3px solid var(--accent)}
-  .player.dragging{transform:scale(1.08); cursor:grabbing}
+    .control{background:rgba(255,255,255,0.02);padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.02)}
 
-  /* Ball */
-  .ball {
-    width:22px;height:22px;border-radius:50%; background:#fff;border:3px solid #111; position:absolute; display:flex;align-items:center;justify-content:center;box-shadow:0 8px 18px rgba(0,0,0,0.25); cursor:grab;
-  }
+    label.small{display:block;color:var(--muted);font-size:12px;margin-bottom:8px}
 
-  /* SVG arrows layer */
-  #arrowLayer { position:absolute; inset:0; pointer-events:none; }
+    input[type="range"]{width:100%}
 
-  /* Toolbar controls style */
-  .tool-block { background:#fbfbfb;border-radius:8px;padding:10px;border:1px solid #eee }
-  label { display:block; font-size:0.85rem; color:#444; margin-bottom:6px }
+    /* center pitch */
+    .center{display:flex;align-items:center;justify-content:center;padding:6px}
+    .pitchCard{width:100%;max-width:1200px;height:calc(100vh - 160px);border-radius:12px;background:linear-gradient(180deg,#1a7a3d,#0b4b22);box-shadow:0 20px 60px rgba(0,0,0,0.6);position:relative;border:6px solid rgba(255,255,255,0.02);overflow:hidden;transform-origin:center center}
+    svg#pitchSVG{width:100%;height:100%;display:block}
 
-  /* Small text */
-  .muted { color:#666; font-size:0.9rem }
+    /* player DOM */
+    #playerLayer{position:absolute;left:0;top:0;right:0;bottom:0;pointer-events:none}
+    .player{
+      position:absolute;width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;user-select:none;touch-action:none;cursor:grab;transform:translate(-50%,-50%);box-shadow:0 14px 30px rgba(0,0,0,0.5);pointer-events:auto;transition:transform 150ms,var(--transition)
+    }
+    .player.home{background:linear-gradient(180deg,#ffffff,#eef6f6);color:#042022;border:4px solid var(--accent)}
+    .player.away{background:linear-gradient(180deg,#0b1220,#0f1726);color:#fff;border:4px solid #ffffff33}
+    .player.ball{width:36px;height:36px;border-radius:50%;background:#fff;color:#022b2f;border:3px solid #0b1220;font-weight:900;font-size:12px}
+    .player.selected{transform:translate(-50%,-50%) scale(1.08);box-shadow:0 24px 48px rgba(0,0,0,0.6), 0 0 0 6px rgba(18,130,162,0.08)}
 
-  /* Right panel */
-  .rightpanel { width:240px; display:flex; flex-direction:column; gap:12px }
-  .rightpanel .panel { background:var(--tile); padding:12px; border-radius:10px; box-shadow:0 6px 18px rgba(0,0,0,0.06) }
+    /* arrows */
+    .arrowLine{stroke:#fff;stroke-width:3;stroke-linecap:round;opacity:0.95;fill:none}
+    .arrowHead{fill:#fff}
+    .arrowGlow{filter:url(#glow);stroke-linecap:round}
 
-  /* footnote */
-  .hint { font-size:0.85rem; color:#555 }
+    /* right panel */
+    aside.right{background:var(--panel);border-radius:var(--radius);padding:16px;border:1px solid rgba(255,255,255,0.02);box-shadow:var(--shadow);overflow:auto}
+    .panelItem{background:rgba(255,255,255,0.02);padding:12px;border-radius:10px;margin-bottom:12px}
+    .kbd{background:#062428;padding:6px 8px;border-radius:6px;border:1px solid rgba(255,255,255,0.03);color:var(--muted);font-size:12px}
 
-  /* responsive */
-  @media(max-width:1100px){
-    .toolbar{display:none}
-    .rightpanel{display:none}
-    .pitch{max-width:calc(100vw - 40px);height:60vh}
-  }
-</style>
+    /* timeline */
+    .timeline{position:absolute;left:16px;right:16px;bottom:16px;background:rgba(0,0,0,0.28);padding:10px;border-radius:10px;display:flex;gap:10px;align-items:center;border:1px solid rgba(255,255,255,0.03)}
+    .progress{height:8px;background:linear-gradient(90deg,var(--accent),#0f9fb0);border-radius:6px;width:0%}
+
+    /* tooltips & helpers */
+    .hint{font-size:13px;color:var(--muted)}
+    .flexRow{display:flex;gap:10px;align-items:center}
+    .spacer{flex:1}
+
+    /* responsive */
+    @media(max-width:1100px){
+      .app{grid-template-columns:1fr;grid-template-rows:72px auto auto}
+      aside.left,aside.right{order:2}
+      .center{order:1;padding:10px}
+      .pitchCard{height:60vh}
+    }
+
+  </style>
 </head>
 <body>
-
-<div class="app">
-
-  <!-- TOP -->
-  <div class="topbar">
-    <h1>TACTICS CONSOLE</h1>
-    <div class="subtitle">Build formations • draw runs • save setups</div>
-
-    <div class="actions">
-      <button id="exitBtn" class="btn small ghost">Back</button>
-      <button id="undoBtn" class="btn small">Undo</button>
-      <button id="clearArrowsBtn" class="btn small">Clear Arrows</button>
-      <button id="saveBtn" class="btn small">Save</button>
-      <button id="downloadBtn" class="btn small">Download JSON</button>
-    </div>
-  </div>
-
-  <!-- MAIN -->
-  <div class="main">
-    <!-- LEFT toolbar -->
-    <aside class="toolbar" aria-label="Toolbox">
-      <h3>Tools</h3>
-
-      <div class="tool-row">
-        <button id="selectTool" class="btn small">Select</button>
-        <button id="drawTool" class="btn small">Draw</button>
-        <button id="eraseTool" class="btn small">Erase</button>
-      </div>
-
-      <div class="tool-block">
-        <label>Add entity</label>
-        <div class="tool-row">
-          <button id="addHome" class="btn">Add Home</button>
-          <button id="addAway" class="btn ghost">Add Away</button>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <div class="logo">PT</div>
+        <div>
+          <div class="title">ProTactix</div>
+          <div class="subtitle">Cleaner • directional • user-friendly</div>
         </div>
-        <div style="height:8px"></div>
-        <button id="addBall" class="btn">Add Ball</button>
-        <div style="height:8px"></div>
-        <button id="removeSelected" class="btn ghost">Remove Selected</button>
       </div>
 
-      <div class="tool-block">
-        <label>Formations</label>
-        <select id="formationSelect" class="formation-select">
-          <option value="">— choose preset —</option>
-          <option value="4-3-3">4 - 3 - 3</option>
-          <option value="4-4-2">4 - 4 - 2</option>
-          <option value="3-5-2">3 - 5 - 2</option>
-        </select>
-        <div style="height:10px"></div>
-        <button id="applyFormation" class="btn">Apply Formation</button>
+      <div class="toolbar">
+        <button class="btn ghost" id="btnUndo">Undo</button>
+        <button class="btn ghost" id="btnRedo">Redo</button>
+        <button class="btn" id="btnImport">Import</button>
+        <button class="btn primary" id="btnExport">Export</button>
       </div>
+    </header>
 
-      <div class="tool-block">
-        <label>Zoom</label>
-        <input id="zoomRange" type="range" min="0.6" max="1.4" step="0.05" value="1" />
-        <div class="muted">Scale field</div>
-      </div>
+    <!-- LEFT -->
+    <aside class="left">
+      <div class="sectionTitle">Tools</div>
+      <div class="muted">Choose a mode to interact with the pitch</div>
 
-      <div class="tool-block">
-        <label>Record Movement</label>
-        <div style="display:flex;gap:8px">
-          <button id="startRec" class="btn">Record</button>
-          <button id="stopRec" class="btn ghost">Stop</button>
+      <div class="controls" style="margin-top:12px">
+        <div class="control">
+          <label class="small">Mode</label>
+          <div class="modes">
+            <div class="chip active" data-mode="select">Select (S)</div>
+            <div class="chip" data-mode="draw">Draw (D)</div>
+            <div class="chip" data-mode="curve">Curve (C)</div>
+            <div class="chip" data-mode="erase">Erase (E)</div>
+          </div>
+          <div class="hint" style="margin-top:8px">Click a player to start, then drag to draw an arrow. For curve mode, drag control point to shape the run.</div>
         </div>
-        <div class="muted">Recording saves frames to download</div>
+
+        <div class="control">
+          <label class="small">Add entity</label>
+          <div style="display:flex;gap:8px">
+            <button class="btn" id="addHome">Add Home</button>
+            <button class="btn" id="addAway">Add Away</button>
+            <button class="btn" id="addBall">Add Ball</button>
+          </div>
+        </div>
+
+        <div class="control">
+          <label class="small">Arrow style</label>
+          <div style="display:flex;gap:8px;margin-bottom:8px">
+            <select id="arrowStyle" style="flex:1;padding:8px;border-radius:8px;background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--muted)">
+              <option value="solid">Solid</option>
+              <option value="dashed">Dashed</option>
+              <option value="curved">Curved auto</option>
+              <option value="glow">Glow (fast)</option>
+            </select>
+            <input id="arrowWidth" type="number" min="1" max="12" value="3" style="width:72px;padding:8px;border-radius:8px;background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--muted)">
+          </div>
+          <div style="display:flex;gap:8px">
+            <input id="arrowColor" type="color" value="#ffd166" style="width:52px;height:36px;border-radius:8px;border:0;cursor:pointer">
+            <div class="muted" style="align-self:center">Color</div>
+          </div>
+        </div>
+
+        <div class="control">
+          <label class="small">View</label>
+          <div style="display:flex;gap:8px;align-items:center">
+            <input id="zoomRange" type="range" min="0.6" max="1.6" step="0.05" value="1" />
+            <div class="muted" id="zoomLabel">100%</div>
+          </div>
+          <label class="small" style="margin-top:10px"><input id="snapGrid" type="checkbox"> Snap to grid</label>
+        </div>
+
       </div>
-
-      <div style="flex:1"></div>
-
-      <div class="muted" style="font-size:0.85rem">Tip: hold and drag players. Use Draw for runs. Save layouts to local storage.</div>
     </aside>
 
-    <!-- CENTER pitch -->
-    <div class="canvas-wrap" role="main">
-      <div id="pitch" class="pitch" tabindex="0">
-        <!-- arrows (SVG) -->
-        <svg id="arrowLayer" xmlns="http://www.w3.org/2000/svg">
+    <!-- CENTER -->
+    <div class="center">
+      <div class="pitchCard" id="pitchCard" tabindex="0" aria-label="Tactics pitch">
+        <svg id="pitchSVG" viewBox="0 0 1100 700" preserveAspectRatio="xMidYMid meet">
           <defs>
-            <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
-              <path d="M0,0 L10,3.5 L0,7 Z" fill="#FFA500"/>
+            <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+              <feGaussianBlur stdDeviation="6" result="coloredBlur"></feGaussianBlur>
+              <feMerge>
+                <feMergeNode in="coloredBlur"></feMergeNode>
+                <feMergeNode in="SourceGraphic"></feMergeNode>
+              </feMerge>
+            </filter>
+            <marker id="arrowHead" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="strokeWidth">
+              <path class="arrowHead" d="M0,0 L12,6 L0,12 z" fill="#fff" />
             </marker>
+            <marker id="arrowHeadGlow" markerWidth="20" markerHeight="20" refX="16" refY="10" orient="auto">
+              <path d="M0,0 L20,10 L0,20 z" fill="#fff" opacity="0.95"/>
+            </marker>
+            <pattern id="grass" patternUnits="userSpaceOnUse" width="110" height="700">
+              <rect width="110" height="700" fill="#1f7a39"></rect>
+              <rect width="55" height="700" fill="#176a2f"></rect>
+            </pattern>
           </defs>
+
+          <rect x="0" y="0" width="1100" height="700" fill="url(#grass)"></rect>
+
+          <!-- pitch lines -->
+          <g id="pitchLines" stroke="#ffffff" stroke-opacity="0.75" fill="none" stroke-width="3">
+            <rect x="60" y="30" width="980" height="640" rx="10" stroke-opacity="0.6" />
+            <circle cx="550" cy="365" r="70" stroke-opacity="0.45" />
+            <line x1="550" y1="30" x2="550" y2="670" stroke-opacity="0.45" />
+            <rect x="60" y="150" width="180" height="220" rx="6" stroke-opacity="0.45"></rect>
+            <rect x="860" y="150" width="180" height="220" rx="6" stroke-opacity="0.45"></rect>
+          </g>
+
+          <!-- arrows + temp -->
+          <g id="arrowsLayer"></g>
+          <g id="tempLayer"></g>
         </svg>
 
-        <!-- markings layer -->
-        <div class="markings" aria-hidden="true">
-          <svg viewBox="0 0 1100 640" preserveAspectRatio="none">
-            <rect x="40" y="40" width="1020" height="560" rx="6" fill="none" stroke="rgba(255,255,255,0.85)" stroke-width="2"/>
-            <!-- halfway -->
-            <line x1="600" y1="40" x2="600" y2="600" stroke="rgba(255,255,255,0.5)" stroke-width="1"/>
-            <circle cx="600" cy="320" r="60" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="1.5"/>
-            <!-- penalty boxes -->
-            <rect x="40" y="160" width="160" height="320" rx="4" fill="none" stroke="rgba(255,255,255,0.5)"/>
-            <rect x="980" y="160" width="160" height="320" rx="4" fill="none" stroke="rgba(255,255,255,0.5)"/>
-            <circle cx="150" cy="320" r="6" fill="rgba(255,255,255,0.9)"/>
-            <circle cx="1050" cy="320" r="6" fill="rgba(255,255,255,0.9)"/>
-          </svg>
+        <!-- players as DOM (easier to drag / animate) -->
+        <div id="playerLayer"></div>
+
+        <!-- timeline (simple) -->
+        <div class="timeline" role="region" aria-label="Replay timeline">
+          <button class="btn ghost" id="playPause">Play</button>
+          <div class="spacer"></div>
+          <div style="flex:1;max-width:560px;background:rgba(255,255,255,0.03);height:8px;border-radius:6px;overflow:hidden">
+            <div class="progress" id="playProgress" style="width:0%"></div>
+          </div>
+          <div class="spacer"></div>
+          <div class="muted" id="frameLabel">Frame: 0</div>
         </div>
 
       </div>
     </div>
 
-    <!-- RIGHT panel -->
-    <aside class="rightpanel">
-      <div class="panel">
-        <strong>Selection</strong>
-        <div id="selectedInfo" style="margin-top:8px" class="muted">None selected</div>
+    <!-- RIGHT -->
+    <aside class="right">
+      <div class="panelItem">
+        <div class="sectionTitle">Selection</div>
+        <div class="muted" id="selInfo">Type: — <br> Team: — <br> Label: —</div>
       </div>
 
-      <div class="panel">
-        <strong>Saved layouts</strong>
-        <div style="display:flex;gap:8px;margin-top:8px">
-          <button id="loadLocal" class="btn ghost small">Load</button>
-          <button id="clearLocal" class="btn small">Clear</button>
+      <div class="panelItem">
+        <div class="sectionTitle">Export / Import</div>
+        <div style="display:flex;gap:8px">
+          <button class="btn" id="btnExportJSON">Download JSON</button>
+          <button class="btn" id="btnLoadJSON">Load JSON</button>
+          <input type="file" id="fileInput" accept=".json" style="display:none">
         </div>
-        <div style="height:8px"></div>
-        <div class="muted">Local saves are stored in your browser.</div>
       </div>
 
-      <div class="panel">
-        <strong>Export / Import</strong>
-        <div style="display:flex;gap:8px;margin-top:8px">
-          <input id="importInput" type="file" accept="application/json" style="flex:1"/>
+      <div class="panelItem">
+        <div class="sectionTitle">Quick Actions</div>
+        <div style="display:flex;gap:8px">
+          <button class="btn warn" id="btnClear">Clear Pitch</button>
+          <button class="btn" id="btnReset">Reset View</button>
         </div>
+      </div>
+
+      <div class="panelItem">
+        <div class="sectionTitle">Shortcuts</div>
+        <div class="muted">S - Select • D - Draw • C - Curve • E - Erase • DEL - Delete • Z / Y - Undo/Redo</div>
       </div>
     </aside>
   </div>
-</div>
 
-<!-- SCRIPT -->
-<script>
-/* -------------------------
-  Tactics Console JS
-   - drag/drop players & ball
-   - draw arrows (SVG)
-   - erase arrows
-   - add/remove entities
-   - formations
-   - save/load JSON (localStorage + download)
-   - record frames (download JSON)
-   - zoom (scale)
----------------------------*/
+  <script>
+    /* Cleaned up JS — clearer separation of concerns, direction-first UX */
 
-(() => {
-  const pitch = document.getElementById('pitch');
-  const arrowLayer = document.getElementById('arrowLayer');
-  const selectTool = document.getElementById('selectTool');
-  const drawTool = document.getElementById('drawTool');
-  const eraseTool = document.getElementById('eraseTool');
-  const addHome = document.getElementById('addHome');
-  const addAway = document.getElementById('addAway');
-  const addBall = document.getElementById('addBall');
-  const removeSelected = document.getElementById('removeSelected');
-  const formationSelect = document.getElementById('formationSelect');
-  const applyFormation = document.getElementById('applyFormation');
-  const zoomRange = document.getElementById('zoomRange');
-  const saveBtn = document.getElementById('saveBtn');
-  const loadLocal = document.getElementById('loadLocal');
-  const clearLocal = document.getElementById('clearLocal');
-  const downloadBtn = document.getElementById('downloadBtn');
-  const importInput = document.getElementById('importInput');
-  const selectedInfo = document.getElementById('selectedInfo');
-  const undoBtn = document.getElementById('undoBtn');
-  const clearArrowsBtn = document.getElementById('clearArrowsBtn');
-  const startRec = document.getElementById('startRec');
-  const stopRec = document.getElementById('stopRec');
-  const exitBtn = document.getElementById('exitBtn');
+    /* Utilities */
+    const $ = (sel, root = document) => root.querySelector(sel);
+    const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
+    const uid = (p = '') => p + Math.random().toString(36).slice(2,9);
+    const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+    const VB = {w:1100, h:700}; // viewBox for svg pitch
 
-  // state
-  let tool = 'select'; // select, draw, erase
-  let dragging = null;
-  let dragOffset = {x:0,y:0};
-  let selected = null;
-  let arrows = []; // {el, x1,y1,x2,y2}
-  let undoStack = [];
-  let recordFrames = [];
-  let recording = false;
-  let drawTempLine = null;
-  let arrowIdCounter = 0;
-
-  // pitch coordinate helpers (we use pitch client coordinates)
-  function bounds(el){
-    const r = el.getBoundingClientRect();
-    return {left:r.left, top:r.top, width:r.width, height:r.height};
-  }
-
-  /* ------- utilities ------- */
-  function makePlayer(team='home', label='') {
-    const el = document.createElement('div');
-    el.className = 'player ' + (team==='home' ? 'home' : 'away');
-    el.dataset.type = 'player';
-    el.dataset.team = team;
-    el.dataset.label = label || (team==='home' ? 'H' : 'A');
-    el.textContent = el.dataset.label;
-    // center by default
-    el.style.left = (pitch.clientWidth/2 - 22) + 'px';
-    el.style.top = (pitch.clientHeight/2 - 22) + 'px';
-    appendEntity(el);
-    return el;
-  }
-
-  function makeBall() {
-    const el = document.createElement('div');
-    el.className = 'ball';
-    el.dataset.type = 'ball';
-    el.style.left = (pitch.clientWidth/2 - 11) + 'px';
-    el.style.top = (pitch.clientHeight/2 - 11) + 'px';
-    appendEntity(el);
-    el.textContent = '';
-    return el;
-  }
-
-  function appendEntity(el) {
-    pitch.appendChild(el);
-    attachEntityEvents(el);
-    pushUndo({op:'add', node:el});
-    if(recording) captureFrame();
-  }
-
-  function attachEntityEvents(el){
-    el.addEventListener('mousedown', e => {
-      if(tool !== 'select') return;
-      dragging = el;
-      el.classList.add('dragging');
-      const br = pitch.getBoundingClientRect();
-      dragOffset.x = e.clientX - el.offsetLeft - br.left;
-      dragOffset.y = e.clientY - el.offsetTop - br.top;
-      selected = el;
-      updateSelectedInfo();
-      e.preventDefault();
-    });
-
-    el.addEventListener('click', e => {
-      if(tool === 'erase' && el.dataset.type === 'player') {
-        el.remove();
-        pushUndo({op:'remove', node:el});
-        selected = null; updateSelectedInfo();
-      } else if(tool === 'select') {
-        selected = el; updateSelectedInfo();
-      }
-    });
-  }
-
-  // mouse move on document for dragging players
-  document.addEventListener('mousemove', e => {
-    if(!dragging) return;
-    const br = pitch.getBoundingClientRect();
-    const x = e.clientX - br.left - dragOffset.x;
-    const y = e.clientY - br.top - dragOffset.y;
-    // clamp inside pitch
-    const w = dragging.offsetWidth, h = dragging.offsetHeight;
-    const nx = Math.max(0, Math.min(br.width - w, x));
-    const ny = Math.max(0, Math.min(br.height - h, y));
-    dragging.style.left = nx + 'px';
-    dragging.style.top = ny + 'px';
-    if(recording) captureFrame();
-  });
-
-  document.addEventListener('mouseup', e => {
-    if(dragging) {
-      dragging.classList.remove('dragging');
-      pushUndo({op:'move', node:dragging, x:dragging.style.left, y:dragging.style.top});
-      dragging = null;
-    }
-    if(tool === 'draw' && drawTempLine) {
-      // finalize line on mouseup if released inside pitch
-      removeTempLine();
-    }
-  });
-
-  // clicking on pitch when drawing arrows
-  pitch.addEventListener('mousedown', (e) => {
-    const br = pitch.getBoundingClientRect();
-    const px = e.clientX - br.left;
-    const py = e.clientY - br.top;
-    if(tool === 'draw') {
-      startDraw(px,py);
-    } else if (tool === 'erase') {
-      // erase nearest arrow if clicked
-      eraseNearestArrow(px,py);
-    } else {
-      // select none if clicked on empty pitch
-      if(e.target === pitch || e.target.classList.contains('markings')){
-        selected = null; updateSelectedInfo();
-      }
-    }
-  });
-
-  // drawing helpers
-  function startDraw(x,y){
-    // create a temporary line element under arrowLayer
-    drawTempLine = document.createElementNS('http://www.w3.org/2000/svg','line');
-    drawTempLine.setAttribute('x1', x);
-    drawTempLine.setAttribute('y1', y);
-    drawTempLine.setAttribute('x2', x);
-    drawTempLine.setAttribute('y2', y);
-    drawTempLine.setAttribute('stroke', '#FFA500');
-    drawTempLine.setAttribute('stroke-width','6');
-    drawTempLine.setAttribute('stroke-linecap','round');
-    drawTempLine.setAttribute('opacity','0.95');
-    arrowLayer.appendChild(drawTempLine);
-    // listen for mousemove to update
-    function move(e){
-      const br = pitch.getBoundingClientRect();
-      const nx = e.clientX - br.left;
-      const ny = e.clientY - br.top;
-      drawTempLine.setAttribute('x2', nx);
-      drawTempLine.setAttribute('y2', ny);
-    }
-    function up(e){
-      document.removeEventListener('mousemove', move);
-      document.removeEventListener('mouseup', up);
-      const br = pitch.getBoundingClientRect();
-      const x2 = parseFloat(drawTempLine.getAttribute('x2'));
-      const y2 = parseFloat(drawTempLine.getAttribute('y2'));
-      // create final arrow element
-      const final = document.createElementNS('http://www.w3.org/2000/svg','line');
-      final.setAttribute('x1', drawTempLine.getAttribute('x1'));
-      final.setAttribute('y1', drawTempLine.getAttribute('y1'));
-      final.setAttribute('x2', x2);
-      final.setAttribute('y2', y2);
-      final.setAttribute('stroke', '#FFA500');
-      final.setAttribute('stroke-width','6');
-      final.setAttribute('stroke-linecap','round');
-      final.setAttribute('marker-end','url(#arrowhead)');
-      final.dataset.arrowId = 'a'+(++arrowIdCounter);
-      final.style.cursor = 'pointer';
-      arrowLayer.appendChild(final);
-      arrows.push(final);
-      pushUndo({op:'add-arrow', node:final});
-      // make arrow clickable/selectable for erase
-      final.addEventListener('click', (evt) => {
-        if(tool === 'erase') {
-          final.remove();
-          arrows = arrows.filter(a=>a!==final);
-        } else {
-          // select arrow (shows info)
-          selected = final;
-          updateSelectedInfo();
-        }
-        evt.stopPropagation();
-      });
-      drawTempLine.remove();
-      drawTempLine = null;
-      if(recording) captureFrame();
-    }
-    document.addEventListener('mousemove', move);
-    document.addEventListener('mouseup', up);
-  }
-
-  function removeTempLine(){
-    if(drawTempLine){ drawTempLine.remove(); drawTempLine=null; }
-  }
-
-  function eraseNearestArrow(px,py){
-    if(arrows.length===0) return;
-    let best=null, bestDist=1e9;
-    arrows.forEach(a=>{
-      const x1 = +a.getAttribute('x1'), y1 = +a.getAttribute('y1');
-      const x2 = +a.getAttribute('x2'), y2 = +a.getAttribute('y2');
-      // closest distance to segment
-      const t = Math.max(0, Math.min(1, ((px-x1)*(x2-x1)+(py-y1)*(y2-y1))/((x2-x1)**2+(y2-y1)**2||1)));
-      const cx = x1 + t*(x2-x1), cy = y1 + t*(y2-y1);
-      const d = Math.hypot(px-cx,py-cy);
-      if(d < bestDist){ bestDist = d; best = a; }
-    });
-    if(best && bestDist < 20){
-      best.remove();
-      arrows = arrows.filter(a=>a!==best);
-      pushUndo({op:'remove-arrow', node:best});
-    }
-  }
-
-  /* ------- tool switching ------- */
-  function setTool(t){
-    tool = t;
-    selectTool.classList.toggle('active', t==='select');
-    drawTool.classList.toggle('active', t==='draw');
-    eraseTool.classList.toggle('active', t==='erase');
-    // visual feedback
-    [selectTool, drawTool, eraseTool].forEach(btn=>{
-      btn.style.opacity = (btn === document.getElementById(btn.id) ? '1' : '0.95');
-    });
-  }
-
-  selectTool.addEventListener('click', ()=> setTool('select'));
-  drawTool.addEventListener('click', ()=> setTool('draw'));
-  eraseTool.addEventListener('click', ()=> setTool('erase'));
-  setTool('select');
-
-  /* ------- add/remove ------- */
-  addHome.addEventListener('click', ()=> makePlayer('home', 'H'));
-  addAway.addEventListener('click', ()=> makePlayer('away', 'A'));
-  addBall.addEventListener('click', ()=> makeBall());
-
-  removeSelected.addEventListener('click', ()=>{
-    if(!selected) return alert('No selection');
-    if(selected instanceof SVGElement){
-      selected.remove();
-      arrows = arrows.filter(a=>a!==selected);
-    } else selected.remove();
-    pushUndo({op:'remove', node:selected});
-    selected = null; updateSelectedInfo();
-  });
-
-  function makePlayer(team,label){
-    const el = document.createElement('div');
-    el.className = 'player ' + (team==='home'?'home':'away');
-    el.dataset.type = 'player';
-    el.dataset.team = team;
-    el.dataset.label = label || (team==='home'?'H':'A');
-    el.textContent = el.dataset.label;
-    // random pos (not overlapping top-left)
-    const x = Math.random()*(pitch.clientWidth-60)+30;
-    const y = Math.random()*(pitch.clientHeight-120)+60;
-    el.style.left = x+'px'; el.style.top = y+'px';
-    pitch.appendChild(el);
-    attachEntityEvents(el);
-    pushUndo({op:'add', node:el});
-    if(recording) captureFrame();
-    return el;
-  }
-
-  function makeBall(){
-    const el = document.createElement('div');
-    el.className = 'ball';
-    el.dataset.type = 'ball';
-    const x = Math.random()*(pitch.clientWidth-60)+30;
-    const y = Math.random()*(pitch.clientHeight-60)+30;
-    el.style.left = x+'px'; el.style.top = y+'px';
-    pitch.appendChild(el);
-    attachEntityEvents(el);
-    pushUndo({op:'add', node:el});
-    if(recording) captureFrame();
-    return el;
-  }
-
-  /* attach events for players/ball on initial load */
-  function attachEntityEvents(el){
-    // only allow dragging inside pitch via mousedown
-    el.addEventListener('mousedown', e => {
-      if(tool !== 'select') return;
-      dragging = el;
-      el.classList.add('dragging');
-      const br = pitch.getBoundingClientRect();
-      dragOffset.x = e.clientX - br.left - el.offsetLeft;
-      dragOffset.y = e.clientY - br.top - el.offsetTop;
-      selected = el; updateSelectedInfo();
-      e.preventDefault();
-    });
-    el.addEventListener('click', (ev) => {
-      ev.stopPropagation();
-      if(tool === 'erase'){
-        // remove entity
-        const node = el;
-        node.remove();
-        pushUndo({op:'remove', node});
-        selected = null; updateSelectedInfo();
-      } else {
-        selected = el; updateSelectedInfo();
-      }
-    });
-  }
-
-  /* ------- formations ------- */
-  const formations = {
-    "4-3-3": [
-      {team:'home', label:'GK', xPct:50, yPct:87},
-      {team:'home', label:'LB', xPct:18, yPct:68},
-      {team:'home', label:'CB', xPct:40, yPct:68},
-      {team:'home', label:'CB2', xPct:60, yPct:68},
-      {team:'home', label:'RB', xPct:82, yPct:68},
-      {team:'home', label:'CM', xPct:36, yPct:50},
-      {team:'home', label:'CM2', xPct:50, yPct:52},
-      {team:'home', label:'CM3', xPct:64, yPct:50},
-      {team:'home', label:'LW', xPct:22, yPct:30},
-      {team:'home', label:'ST', xPct:50, yPct:24},
-      {team:'home', label:'RW', xPct:78, yPct:30}
-    ],
-    "4-4-2": [
-      {team:'home', label:'GK', xPct:50, yPct:87},
-      {team:'home', label:'LB', xPct:18, yPct:68},
-      {team:'home', label:'CB', xPct:40, yPct:68},
-      {team:'home', label:'CB2', xPct:60, yPct:68},
-      {team:'home', label:'RB', xPct:82, yPct:68},
-      {team:'home', label:'LM', xPct:20, yPct:44},
-      {team:'home', label:'CM', xPct:40, yPct:44},
-      {team:'home', label:'CM2', xPct:60, yPct:44},
-      {team:'home', label:'RM', xPct:80, yPct:44},
-      {team:'home', label:'ST1', xPct:42, yPct:24},
-      {team:'home', label:'ST2', xPct:58, yPct:24}
-    ],
-    "3-5-2": [
-      {team:'home', label:'GK', xPct:50, yPct:87},
-      {team:'home', label:'CB1', xPct:30, yPct:68},
-      {team:'home', label:'CB2', xPct:50, yPct:68},
-      {team:'home', label:'CB3', xPct:70, yPct:68},
-      {team:'home', label:'LM', xPct:20, yPct:48},
-      {team:'home', label:'CM1', xPct:35, yPct:48},
-      {team:'home', label:'CM2', xPct:50, yPct:42},
-      {team:'home', label:'CM3', xPct:65, yPct:48},
-      {team:'home', label:'RM', xPct:80, yPct:48},
-      {team:'home', label:'ST1', xPct:42, yPct:24},
-      {team:'home', label:'ST2', xPct:58, yPct:24}
-    ]
-  };
-
-  applyFormation.addEventListener('click', ()=>{
-    const v = formationSelect.value;
-    if(!v || !formations[v]) { alert('Pick a formation'); return; }
-    // remove existing home players
-    const existing = Array.from(pitch.querySelectorAll('.player')).filter(p=>p.dataset.team==='home');
-    existing.forEach(n=>n.remove());
-    formations[v].forEach(item=>{
-      const el = document.createElement('div');
-      el.className = 'player home';
-      el.dataset.type = 'player';
-      el.dataset.team = 'home';
-      el.dataset.label = item.label;
-      el.textContent = item.label;
-      // place by percent
-      const nx = (item.xPct/100) * pitch.clientWidth;
-      const ny = (item.yPct/100) * pitch.clientHeight;
-      el.style.left = (nx - 22) + 'px';
-      el.style.top = (ny - 22) + 'px';
-      pitch.appendChild(el);
-      attachEntityEvents(el);
-    });
-    pushUndo({op:'apply-formation', formation:v});
-    if(recording) captureFrame();
-  });
-
-  /* ------- zoom ------- */
-  zoomRange.addEventListener('input', () => {
-    const s = parseFloat(zoomRange.value);
-    pitch.style.transform = 'scale(' + s + ')';
-  });
-
-  /* ------- save/load ------- */
-  function snapshot(){
-    // collect players, ball, arrows
-    const entities = [];
-    pitch.querySelectorAll('[data-type]').forEach(n=>{
-      const r = {
-        type: n.dataset.type,
-        team: n.dataset.team,
-        label: n.dataset.label,
-        left: parseFloat(n.style.left||0),
-        top: parseFloat(n.style.top||0),
-        html: n.outerHTML
-      };
-      entities.push(r);
-    });
-    const arr = arrows.map(a => ({
-      x1:+a.getAttribute('x1'), y1:+a.getAttribute('y1'),
-      x2:+a.getAttribute('x2'), y2:+a.getAttribute('y2')
-    }));
-    return {entities, arrows:arr, time:Date.now()};
-  }
-
-  saveBtn.addEventListener('click', () => {
-    const data = snapshot();
-    localStorage.setItem('tactics-console-save', JSON.stringify(data));
-    alert('Saved to local storage.');
-  });
-
-  loadLocal.addEventListener('click', () => {
-    const raw = localStorage.getItem('tactics-console-save');
-    if(!raw) return alert('No saved layout in this browser.');
-    loadFromJSON(JSON.parse(raw));
-  });
-
-  clearLocal.addEventListener('click', ()=>{
-    if(confirm('Clear saved layout from this browser?')) localStorage.removeItem('tactics-console-save');
-  });
-
-  downloadBtn.addEventListener('click', ()=>{
-    const data = snapshot();
-    const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url; a.download = 'tactics-layout.json';
-    a.click(); URL.revokeObjectURL(url);
-  });
-
-  importInput.addEventListener('change', (e)=>{
-    const f = e.target.files[0]; if(!f) return;
-    const r = new FileReader();
-    r.onload = () => {
-      try {
-        const obj = JSON.parse(r.result);
-        loadFromJSON(obj);
-      } catch(err){ alert('Invalid file'); }
+    /* State */
+    const App = {
+      mode: 'select', // select|draw|curve|erase
+      players: [], // {uid,type,xPct,yPct,label,z}
+      arrows: [],   // {id,fromUid,toUid,x1,y1,x2,y2,style,width,color,control}
+      drawing: null, // {fromUid, start:{x,y}, cur:{x,y}, tempElem}
+      undoStack: [], redoStack: [],
+      frames: [], playing: false, currentFrame: 0
     };
-    r.readAsText(f);
-  });
 
-  function loadFromJSON(obj){
-    // clear pitch entities and arrows
-    Array.from(pitch.querySelectorAll('[data-type]')).forEach(n=>n.remove());
-    Array.from(arrowLayer.querySelectorAll('line')).forEach(n=>n.remove());
-    arrows = [];
-    // recreate entities
-    (obj.entities||[]).forEach(e=>{
-      if(e.type === 'player'){
+    /* Elements */
+    const pitchCard = $('#pitchCard');
+    const pitchSVG = $('#pitchSVG');
+    const arrowsLayer = $('#arrowsLayer');
+    const tempLayer = $('#tempLayer');
+    const playerLayer = $('#playerLayer');
+
+    const modeChips = $$('.chip');
+    const addHomeBtn = $('#addHome'), addAwayBtn = $('#addAway'), addBallBtn = $('#addBall');
+    const arrowStyleEl = $('#arrowStyle'), arrowWidthEl = $('#arrowWidth'), arrowColorEl = $('#arrowColor');
+    const zoomRange = $('#zoomRange'), zoomLabel = $('#zoomLabel'), snapGrid = $('#snapGrid');
+
+    const playPauseBtn = $('#playPause'), playProgress = $('#playProgress'), frameLabel = $('#frameLabel');
+
+    const selInfo = $('#selInfo');
+
+    /* Coordinate helpers */
+    function pxToSvg(pxX, pxY){
+      const rect = pitchCard.getBoundingClientRect();
+      const x = ((pxX - rect.left) / rect.width) * VB.w;
+      const y = ((pxY - rect.top) / rect.height) * VB.h;
+      return {x, y};
+    }
+    function svgToPct(sx, sy){ return {x: (sx / VB.w) * 100, y: (sy / VB.h) * 100}; }
+    function pctToSvg(pxPctX, pxPctY){ return {x: pxPctX * (VB.w/100), y: pxPctY * (VB.h/100)}; }
+
+    /* Rendering */
+    function renderPlayers(){
+      playerLayer.innerHTML = '';
+      App.players.forEach(p => {
         const el = document.createElement('div');
-        el.className = 'player ' + (e.team||'home');
-        el.dataset.type = 'player';
-        el.dataset.team = e.team||'home';
-        el.dataset.label = e.label || '';
-        el.textContent = el.dataset.label;
-        el.style.left = (e.left||0)+'px';
-        el.style.top = (e.top||0)+'px';
-        pitch.appendChild(el);
-        attachEntityEvents(el);
-      } else if(e.type === 'ball'){
-        const el = document.createElement('div');
-        el.className = 'ball';
-        el.dataset.type = 'ball';
-        el.style.left = (e.left||0)+'px';
-        el.style.top = (e.top||0)+'px';
-        pitch.appendChild(el);
-        attachEntityEvents(el);
+        el.className = 'player ' + (p.type === 'away' ? 'away' : (p.type === 'ball' ? 'ball' : 'home'));
+        el.style.left = p.xPct + '%';
+        el.style.top = p.yPct + '%';
+        el.dataset.uid = p.uid;
+        el.textContent = p.type === 'ball' ? 'B' : (p.label || p.type.toUpperCase());
+        el.title = p.label || p.type;
+        playerLayer.appendChild(el);
+        attachPlayerHandlers(el, p);
+      });
+    }
+
+    function renderArrows(){
+      arrowsLayer.innerHTML = '';
+      App.arrows.forEach(a => {
+        const path = document.createElementNS('http://www.w3.org/2000/svg','path');
+        const start = {x: a.x1, y: a.y1}, end = {x: a.x2, y: a.y2};
+        let d;
+        if(a.control && typeof a.control.cx === 'number'){
+          d = `M ${start.x} ${start.y} Q ${a.control.cx} ${a.control.cy} ${end.x} ${end.y}`;
+        } else if(a.style === 'curved'){
+          const mx = (start.x + end.x) / 2, my = (start.y + end.y) / 2;
+          const dx = end.x - start.x, dy = end.y - start.y;
+          const dist = Math.hypot(dx, dy) || 1;
+          const nx = -dy/dist, ny = dx/dist;
+          const offset = clamp(dist * 0.18, 30, 200);
+          const cx = mx + nx * offset, cy = my + ny * offset;
+          d = `M ${start.x} ${start.y} Q ${cx} ${cy} ${end.x} ${end.y}`;
+        } else {
+          d = `M ${start.x} ${start.y} L ${end.x} ${end.y}`;
+        }
+        path.setAttribute('d', d);
+        path.setAttribute('class','arrowLine');
+        path.setAttribute('stroke', a.color || '#ffd166');
+        path.setAttribute('stroke-width', a.width || 3);
+        if(a.style === 'dashed') path.setAttribute('stroke-dasharray','12 8');
+        if(a.style === 'glow') path.setAttribute('filter','url(#glow)');
+        path.setAttribute('marker-end', a.style === 'glow' ? 'url(#arrowHeadGlow)' : 'url(#arrowHead)');
+        path.dataset.aid = a.id;
+        arrowsLayer.appendChild(path);
+      });
+    }
+
+    /* Player events/dragging */
+    let drag = null;
+    function attachPlayerHandlers(el, model){
+      el.addEventListener('pointerdown', ev => {
+        ev.stopPropagation(); ev.preventDefault();
+        if(App.mode === 'draw' || App.mode === 'curve'){
+          startDrawingFrom(model, ev);
+          return;
+        }
+        if(App.mode === 'erase'){
+          removePlayer(model.uid);
+          return;
+        }
+        // select + start drag
+        setSelected(model.uid);
+        drag = {uid: model.uid, startClient: {x: ev.clientX, y: ev.clientY}, orig: {xPct: model.xPct, yPct: model.yPct}};
+        el.setPointerCapture(ev.pointerId);
+        el.style.cursor = 'grabbing';
+      });
+
+      el.addEventListener('pointermove', ev => {
+        if(!drag || drag.uid !== model.uid) return;
+        ev.preventDefault();
+        const rect = pitchCard.getBoundingClientRect();
+        const dx = ev.clientX - drag.startClient.x;
+        const dy = ev.clientY - drag.startClient.y;
+        const percentX = (dx / rect.width) * 100;
+        const percentY = (dy / rect.height) * 100;
+        let nx = drag.orig.xPct + percentX;
+        let ny = drag.orig.yPct + percentY;
+        nx = clamp(nx, 1, 99); ny = clamp(ny, 1, 99);
+        if($('#snapGrid').checked){ nx = Math.round(nx/2)*2; ny = Math.round(ny/2)*2; }
+        const p = App.players.find(pp => pp.uid === model.uid);
+        if(p){ p.xPct = nx; p.yPct = ny; renderPlayers(); renderArrows(); }
+      });
+
+      el.addEventListener('pointerup', ev => {
+        if(drag && drag.uid === model.uid){
+          pushUndo();
+          saveLocal();
+        }
+        drag = null;
+        try{ el.releasePointerCapture(ev.pointerId);}catch(e){}
+        el.style.cursor = 'grab';
+      });
+
+      el.addEventListener('dblclick', ev => {
+        ev.stopPropagation();
+        const label = prompt('Label', model.label || '');
+        if(label !== null){
+          pushUndo();
+          model.label = label;
+          renderPlayers(); saveLocal();
+        }
+      });
+    }
+
+    /* Selection */
+    let selectedUid = null;
+    function setSelected(uid){
+      selectedUid = uid;
+      $$('.player').forEach(el => el.classList.toggle('selected', el.dataset.uid === uid));
+      updateSelectionInfo();
+    }
+    function updateSelectionInfo(){
+      if(!selectedUid){ selInfo.innerHTML = 'Type: — <br> Team: — <br> Label: —'; return; }
+      const p = App.players.find(x => x.uid === selectedUid);
+      if(!p) { selInfo.innerHTML = 'Type: —'; return; }
+      selInfo.innerHTML = `Type: <b>${p.type}</b><br>Team: <b>${p.type==='away'?'Away':'Home'}</b><br>Label: <b>${p.label||'-'}</b>`;
+    }
+
+    /* Add / remove */
+    function addPlayer(type='home'){
+      pushUndo();
+      const p = {
+        uid: uid('p_'),
+        type,
+        xPct: 20 + Math.random()*60,
+        yPct: 20 + Math.random()*60,
+        label: type==='home' ? 'ST' : (type==='away' ? 'OP' : 'BALL'),
+      };
+      App.players.push(p);
+      renderPlayers(); renderArrows(); saveLocal();
+    }
+    function removePlayer(uid){
+      pushUndo();
+      App.players = App.players.filter(p => p.uid !== uid);
+      App.arrows = App.arrows.filter(a => a.fromUid !== uid && a.toUid !== uid);
+      renderPlayers(); renderArrows(); setSelected(null); saveLocal();
+    }
+
+    /* Drawing arrows */
+    function startDrawingFrom(player, ev){
+      const start = pctToSvg(player.xPct, player.yPct);
+      App.drawing = {fromUid: player.uid, start: {...start}, cur: {...start}, tempElem: null};
+      renderTemp();
+    }
+
+    function renderTemp(){
+      tempLayer.innerHTML = '';
+      if(!App.drawing) return;
+      const d = `M ${App.drawing.start.x} ${App.drawing.start.y} L ${App.drawing.cur.x} ${App.drawing.cur.y}`;
+      const path = document.createElementNS('http://www.w3.org/2000/svg','path');
+      path.setAttribute('d', d);
+      path.setAttribute('stroke', arrowColorEl.value);
+      path.setAttribute('stroke-width', arrowWidthEl.value);
+      path.setAttribute('class','arrowLine');
+      path.setAttribute('stroke-opacity','0.8');
+      path.setAttribute('marker-end', arrowStyleEl.value === 'glow' ? 'url(#arrowHeadGlow)' : 'url(#arrowHead)');
+      tempLayer.appendChild(path);
+      App.drawing.tempElem = path;
+    }
+
+    document.addEventListener('pointermove', ev => {
+      if(!App.drawing) return;
+      const p = pxToSvg(ev.clientX, ev.clientY);
+      App.drawing.cur.x = p.x; App.drawing.cur.y = p.y;
+      // curve preview if selected
+      if(arrowStyleEl.value === 'curved'){
+        const mx = (App.drawing.start.x + App.drawing.cur.x)/2;
+        const my = (App.drawing.start.y + App.drawing.cur.y)/2;
+        const dx = App.drawing.cur.x - App.drawing.start.x;
+        const dy = App.drawing.cur.y - App.drawing.start.y;
+        const dist = Math.hypot(dx,dy) || 1;
+        const nx = -dy/dist, ny = dx/dist;
+        const offset = clamp(dist * 0.18, 30, 200);
+        const cx = mx + nx * offset, cy = my + ny * offset;
+        App.drawing.tempElem.setAttribute('d', `M ${App.drawing.start.x} ${App.drawing.start.y} Q ${cx} ${cy} ${App.drawing.cur.x} ${App.drawing.cur.y}`);
+      } else {
+        App.drawing.tempElem.setAttribute('d', `M ${App.drawing.start.x} ${App.drawing.start.y} L ${App.drawing.cur.x} ${App.drawing.cur.y}`);
       }
     });
-    (obj.arrows||[]).forEach(a=>{
-      const final = document.createElementNS('http://www.w3.org/2000/svg','line');
-      final.setAttribute('x1',a.x1); final.setAttribute('y1',a.y1);
-      final.setAttribute('x2',a.x2); final.setAttribute('y2',a.y2);
-      final.setAttribute('stroke','#FFA500'); final.setAttribute('stroke-width','6');
-      final.setAttribute('marker-end','url(#arrowhead)');
-      arrowLayer.appendChild(final);
-      arrows.push(final);
+
+    // complete draw on pointerup: if hitting a player, connect to player; else create free-arrow
+    document.addEventListener('pointerup', ev => {
+      if(!App.drawing) return;
+      const target = ev.target;
+      if(target && target.classList && target.classList.contains('player')){
+        const toUid = target.dataset.uid;
+        if(toUid && toUid !== App.drawing.fromUid){
+          const fromP = App.players.find(p => p.uid === App.drawing.fromUid);
+          const toP = App.players.find(p => p.uid === toUid);
+          if(fromP && toP){
+            pushUndo();
+            const a = {
+              id: uid('a_'),
+              fromUid: fromP.uid,
+              toUid: toP.uid,
+              x1: pctToSvg(fromP.xPct, fromP.yPct).x,
+              y1: pctToSvg(fromP.xPct, fromP.yPct).y,
+              x2: pctToSvg(toP.xPct, toP.yPct).x,
+              y2: pctToSvg(toP.xPct, toP.yPct).y,
+              style: arrowStyleEl.value,
+              width: Number(arrowWidthEl.value),
+              color: arrowColorEl.value,
+              control: arrowStyleEl.value==='curved' ? computeAutoControl(fromP, toP) : null
+            };
+            App.arrows.push(a);
+            renderArrows(); saveLocal();
+          }
+        }
+      } else {
+        // free arrow to point
+        pushUndo();
+        const a = {
+          id: uid('a_'),
+          fromUid: null,
+          toUid: null,
+          x1: App.drawing.start.x, y1: App.drawing.start.y,
+          x2: App.drawing.cur.x, y2: App.drawing.cur.y,
+          style: arrowStyleEl.value,
+          width: Number(arrowWidthEl.value),
+          color: arrowColorEl.value,
+          control: null
+        };
+        App.arrows.push(a);
+        renderArrows(); saveLocal();
+      }
+      App.drawing = null; tempLayer.innerHTML = '';
     });
-    alert('Loaded layout');
-  }
 
-  /* ------- undo ------- */
-  function pushUndo(op){
-    undoStack.push(op);
-    if(undoStack.length>80) undoStack.shift();
-  }
-  undoBtn.addEventListener('click', ()=>{
-    const last = undoStack.pop();
-    if(!last) return alert('Nothing to undo');
-    if(last.op === 'add'){
-      last.node.remove();
-    } else if(last.op === 'remove'){
-      pitch.appendChild(last.node);
-      attachEntityEvents(last.node);
-    } else if(last.op === 'add-arrow'){
-      last.node.remove();
-      arrows = arrows.filter(a=>a!==last.node);
-    } else if(last.op === 'remove-arrow'){
-      arrowLayer.appendChild(last.node);
-      arrows.push(last.node);
-    } else if(last.op === 'move'){
-      // cannot fully restore older pos easily; skip
-      alert('Undo move is limited — try save/load for safety');
-    } else if(last.op === 'apply-formation'){
-      alert('Undo formation not supported (re-load saved layout if needed)');
+    function computeAutoControl(fromP, toP){
+      const A = pctToSvg(fromP.xPct, fromP.yPct), B = pctToSvg(toP.xPct, toP.yPct);
+      const mx = (A.x + B.x)/2, my = (A.y + B.y)/2;
+      const dx = B.x - A.x, dy = B.y - A.y;
+      const dist = Math.hypot(dx, dy) || 1;
+      const nx = -dy/dist, ny = dx/dist;
+      const offset = clamp(dist * 0.18, 30, 200);
+      return {cx: mx + nx*offset, cy: my + ny*offset};
     }
-  });
 
-  /* ------- selected info ------- */
-  function updateSelectedInfo(){
-    if(!selected){ selectedInfo.textContent = 'None selected'; return; }
-    if(selected instanceof SVGElement){
-      selectedInfo.innerHTML = 'Arrow — coords: ' + 
-        Math.round(selected.getAttribute('x1'))+','+Math.round(selected.getAttribute('y1')) +
-        ' → ' + Math.round(selected.getAttribute('x2'))+','+Math.round(selected.getAttribute('y2'));
-    } else {
-      selectedInfo.innerHTML = 'Type: ' + selected.dataset.type + '<br> Team: ' + (selected.dataset.team||'-') + '<br> Label: ' + (selected.dataset.label||'-');
+    /* Undo / Redo */
+    function pushUndo(){
+      App.undoStack.push(JSON.stringify({players: App.players, arrows: App.arrows}));
+      if(App.undoStack.length > 50) App.undoStack.shift();
+      App.redoStack = [];
     }
-  }
+    $('#btnUndo').addEventListener('click', () => {
+      const s = App.undoStack.pop(); if(!s) return;
+      App.redoStack.push(JSON.stringify({players: App.players, arrows: App.arrows}));
+      const parsed = JSON.parse(s);
+      App.players = parsed.players || []; App.arrows = parsed.arrows || [];
+      renderPlayers(); renderArrows(); saveLocal();
+    });
+    $('#btnRedo').addEventListener('click', () => {
+      const s = App.redoStack.pop(); if(!s) return;
+      App.undoStack.push(JSON.stringify({players: App.players, arrows: App.arrows}));
+      const parsed = JSON.parse(s);
+      App.players = parsed.players || []; App.arrows = parsed.arrows || [];
+      renderPlayers(); renderArrows(); saveLocal();
+    });
 
-  /* ------- clear arrows ------- */
-  clearArrowsBtn.addEventListener('click', ()=>{
-    arrows.forEach(a=>a.remove());
-    arrows = [];
-    pushUndo({op:'clear-arrows'});
-  });
+    /* Save / load local */
+    function saveLocal(){
+      try{ localStorage.setItem('protactix_v1', JSON.stringify({players: App.players, arrows: App.arrows})); }catch(e){}
+    }
+    function loadLocal(){
+      try{
+        const raw = localStorage.getItem('protactix_v1'); if(!raw) return;
+        const parsed = JSON.parse(raw);
+        App.players = parsed.players || []; App.arrows = parsed.arrows || [];
+      }catch(e){}
+    }
 
-  /* ------- recording frames ------- */
-  startRec.addEventListener('click', ()=>{
-    recording = true; recordFrames = [];
-    startRec.disabled = true; stopRec.disabled = false;
-    captureFrame(); // first
-    alert('Recording started — move players to create frames. Click Stop when finished.');
-  });
-  stopRec.addEventListener('click', ()=>{
-    if(!recording) return;
-    recording = false; startRec.disabled = false; stopRec.disabled = true;
-    if(recordFrames.length === 0) return alert('No frames recorded');
-    // offer download
-    const blob = new Blob([JSON.stringify(recordFrames,null,2)], {type:'application/json'});
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a'); a.href = url; a.download = 'tactics-recording.json'; a.click(); URL.revokeObjectURL(url);
-    alert('Recording downloaded (JSON frames). You can later implement playback from this file.');
-  });
+    /* Export / Import */
+    $('#btnExport').addEventListener('click', () => {
+      const data = JSON.stringify({players: App.players, arrows: App.arrows}, null, 2);
+      const blob = new Blob([data], {type:'application/json'}); const url = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href = url; a.download = 'protactix_setup.json'; a.click(); URL.revokeObjectURL(url);
+    });
+    $('#btnImport').addEventListener('click', () => $('#fileInput').click());
+    $('#btnExportJSON').addEventListener('click', () => $('#btnExport').click());
+    $('#btnLoadJSON').addEventListener('click', () => $('#fileInput').click());
+    $('#fileInput').addEventListener('change', ev => {
+      const f = ev.target.files[0]; if(!f) return;
+      const r = new FileReader(); r.onload = e => { try{ const parsed = JSON.parse(e.target.result); pushUndo(); App.players = parsed.players||[]; App.arrows = parsed.arrows||[]; renderPlayers(); renderArrows(); saveLocal(); alert('Loaded'); }catch(err){ alert('Invalid JSON'); }}; r.readAsText(f);
+    });
 
-  function captureFrame(){
-    const frame = {time:Date.now(), entities:[], arrows:[]};
-    pitch.querySelectorAll('[data-type]').forEach(n=>{
-      frame.entities.push({
-        type: n.dataset.type,
-        team: n.dataset.team,
-        label: n.dataset.label,
-        left: parseFloat(n.style.left||0),
-        top: parseFloat(n.style.top||0)
+    /* UI bindings */
+    modeChips.forEach(chip => chip.addEventListener('click', () => {
+      modeChips.forEach(c=>c.classList.remove('active')); chip.classList.add('active');
+      App.mode = chip.dataset.mode;
+    }));
+    addHomeBtn.addEventListener('click', ()=> addPlayer('home'));
+    addAwayBtn.addEventListener('click', ()=> addPlayer('away'));
+    addBallBtn.addEventListener('click', ()=> addPlayer('ball'));
+
+    $('#btnClear').addEventListener('click', ()=> { if(confirm('Clear pitch?')){ pushUndo(); App.players=[]; App.arrows=[]; renderPlayers(); renderArrows(); saveLocal(); }});
+    $('#btnReset').addEventListener('click', ()=> { pitchCard.style.transform = ''; zoomRange.value = 1; zoomLabel.textContent = '100%'; });
+
+    zoomRange.addEventListener('input', e => { const s = parseFloat(e.target.value); pitchCard.style.transform = `scale(${s})`; zoomLabel.textContent = Math.round(s*100) + '%'; });
+
+    $('#btnDelete').addEventListener('click', ()=> { if(selectedUid && confirm('Delete selected?')) removePlayer(selectedUid); });
+
+    /* pitch click deselect */
+    pitchCard.addEventListener('pointerdown', ev => {
+      if(ev.target === pitchCard || ev.target === pitchSVG) { setSelected(null); }
+    });
+
+    /* keyboard shortcuts */
+    document.addEventListener('keydown', ev => {
+      if(ev.key === 's') setModeUI('select');
+      if(ev.key === 'd') setModeUI('draw');
+      if(ev.key === 'c') setModeUI('curve');
+      if(ev.key === 'e') setModeUI('erase');
+      if(ev.key === 'Delete' && selectedUid) { if(confirm('Delete selected?')) removePlayer(selectedUid); }
+      if((ev.ctrlKey||ev.metaKey) && ev.key === 'z') $('#btnUndo').click();
+      if((ev.ctrlKey||ev.metaKey) && ev.key === 'y') $('#btnRedo').click();
+    });
+
+    function setModeUI(mode){
+      App.mode = mode;
+      modeChips.forEach(c => c.classList.toggle('active', c.dataset.mode === mode));
+    }
+
+    /* keep arrows attached to players on loop */
+    function layoutLoop(){
+      App.arrows.forEach(a => {
+        if(a.fromUid){
+          const f = App.players.find(p => p.uid === a.fromUid);
+          if(f){ const s = pctToSvg(f.xPct, f.yPct); a.x1 = s.x; a.y1 = s.y; }
+        }
+        if(a.toUid){
+          const t = App.players.find(p => p.uid === a.toUid);
+          if(t){ const s = pctToSvg(t.xPct, t.yPct); a.x2 = s.x; a.y2 = s.y; }
+        }
       });
-    });
-    arrows.forEach(a=>{
-      frame.arrows.push({x1:+a.getAttribute('x1'), y1:+a.getAttribute('y1'), x2:+a.getAttribute('x2'), y2:+a.getAttribute('y2')});
-    });
-    recordFrames.push(frame);
-  }
-
-  /* ------- exit back to index (simple link) ------- */
-  exitBtn.addEventListener('click', ()=> {
-    window.location.href = 'index.html';
-  });
-
-  /* ---- initial demo content ---- */
-  // add default home formation
-  (function seedDemo(){
-    // two teams and ball
-    const demo = [
-      {team:'home', label:'GK', left: (pitch.clientWidth*0.5 - 22), top: (pitch.clientHeight*0.85 - 22)},
-      {team:'home', label:'LB', left: (pitch.clientWidth*0.18 - 22), top: (pitch.clientHeight*0.66 - 22)},
-      {team:'home', label:'CB', left: (pitch.clientWidth*0.40 - 22), top: (pitch.clientHeight*0.66 - 22)},
-      {team:'home', label:'CB2', left: (pitch.clientWidth*0.60 - 22), top: (pitch.clientHeight*0.66 - 22)},
-      {team:'home', label:'RB', left: (pitch.clientWidth*0.82 - 22), top: (pitch.clientHeight*0.66 - 22)},
-      {team:'home', label:'ST', left: (pitch.clientWidth*0.5 - 22), top: (pitch.clientHeight*0.24 - 22)},
-      {team:'away', label:'GK', left: (pitch.clientWidth*0.5 - 22), top: (pitch.clientHeight*0.12 - 22)}
-    ];
-    demo.forEach(d=>{
-      const el = document.createElement('div');
-      el.className = 'player ' + (d.team==='home'?'home':'away');
-      el.dataset.type = 'player';
-      el.dataset.team = d.team;
-      el.dataset.label = d.label;
-      el.textContent = d.label;
-      el.style.left = d.left+'px'; el.style.top = d.top+'px';
-      pitch.appendChild(el);
-      attachEntityEvents(el);
-    });
-    // ball
-    const b = document.createElement('div');
-    b.className = 'ball'; b.dataset.type='ball';
-    b.style.left = (pitch.clientWidth*0.5 - 11) + 'px';
-    b.style.top = (pitch.clientHeight*0.48 - 11) + 'px';
-    pitch.appendChild(b); attachEntityEvents(b);
-  })();
-
-  // helper: click on arrow to select when tool=select
-  arrowLayer.addEventListener('click', e=>{
-    if(e.target.tagName === 'line' && tool !== 'erase'){
-      selected = e.target; updateSelectedInfo();
-      e.stopPropagation();
+      renderArrows();
+      requestAnimationFrame(layoutLoop);
     }
-  });
+    layoutLoop();
 
-  // clicking outside resets selection
-  pitch.addEventListener('click', ()=> {
-    // no-op handled earlier
-  });
+    /* helpers */
+    function pctToSvg(xPct, yPct){ return {x: xPct * (VB.w/100), y: yPct * (VB.h/100)}; }
 
-})();
-</script>
+    /* initial data */
+    (function init(){
+      // sample players if none saved
+      loadLocal();
+      if(App.players.length === 0){
+        App.players = [
+          {uid:uid('p_'), type:'home', xPct:20, yPct:50, label:'ST'},
+          {uid:uid('p_'), type:'home', xPct:35, yPct:30, label:'LW'},
+          {uid:uid('p_'), type:'home', xPct:35, yPct:70, label:'RW'},
+          {uid:uid('p_'), type:'away', xPct:80, yPct:50, label:'CB'},
+          {uid:uid('p_'), type:'away', xPct:65, yPct:30, label:'LB'},
+          {uid:uid('p_'), type:'ball', xPct:50, yPct:50, label:'B'}
+        ];
+      }
+      renderPlayers(); renderArrows(); updateSelectionInfo();
+    })();
+
+    /* small UX: remove selection on window blur to avoid stuck states */
+    window.addEventListener('blur', () => { setSelected(null); App.drawing = null; tempLayer.innerHTML = ''; });
+
+  </script>
 </body>
 </html>
