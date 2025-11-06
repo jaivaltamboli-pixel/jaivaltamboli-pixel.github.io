@@ -3,123 +3,169 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>ProTactix — Cleaner Tactics Console</title>
+  <title>ProTactix — Professional Tactics Console</title>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&family=Oswald:wght@400;600;700&display=swap" rel="stylesheet">
+
   <style>
+    /* =========================
+       THEME VARIABLES
+       ========================= */
     :root{
-      --bg-0:#071426;
-      --bg-1:#0a2a3d;
-      --panel:#0d2636;
-      --accent:#1282a2;
-      --accent-2:#ffd166;
-      --danger:#e63946;
-      --muted:#9fc7d3;
-      --text:#ecf6f8;
-      --glass:rgba(255,255,255,0.03);
-      --shadow:0 12px 40px rgba(0,0,0,0.6);
-      --radius:12px;
-      --transition:200ms cubic-bezier(.2,.9,.3,1);
+      --bg-0: #071426;
+      --bg-1: #0a2a3d;
+      --panel: #0d2636;
+      --accent: #1282a2;
+      --accent-2: #ffd166;
+      --danger: #e63946;
+      --muted: #9fc7d3;
+      --text: #ecf6f8;
+      --glass: rgba(255,255,255,0.03);
+      --shadow: 0 12px 40px rgba(0,0,0,0.6);
+      --radius: 12px;
+      --soft: 0 6px 20px rgba(0,0,0,0.45);
+      --transition: 180ms cubic-bezier(.2,.9,.3,1);
+      --z-player: 900;
     }
 
-    /* reset */
-    *{box-sizing:border-box}
-    html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial;color:var(--text);background:linear-gradient(180deg,var(--bg-0),var(--bg-1));-webkit-font-smoothing:antialiased}
+    /* =========================
+       RESET + BASE
+       ========================= */
+    * { box-sizing: border-box; }
+    html,body { height:100%; margin:0; background: linear-gradient(180deg,var(--bg-0),var(--bg-1)); color:var(--text); font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale; }
+    a { color: inherit; text-decoration: none; }
+    button { font-family: inherit; }
 
-    /* layout */
-    .app{
-      display:grid;
-      grid-template-columns:280px 1fr 320px;
-      grid-template-rows:72px 1fr;
-      gap:18px;
-      height:100vh;
-      padding:16px;
+    /* =========================
+       LAYOUT
+       ========================= */
+    .app {
+      display: grid;
+      grid-template-columns: 300px 1fr 340px;
+      grid-template-rows: 76px 1fr;
+      gap: 18px;
+      height: calc(100vh - 24px);
+      padding: 12px;
     }
 
-    header.topbar{
-      grid-column:1/-1;
+    header.topbar {
+      grid-column: 1 / -1;
       display:flex;
       align-items:center;
-      gap:18px;
-      padding:12px 18px;
-      background:linear-gradient(90deg,rgba(255,255,255,0.02),transparent);
-      border-radius:var(--radius);
-      box-shadow:var(--shadow);
+      gap: 16px;
+      padding: 12px 20px;
+      border-radius: 14px;
+      background: linear-gradient(90deg, rgba(255,255,255,0.02), transparent);
+      box-shadow: var(--shadow);
       border:1px solid rgba(255,255,255,0.03);
     }
-    .brand{display:flex;gap:12px;align-items:center}
-    .logo{
-      width:44px;height:44px;border-radius:10px;background:linear-gradient(180deg,var(--accent),#0a6b77);
-      display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;font-family:Oswald,Segoe UI,sans-serif
+
+    .brand { display:flex; gap:12px; align-items:center; }
+    .logo {
+      width:48px; height:48px; border-radius:10px; display:flex; align-items:center; justify-content:center;
+      background: linear-gradient(180deg, var(--accent), #0f9fb0); color:#021617; font-weight:800; font-family:Oswald, Arial;
+      box-shadow: 0 8px 24px rgba(18,130,162,0.12);
     }
-    .title{font-weight:700;font-size:16px;color:var(--accent-2)}
-    .subtitle{font-size:12px;color:var(--muted)}
+    .titleBlock { line-height:1; }
+    .titleBlock .title { font-weight:700; color:var(--accent-2); font-size:18px; }
+    .titleBlock .subtitle { font-size:12px; color:var(--muted); }
 
-    .toolbar{margin-left:auto;display:flex;gap:8px;align-items:center}
-    .btn{background:linear-gradient(180deg,#0f3a47,#09252f);border:1px solid rgba(255,255,255,0.03);color:var(--text);padding:8px 12px;border-radius:10px;cursor:pointer;transition:var(--transition);font-weight:600}
-    .btn.ghost{background:transparent;border:1px solid rgba(255,255,255,0.04)}
-    .btn.primary{background:linear-gradient(90deg,var(--accent),#0f9fb0);box-shadow:0 8px 30px rgba(18,130,162,0.12)}
-    .btn.warn{background:linear-gradient(90deg,#e07a5f,#d4503a)}
+    .toolbar { margin-left:auto; display:flex; gap:8px; align-items:center; }
 
-    /* left panel */
-    aside.left{
-      background:var(--panel);border-radius:var(--radius);padding:16px;border:1px solid rgba(255,255,255,0.02);box-shadow:var(--shadow);overflow:auto;
+    .btn {
+      padding:8px 12px; border-radius:10px; background: linear-gradient(180deg,#0f3a47,#09252f);
+      color:var(--text); border:1px solid rgba(255,255,255,0.03); cursor:pointer; font-weight:600; transition: var(--transition);
+      box-shadow: 0 6px 18px rgba(0,0,0,0.45);
     }
-    .sectionTitle{font-weight:700;color:var(--text);margin-bottom:8px}
-    .muted{color:var(--muted);font-size:13px}
+    .btn.ghost { background: transparent; border:1px solid rgba(255,255,255,0.05); }
+    .btn.primary { background: linear-gradient(90deg,var(--accent), #0f9fb0); box-shadow: 0 10px 30px rgba(18,130,162,0.12); color:#021617; }
+    .btn.warn { background: linear-gradient(90deg,#e07a5f,#d4503a); }
 
-    .controls{display:flex;flex-direction:column;gap:12px}
-
-    .modes{display:flex;gap:8px;flex-wrap:wrap}
-    .chip{padding:8px 10px;background:var(--glass);border-radius:8px;border:1px solid rgba(255,255,255,0.02);cursor:pointer}
-    .chip.active{background:linear-gradient(90deg,var(--accent),#0f9fb0);color:#062428;font-weight:700}
-
-    .control{background:rgba(255,255,255,0.02);padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.02)}
-
-    label.small{display:block;color:var(--muted);font-size:12px;margin-bottom:8px}
-
-    input[type="range"]{width:100%}
-
-    /* center pitch */
-    .center{display:flex;align-items:center;justify-content:center;padding:6px}
-    .pitchCard{width:100%;max-width:1200px;height:calc(100vh - 160px);border-radius:12px;background:linear-gradient(180deg,#1a7a3d,#0b4b22);box-shadow:0 20px 60px rgba(0,0,0,0.6);position:relative;border:6px solid rgba(255,255,255,0.02);overflow:hidden;transform-origin:center center}
-    svg#pitchSVG{width:100%;height:100%;display:block}
-
-    /* player DOM */
-    #playerLayer{position:absolute;left:0;top:0;right:0;bottom:0;pointer-events:none}
-    .player{
-      position:absolute;width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;user-select:none;touch-action:none;cursor:grab;transform:translate(-50%,-50%);box-shadow:0 14px 30px rgba(0,0,0,0.5);pointer-events:auto;transition:transform 150ms,var(--transition)
+    /* SIDEBARS + PANELS */
+    aside.left, aside.right {
+      background: var(--panel);
+      padding:16px;
+      border-radius:12px;
+      border:1px solid rgba(255,255,255,0.02);
+      box-shadow: var(--soft);
+      overflow:auto;
     }
-    .player.home{background:linear-gradient(180deg,#ffffff,#eef6f6);color:#042022;border:4px solid var(--accent)}
-    .player.away{background:linear-gradient(180deg,#0b1220,#0f1726);color:#fff;border:4px solid #ffffff33}
-    .player.ball{width:36px;height:36px;border-radius:50%;background:#fff;color:#022b2f;border:3px solid #0b1220;font-weight:900;font-size:12px}
-    .player.selected{transform:translate(-50%,-50%) scale(1.08);box-shadow:0 24px 48px rgba(0,0,0,0.6), 0 0 0 6px rgba(18,130,162,0.08)}
+
+    .sectionTitle { font-weight:700; color:var(--text); margin-bottom:8px; }
+    .muted { color:var(--muted); font-size:13px; }
+
+    .controls { display:flex; flex-direction:column; gap:12px; }
+
+    .chip {
+      display:inline-flex; align-items:center; gap:8px;
+      padding:8px 10px; border-radius:8px; background:var(--glass); border:1px solid rgba(255,255,255,0.02); cursor:pointer;
+    }
+    .chip.active { background: linear-gradient(90deg,var(--accent),#0f9fb0); color:#062428; font-weight:700; }
+
+    /* CENTER PITCH */
+    .center { display:flex; align-items:center; justify-content:center; padding:6px; }
+    .pitchCard {
+      width:100%; max-width:1280px; height: calc(100vh - 170px);
+      border-radius: 14px; position:relative; overflow:hidden;
+      background: linear-gradient(180deg,#1a7a3d,#0b4b22);
+      border:6px solid rgba(255,255,255,0.02);
+      box-shadow: 0 20px 70px rgba(0,0,0,0.6);
+      transform-origin:center;
+    }
+
+    /* SVG pitch */
+    svg#pitchSVG { width:100%; height:100%; display:block; pointer-events: auto; }
+
+    /* Player DOM layer */
+    #playerLayer { position:absolute; left:0; top:0; right:0; bottom:0; pointer-events:none; }
+    .player {
+      position:absolute; width:60px; height:60px; border-radius:50%;
+      display:flex; align-items:center; justify-content:center; font-weight:800; font-family:Oswald, Inter, sans-serif;
+      user-select:none; touch-action:none; cursor:grab; transform: translate(-50%,-50%); pointer-events:auto;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.6); transition: transform 140ms,var(--transition);
+      z-index: var(--z-player);
+    }
+    .player.home { background: linear-gradient(180deg,#fff,#eef6f6); color:#042022; border:4px solid var(--accent); }
+    .player.away { background: linear-gradient(180deg,#0b1220,#0f1726); color:#fff; border:4px solid rgba(255,255,255,0.06); }
+    .player.ball { width:36px; height:36px; font-size:12px; border-radius:50%; background:#fff; color:#022b2f; border:3px solid #0b1220; font-weight:900; }
+    .player.selected { transform: translate(-50%,-50%) scale(1.08); box-shadow: 0 30px 70px rgba(0,0,0,0.75), 0 0 0 6px rgba(18,130,162,0.08); }
 
     /* arrows */
-    .arrowLine{stroke:#fff;stroke-width:3;stroke-linecap:round;opacity:0.95;fill:none}
-    .arrowHead{fill:#fff}
-    .arrowGlow{filter:url(#glow);stroke-linecap:round}
+    .arrowLine { stroke:#fff; stroke-width:3; stroke-linecap:round; opacity:0.98; fill:none; }
+    .arrowHead { fill:#fff; }
+    .arrowGlow { filter:url(#glow); stroke-linecap:round; }
+
+    /* context menu (right-click) */
+    .ctx {
+      position: absolute; display:none; z-index:1100; min-width:180px; border-radius:10px; padding:8px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border:1px solid rgba(255,255,255,0.04);
+      box-shadow: 0 8px 30px rgba(0,0,0,0.6);
+    }
+    .ctx button { display:block; width:100%; padding:8px 10px; text-align:left; border:none; background:transparent; color:var(--text); cursor:pointer; }
+    .ctx button:hover { background: rgba(255,255,255,0.02); }
+
+    /* timeline / replay controls */
+    .timeline {
+      position:absolute; left:16px; right:16px; bottom:16px; background: rgba(0,0,0,0.28);
+      padding:10px; border-radius:10px; display:flex; gap:10px; align-items:center;
+      border:1px solid rgba(255,255,255,0.03);
+    }
+    .timeline .controls { display:flex; gap:8px; align-items:center; }
+    .timeline .scrub { flex:1; height:8px; background:rgba(255,255,255,0.04); border-radius:6px; position:relative; cursor:pointer; overflow:hidden; }
+    .timeline .progress { height:100%; background: linear-gradient(90deg,var(--accent),#0f9fb0); width:0%; border-radius:6px; }
 
     /* right panel */
-    aside.right{background:var(--panel);border-radius:var(--radius);padding:16px;border:1px solid rgba(255,255,255,0.02);box-shadow:var(--shadow);overflow:auto}
-    .panelItem{background:rgba(255,255,255,0.02);padding:12px;border-radius:10px;margin-bottom:12px}
-    .kbd{background:#062428;padding:6px 8px;border-radius:6px;border:1px solid rgba(255,255,255,0.03);color:var(--muted);font-size:12px}
-
-    /* timeline */
-    .timeline{position:absolute;left:16px;right:16px;bottom:16px;background:rgba(0,0,0,0.28);padding:10px;border-radius:10px;display:flex;gap:10px;align-items:center;border:1px solid rgba(255,255,255,0.03)}
-    .progress{height:8px;background:linear-gradient(90deg,var(--accent),#0f9fb0);border-radius:6px;width:0%}
-
-    /* tooltips & helpers */
-    .hint{font-size:13px;color:var(--muted)}
-    .flexRow{display:flex;gap:10px;align-items:center}
-    .spacer{flex:1}
+    .panelItem { background: rgba(255,255,255,0.02); padding:12px; border-radius:10px; margin-bottom:12px; border:1px solid rgba(255,255,255,0.02); }
+    .mutedSmall { color:var(--muted); font-size:13px; }
 
     /* responsive */
     @media(max-width:1100px){
-      .app{grid-template-columns:1fr;grid-template-rows:72px auto auto}
-      aside.left,aside.right{order:2}
-      .center{order:1;padding:10px}
-      .pitchCard{height:60vh}
+      .app { grid-template-columns:1fr; grid-template-rows:76px auto auto; padding:10px; }
+      aside.left, aside.right { display:block; order:2; }
+      .center { order:1; }
+      .pitchCard { height:60vh; }
     }
-
   </style>
 </head>
 <body>
@@ -127,39 +173,40 @@
     <header class="topbar">
       <div class="brand">
         <div class="logo">PT</div>
-        <div>
+        <div class="titleBlock">
           <div class="title">ProTactix</div>
-          <div class="subtitle">Cleaner • directional • user-friendly</div>
+          <div class="subtitle">Professional tactics console — direction-first</div>
         </div>
       </div>
 
-      <div class="toolbar">
-        <button class="btn ghost" id="btnUndo">Undo</button>
-        <button class="btn ghost" id="btnRedo">Redo</button>
-        <button class="btn" id="btnImport">Import</button>
-        <button class="btn primary" id="btnExport">Export</button>
+      <div class="toolbar" role="toolbar" aria-label="Main actions">
+        <button class="btn ghost" id="undoBtn" title="Undo (Ctrl/Cmd+Z)">Undo</button>
+        <button class="btn ghost" id="redoBtn" title="Redo (Ctrl/Cmd+Y)">Redo</button>
+        <button class="btn" id="saveBtn" title="Save to local">Save</button>
+        <button class="btn primary" id="exportBtn" title="Export JSON">Export</button>
       </div>
     </header>
 
     <!-- LEFT -->
-    <aside class="left">
-      <div class="sectionTitle">Tools</div>
-      <div class="muted">Choose a mode to interact with the pitch</div>
+    <aside class="left" aria-label="Tools">
+      <div class="sectionTitle">Modes</div>
+      <div class="muted">Select mode, draw runs, record replays and more</div>
 
       <div class="controls" style="margin-top:12px">
-        <div class="control">
-          <label class="small">Mode</label>
-          <div class="modes">
-            <div class="chip active" data-mode="select">Select (S)</div>
-            <div class="chip" data-mode="draw">Draw (D)</div>
-            <div class="chip" data-mode="curve">Curve (C)</div>
-            <div class="chip" data-mode="erase">Erase (E)</div>
+        <div class="panelItem">
+          <label class="small">Interaction</label>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <div class="chip active" data-mode="select" id="modeSelect">Select (S)</div>
+            <div class="chip" data-mode="draw" id="modeDraw">Draw (D)</div>
+            <div class="chip" data-mode="curve" id="modeCurve">Curve (C)</div>
+            <div class="chip" data-mode="erase" id="modeErase">Erase (E)</div>
+            <div class="chip" data-mode="context" id="modeContext">Context (Right click)</div>
           </div>
-          <div class="hint" style="margin-top:8px">Click a player to start, then drag to draw an arrow. For curve mode, drag control point to shape the run.</div>
+          <div class="mutedSmall" style="margin-top:8px">Tip: Right-click a player to open a context menu (quick actions).</div>
         </div>
 
-        <div class="control">
-          <label class="small">Add entity</label>
+        <div class="panelItem">
+          <label class="small">Add entities</label>
           <div style="display:flex;gap:8px">
             <button class="btn" id="addHome">Add Home</button>
             <button class="btn" id="addAway">Add Away</button>
@@ -167,38 +214,47 @@
           </div>
         </div>
 
-        <div class="control">
+        <div class="panelItem">
           <label class="small">Arrow style</label>
-          <div style="display:flex;gap:8px;margin-bottom:8px">
+          <div style="display:flex;gap:8px;align-items:center">
             <select id="arrowStyle" style="flex:1;padding:8px;border-radius:8px;background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--muted)">
               <option value="solid">Solid</option>
               <option value="dashed">Dashed</option>
               <option value="curved">Curved auto</option>
               <option value="glow">Glow (fast)</option>
             </select>
-            <input id="arrowWidth" type="number" min="1" max="12" value="3" style="width:72px;padding:8px;border-radius:8px;background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--muted)">
+            <input id="arrowWidth" type="number" min="1" max="14" value="3" style="width:72px;padding:8px;border-radius:8px;background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--muted)">
           </div>
-          <div style="display:flex;gap:8px">
+          <div style="display:flex;gap:8px;margin-top:8px;align-items:center">
             <input id="arrowColor" type="color" value="#ffd166" style="width:52px;height:36px;border-radius:8px;border:0;cursor:pointer">
-            <div class="muted" style="align-self:center">Color</div>
+            <div class="muted">Color</div>
           </div>
         </div>
 
-        <div class="control">
+        <div class="panelItem">
           <label class="small">View</label>
           <div style="display:flex;gap:8px;align-items:center">
-            <input id="zoomRange" type="range" min="0.6" max="1.6" step="0.05" value="1" />
+            <input id="zoomRange" type="range" min="0.6" max="1.8" step="0.05" value="1" style="flex:1">
             <div class="muted" id="zoomLabel">100%</div>
           </div>
-          <label class="small" style="margin-top:10px"><input id="snapGrid" type="checkbox"> Snap to grid</label>
+          <label class="small" style="margin-top:8px"><input id="snapGrid" type="checkbox"> Snap to grid</label>
+          <button class="btn" id="toggle3D" style="margin-top:8px">Toggle 3D runs</button>
         </div>
 
+        <div class="panelItem">
+          <label class="small">Recording / Replay</label>
+          <div style="display:flex;gap:8px">
+            <button class="btn" id="recordFrame">Record Frame</button>
+            <button class="btn" id="clearFrames">Clear Frames</button>
+          </div>
+          <div class="mutedSmall" style="margin-top:8px">Record player positions and arrows as frames, then use timeline to play back.</div>
+        </div>
       </div>
     </aside>
 
-    <!-- CENTER -->
-    <div class="center">
-      <div class="pitchCard" id="pitchCard" tabindex="0" aria-label="Tactics pitch">
+    <!-- CENTER PITCH -->
+    <div class="center" role="main">
+      <div class="pitchCard" id="pitchCard" aria-label="Tactics pitch" tabindex="0">
         <svg id="pitchSVG" viewBox="0 0 1100 700" preserveAspectRatio="xMidYMid meet">
           <defs>
             <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
@@ -208,129 +264,182 @@
                 <feMergeNode in="SourceGraphic"></feMergeNode>
               </feMerge>
             </filter>
+
             <marker id="arrowHead" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="strokeWidth">
-              <path class="arrowHead" d="M0,0 L12,6 L0,12 z" fill="#fff" />
+              <path class="arrowHead" d="M0,0 L12,6 L0,12 z" fill="#fff"></path>
             </marker>
+
             <marker id="arrowHeadGlow" markerWidth="20" markerHeight="20" refX="16" refY="10" orient="auto">
-              <path d="M0,0 L20,10 L0,20 z" fill="#fff" opacity="0.95"/>
+              <path d="M0,0 L20,10 L0,20 z" fill="#fff" opacity="0.95"></path>
             </marker>
+
             <pattern id="grass" patternUnits="userSpaceOnUse" width="110" height="700">
               <rect width="110" height="700" fill="#1f7a39"></rect>
               <rect width="55" height="700" fill="#176a2f"></rect>
             </pattern>
           </defs>
 
-          <rect x="0" y="0" width="1100" height="700" fill="url(#grass)"></rect>
+          <rect x="0" y="0" width="1100" height="700" fill="url(#grass)"/>
 
-          <!-- pitch lines -->
           <g id="pitchLines" stroke="#ffffff" stroke-opacity="0.75" fill="none" stroke-width="3">
-            <rect x="60" y="30" width="980" height="640" rx="10" stroke-opacity="0.6" />
-            <circle cx="550" cy="365" r="70" stroke-opacity="0.45" />
-            <line x1="550" y1="30" x2="550" y2="670" stroke-opacity="0.45" />
+            <rect x="60" y="30" width="980" height="640" rx="10" stroke-opacity="0.6"/>
+            <circle cx="550" cy="365" r="70" stroke-opacity="0.45"/>
+            <line x1="550" y1="30" x2="550" y2="670" stroke-opacity="0.45"/>
             <rect x="60" y="150" width="180" height="220" rx="6" stroke-opacity="0.45"></rect>
             <rect x="860" y="150" width="180" height="220" rx="6" stroke-opacity="0.45"></rect>
           </g>
 
-          <!-- arrows + temp -->
+          <!-- dynamic layers -->
           <g id="arrowsLayer"></g>
           <g id="tempLayer"></g>
         </svg>
 
-        <!-- players as DOM (easier to drag / animate) -->
+        <!-- players as DOM -->
         <div id="playerLayer"></div>
 
-        <!-- timeline (simple) -->
+        <!-- timeline -->
         <div class="timeline" role="region" aria-label="Replay timeline">
-          <button class="btn ghost" id="playPause">Play</button>
-          <div class="spacer"></div>
-          <div style="flex:1;max-width:560px;background:rgba(255,255,255,0.03);height:8px;border-radius:6px;overflow:hidden">
-            <div class="progress" id="playProgress" style="width:0%"></div>
+          <div class="controls">
+            <button class="btn ghost" id="rewindBtn" title="First frame">⏮</button>
+            <button class="btn ghost" id="playBtn" title="Play/Pause">⏯</button>
+            <button class="btn ghost" id="forwardBtn" title="Last frame">⏭</button>
+            <button class="btn" id="exportFrames" title="Export frames">📤 Frames</button>
           </div>
-          <div class="spacer"></div>
-          <div class="muted" id="frameLabel">Frame: 0</div>
+          <div class="scrub" id="scrub">
+            <div class="progress" id="scrubProgress"></div>
+          </div>
+          <div style="min-width:120px;text-align:right;color:var(--muted)"><span id="frameCounter">0</span> / <span id="totalFrames">0</span></div>
         </div>
 
+        <!-- right-click context menu -->
+        <div class="ctx" id="contextMenu" role="menu" aria-hidden="true">
+          <button data-action="rename">Rename</button>
+          <button data-action="to-home">Set Home</button>
+          <button data-action="to-away">Set Away</button>
+          <button data-action="copy">Copy Player</button>
+          <button data-action="delete" style="color:var(--danger)">Delete</button>
+        </div>
       </div>
     </div>
 
-    <!-- RIGHT -->
-    <aside class="right">
+    <!-- RIGHT PANEL -->
+    <aside class="right" aria-label="Properties & Export">
       <div class="panelItem">
         <div class="sectionTitle">Selection</div>
-        <div class="muted" id="selInfo">Type: — <br> Team: — <br> Label: —</div>
+        <div id="selInfo">Type: — <br/> Team: — <br/> Label: — <br/> Depth: —</div>
       </div>
 
       <div class="panelItem">
         <div class="sectionTitle">Export / Import</div>
         <div style="display:flex;gap:8px">
-          <button class="btn" id="btnExportJSON">Download JSON</button>
-          <button class="btn" id="btnLoadJSON">Load JSON</button>
-          <input type="file" id="fileInput" accept=".json" style="display:none">
+          <button class="btn" id="downloadJSON">Download JSON</button>
+          <button class="btn" id="loadJSON">Load JSON</button>
+          <input type="file" id="fileInput" accept=".json" style="display:none"/>
         </div>
       </div>
 
       <div class="panelItem">
         <div class="sectionTitle">Quick Actions</div>
-        <div style="display:flex;gap:8px">
-          <button class="btn warn" id="btnClear">Clear Pitch</button>
-          <button class="btn" id="btnReset">Reset View</button>
+        <div style="display:flex;gap:8px;">
+          <button class="btn warn" id="clearBtn">Clear Pitch</button>
+          <button class="btn" id="resetViewBtn">Reset View</button>
         </div>
       </div>
 
       <div class="panelItem">
         <div class="sectionTitle">Shortcuts</div>
-        <div class="muted">S - Select • D - Draw • C - Curve • E - Erase • DEL - Delete • Z / Y - Undo/Redo</div>
+        <div class="muted">S - Select • D - Draw • C - Curve • E - Erase • R - Record frame • Space - Play/Pause • Right click - context menu</div>
       </div>
     </aside>
   </div>
 
   <script>
-    /* Cleaned up JS — clearer separation of concerns, direction-first UX */
+    /* ==========================================================
+       ProTactix — Feature-rich console
+       - Right-click context menu
+       - Keyboard bindings
+       - 3D run simulation (visual depth)
+       - Frame recording & replay timeline
+       - Curved arrows with control points
+       - Undo / redo, import/export
+       - Player dragging, snapping, double-click rename
+       - Direction-first UX (right-click to start arrow endpoint, etc.)
+       ========================================================== */
 
-    /* Utilities */
-    const $ = (sel, root = document) => root.querySelector(sel);
-    const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
-    const uid = (p = '') => p + Math.random().toString(36).slice(2,9);
-    const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
-    const VB = {w:1100, h:700}; // viewBox for svg pitch
+    /* ----------------------
+       Utilities & helpers
+       ---------------------- */
+    const $ = (s, root = document) => root.querySelector(s);
+    const $$ = (s, root = document) => Array.from((root||document).querySelectorAll(s));
+    const uid = (p='') => p + Math.random().toString(36).slice(2,9);
+    const clamp = (v,a,b) => Math.max(a, Math.min(b, v));
+    const VB = { w: 1100, h: 700 };
 
-    /* State */
+    /* ----------------------
+       App state
+       ---------------------- */
     const App = {
-      mode: 'select', // select|draw|curve|erase
-      players: [], // {uid,type,xPct,yPct,label,z}
-      arrows: [],   // {id,fromUid,toUid,x1,y1,x2,y2,style,width,color,control}
-      drawing: null, // {fromUid, start:{x,y}, cur:{x,y}, tempElem}
+      mode: 'select', // select | draw | curve | erase
+      players: [], // { uid, type('home'|'away'|'ball'), xPct, yPct, label, z }
+      arrows: [],   // { id, fromUid, toUid, x1,y1,x2,y2, style, width, color, control }
+      drawing: null, // when drawing arrow: { fromUid, start:{x,y}, cur:{x,y}, tempElem }
+      selectedUid: null,
+      is3D: false,
       undoStack: [], redoStack: [],
-      frames: [], playing: false, currentFrame: 0
+      frames: [], // frames: array of snapshots {players, arrows, ts}
+      playing: false,
+      playRaf: null,
+      playIndex: 0,
+      playSpeed: 1.0
     };
 
-    /* Elements */
+    /* ----------------------
+       DOM refs
+       ---------------------- */
     const pitchCard = $('#pitchCard');
     const pitchSVG = $('#pitchSVG');
     const arrowsLayer = $('#arrowsLayer');
     const tempLayer = $('#tempLayer');
     const playerLayer = $('#playerLayer');
+    const contextMenu = $('#contextMenu');
+    const scrub = $('#scrub');
+    const scrubProgress = $('#scrubProgress');
+    const frameCounter = $('#frameCounter');
+    const totalFrames = $('#totalFrames');
 
     const modeChips = $$('.chip');
-    const addHomeBtn = $('#addHome'), addAwayBtn = $('#addAway'), addBallBtn = $('#addBall');
+    const addHome = $('#addHome'), addAway = $('#addAway'), addBall = $('#addBall');
     const arrowStyleEl = $('#arrowStyle'), arrowWidthEl = $('#arrowWidth'), arrowColorEl = $('#arrowColor');
     const zoomRange = $('#zoomRange'), zoomLabel = $('#zoomLabel'), snapGrid = $('#snapGrid');
+    const toggle3DBtn = $('#toggle3D');
 
-    const playPauseBtn = $('#playPause'), playProgress = $('#playProgress'), frameLabel = $('#frameLabel');
+    const undoBtn = $('#undoBtn'), redoBtn = $('#redoBtn'), saveBtn = $('#saveBtn'), exportBtn = $('#exportBtn');
+    const playBtn = $('#playBtn'), rewindBtn = $('#rewindBtn'), forwardBtn = $('#forwardBtn'), exportFramesBtn = $('#exportFrames');
 
-    const selInfo = $('#selInfo');
+    const downloadJSON = $('#downloadJSON'), loadJSON = $('#loadJSON'), fileInput = $('#fileInput');
+    const clearBtn = $('#clearBtn'), resetViewBtn = $('#resetViewBtn');
 
-    /* Coordinate helpers */
+    /* ----------------------
+       Coordinate helpers
+       ---------------------- */
     function pxToSvg(pxX, pxY){
       const rect = pitchCard.getBoundingClientRect();
       const x = ((pxX - rect.left) / rect.width) * VB.w;
       const y = ((pxY - rect.top) / rect.height) * VB.h;
-      return {x, y};
+      return { x, y };
     }
-    function svgToPct(sx, sy){ return {x: (sx / VB.w) * 100, y: (sy / VB.h) * 100}; }
-    function pctToSvg(pxPctX, pxPctY){ return {x: pxPctX * (VB.w/100), y: pxPctY * (VB.h/100)}; }
+    function pctToSvg(xPct, yPct){ return { x: xPct * (VB.w/100), y: yPct * (VB.h/100) }; }
+    function svgToPct(sx, sy){ return { x: (sx / VB.w) * 100, y: (sy / VB.h) * 100 }; }
+    function snapToGridPct(xPct, yPct){
+      if($('#snapGrid').checked){
+        return { xPct: Math.round(xPct/2)*2, yPct: Math.round(yPct/2)*2 };
+      }
+      return { xPct, yPct };
+    }
 
-    /* Rendering */
+    /* ----------------------
+       Rendering
+       ---------------------- */
     function renderPlayers(){
       playerLayer.innerHTML = '';
       App.players.forEach(p => {
@@ -339,8 +448,14 @@
         el.style.left = p.xPct + '%';
         el.style.top = p.yPct + '%';
         el.dataset.uid = p.uid;
-        el.textContent = p.type === 'ball' ? 'B' : (p.label || p.type.toUpperCase());
         el.title = p.label || p.type;
+        el.textContent = p.type === 'ball' ? 'B' : (p.label || p.type.toUpperCase());
+        // apply z-depth as translateZ via CSS 3D (visual only)
+        if(App.is3D && p.z){
+          el.style.transform = `translate(-50%,-50%) translateZ(${p.z}px) scale(${1 + p.z/200})`;
+        } else {
+          el.style.transform = 'translate(-50%,-50%)';
+        }
         playerLayer.appendChild(el);
         attachPlayerHandlers(el, p);
       });
@@ -350,25 +465,25 @@
       arrowsLayer.innerHTML = '';
       App.arrows.forEach(a => {
         const path = document.createElementNS('http://www.w3.org/2000/svg','path');
-        const start = {x: a.x1, y: a.y1}, end = {x: a.x2, y: a.y2};
+        const start = { x: a.x1, y: a.y1 }, end = { x: a.x2, y: a.y2 };
         let d;
         if(a.control && typeof a.control.cx === 'number'){
           d = `M ${start.x} ${start.y} Q ${a.control.cx} ${a.control.cy} ${end.x} ${end.y}`;
         } else if(a.style === 'curved'){
-          const mx = (start.x + end.x) / 2, my = (start.y + end.y) / 2;
+          const mx = (start.x + end.x)/2, my = (start.y + end.y)/2;
           const dx = end.x - start.x, dy = end.y - start.y;
-          const dist = Math.hypot(dx, dy) || 1;
+          const dist = Math.hypot(dx,dy) || 1;
           const nx = -dy/dist, ny = dx/dist;
           const offset = clamp(dist * 0.18, 30, 200);
-          const cx = mx + nx * offset, cy = my + ny * offset;
+          const cx = mx + nx*offset, cy = my + ny*offset;
           d = `M ${start.x} ${start.y} Q ${cx} ${cy} ${end.x} ${end.y}`;
         } else {
           d = `M ${start.x} ${start.y} L ${end.x} ${end.y}`;
         }
         path.setAttribute('d', d);
-        path.setAttribute('class','arrowLine');
         path.setAttribute('stroke', a.color || '#ffd166');
         path.setAttribute('stroke-width', a.width || 3);
+        path.setAttribute('class', 'arrowLine');
         if(a.style === 'dashed') path.setAttribute('stroke-dasharray','12 8');
         if(a.style === 'glow') path.setAttribute('filter','url(#glow)');
         path.setAttribute('marker-end', a.style === 'glow' ? 'url(#arrowHeadGlow)' : 'url(#arrowHead)');
@@ -377,90 +492,148 @@
       });
     }
 
-    /* Player events/dragging */
-    let drag = null;
+    /* ----------------------
+       Player handlers (drag, dblclick, right-click)
+       ---------------------- */
+    let dragState = null;
     function attachPlayerHandlers(el, model){
-      el.addEventListener('pointerdown', ev => {
+      // pointerdown: select + drag or start draw if in draw/curve mode
+      el.onpointerdown = (ev) => {
         ev.stopPropagation(); ev.preventDefault();
         if(App.mode === 'draw' || App.mode === 'curve'){
-          startDrawingFrom(model, ev);
+          startDrawFromPlayer(model, ev);
           return;
         }
         if(App.mode === 'erase'){
           removePlayer(model.uid);
           return;
         }
-        // select + start drag
+        // selection + drag
         setSelected(model.uid);
-        drag = {uid: model.uid, startClient: {x: ev.clientX, y: ev.clientY}, orig: {xPct: model.xPct, yPct: model.yPct}};
+        dragState = { uid: model.uid, startClient: { x: ev.clientX, y: ev.clientY }, orig: { xPct: model.xPct, yPct: model.yPct } };
         el.setPointerCapture(ev.pointerId);
         el.style.cursor = 'grabbing';
-      });
+      };
 
-      el.addEventListener('pointermove', ev => {
-        if(!drag || drag.uid !== model.uid) return;
+      el.onpointermove = (ev) => {
+        if(!dragState || dragState.uid !== model.uid) return;
         ev.preventDefault();
         const rect = pitchCard.getBoundingClientRect();
-        const dx = ev.clientX - drag.startClient.x;
-        const dy = ev.clientY - drag.startClient.y;
-        const percentX = (dx / rect.width) * 100;
-        const percentY = (dy / rect.height) * 100;
-        let nx = drag.orig.xPct + percentX;
-        let ny = drag.orig.yPct + percentY;
+        const dx = ev.clientX - dragState.startClient.x, dy = ev.clientY - dragState.startClient.y;
+        const pctX = (dx / rect.width) * 100, pctY = (dy / rect.height) * 100;
+        let nx = dragState.orig.xPct + pctX, ny = dragState.orig.yPct + pctY;
         nx = clamp(nx, 1, 99); ny = clamp(ny, 1, 99);
         if($('#snapGrid').checked){ nx = Math.round(nx/2)*2; ny = Math.round(ny/2)*2; }
         const p = App.players.find(pp => pp.uid === model.uid);
-        if(p){ p.xPct = nx; p.yPct = ny; renderPlayers(); renderArrows(); }
-      });
+        if(p){ p.xPct = nx; p.yPct = ny; renderPlayers(); /* arrows may follow */ }
+      };
 
-      el.addEventListener('pointerup', ev => {
-        if(drag && drag.uid === model.uid){
+      el.onpointerup = (ev) => {
+        if(dragState && dragState.uid === model.uid){
           pushUndo();
           saveLocal();
         }
-        drag = null;
-        try{ el.releasePointerCapture(ev.pointerId);}catch(e){}
+        dragState = null;
+        try{ el.releasePointerCapture(ev.pointerId); } catch(e){}
         el.style.cursor = 'grab';
-      });
+      };
 
-      el.addEventListener('dblclick', ev => {
+      el.ondblclick = (ev) => {
         ev.stopPropagation();
-        const label = prompt('Label', model.label || '');
-        if(label !== null){
+        const newLabel = prompt('Label for player', model.label || '');
+        if(newLabel !== null){
           pushUndo();
-          model.label = label;
+          model.label = newLabel;
           renderPlayers(); saveLocal();
         }
-      });
+      };
+
+      el.oncontextmenu = (ev) => {
+        ev.preventDefault(); ev.stopPropagation();
+        showContextMenuFor(model, ev.clientX, ev.clientY);
+      };
     }
 
-    /* Selection */
-    let selectedUid = null;
+    /* ----------------------
+       Context menu (right click)
+       ---------------------- */
+    function showContextMenuFor(playerModel, clientX, clientY){
+      contextMenu.style.display = 'block';
+      contextMenu.style.left = clientX + 'px';
+      contextMenu.style.top = clientY + 'px';
+      contextMenu.setAttribute('aria-hidden', 'false');
+      // store target
+      contextMenu.dataset.targetUid = playerModel.uid;
+    }
+
+    contextMenu.addEventListener('click', (ev) => {
+      const action = ev.target.dataset.action;
+      if(!action) return;
+      const uid = contextMenu.dataset.targetUid;
+      if(!uid) return;
+      const p = App.players.find(x => x.uid === uid);
+      switch(action){
+        case 'rename':
+          const label = prompt('Label', p.label || '');
+          if(label !== null){ pushUndo(); p.label = label; renderPlayers(); saveLocal(); }
+          break;
+        case 'to-home': pushUndo(); p.type = 'home'; renderPlayers(); saveLocal(); break;
+        case 'to-away': pushUndo(); p.type = 'away'; renderPlayers(); saveLocal(); break;
+        case 'copy':
+          pushUndo();
+          const copy = Object.assign({}, p, { uid: uid('p_'), xPct: p.xPct + 4, yPct: p.yPct + 4 });
+          App.players.push(copy); renderPlayers(); saveLocal();
+          break;
+        case 'delete':
+          if(confirm('Delete player?')){ pushUndo(); removePlayer(uid); }
+          break;
+      }
+      hideContextMenu();
+    });
+
+    document.addEventListener('pointerdown', (ev) => {
+      // hide context menu when clicking elsewhere
+      if(contextMenu.style.display === 'block'){
+        if(!contextMenu.contains(ev.target)) hideContextMenu();
+      }
+    });
+
+    function hideContextMenu(){ contextMenu.style.display = 'none'; contextMenu.setAttribute('aria-hidden', 'true'); contextMenu.dataset.targetUid = ''; }
+
+    /* ----------------------
+       Select / Update selection
+       ---------------------- */
     function setSelected(uid){
-      selectedUid = uid;
+      App.selectedUid = uid;
       $$('.player').forEach(el => el.classList.toggle('selected', el.dataset.uid === uid));
-      updateSelectionInfo();
-    }
-    function updateSelectionInfo(){
-      if(!selectedUid){ selInfo.innerHTML = 'Type: — <br> Team: — <br> Label: —'; return; }
-      const p = App.players.find(x => x.uid === selectedUid);
-      if(!p) { selInfo.innerHTML = 'Type: —'; return; }
-      selInfo.innerHTML = `Type: <b>${p.type}</b><br>Team: <b>${p.type==='away'?'Away':'Home'}</b><br>Label: <b>${p.label||'-'}</b>`;
+      updateSelectionPanel();
     }
 
-    /* Add / remove */
-    function addPlayer(type='home'){
+    function updateSelectionPanel(){
+      const sel = $('#selInfo');
+      if(!App.selectedUid){ sel.innerHTML = 'Type: — <br/> Team: — <br/> Label: — <br/> Depth: —'; return; }
+      const p = App.players.find(x => x.uid === App.selectedUid);
+      if(!p){ sel.innerHTML = 'Type: —'; return; }
+      sel.innerHTML = `Type: <b>${p.type}</b><br/>Team: <b>${p.type==='away'?'Away':'Home'}</b><br/>Label: <b>${p.label || '-'}</b><br/>Depth: <b>${p.z || 0}px</b>`;
+    }
+
+    /* ----------------------
+       Add / Remove Players
+       ---------------------- */
+    function addPlayer(type = 'home'){
       pushUndo();
       const p = {
         uid: uid('p_'),
         type,
         xPct: 20 + Math.random()*60,
         yPct: 20 + Math.random()*60,
-        label: type==='home' ? 'ST' : (type==='away' ? 'OP' : 'BALL'),
+        label: type === 'home' ? 'ST' : (type === 'away' ? 'OP' : 'B'),
+        z: 0
       };
       App.players.push(p);
-      renderPlayers(); renderArrows(); saveLocal();
+      renderPlayers(); saveLocal();
     }
+
     function removePlayer(uid){
       pushUndo();
       App.players = App.players.filter(p => p.uid !== uid);
@@ -468,57 +641,78 @@
       renderPlayers(); renderArrows(); setSelected(null); saveLocal();
     }
 
-    /* Drawing arrows */
-    function startDrawingFrom(player, ev){
+    /* ----------------------
+       Drawing arrows (right-mouse + left) & curves
+       ---------------------- */
+    function startDrawFromPlayer(player, ev){
       const start = pctToSvg(player.xPct, player.yPct);
-      App.drawing = {fromUid: player.uid, start: {...start}, cur: {...start}, tempElem: null};
+      App.drawing = { fromUid: player.uid, start: {...start}, cur: {...start}, tempElem: null };
       renderTemp();
     }
 
     function renderTemp(){
       tempLayer.innerHTML = '';
       if(!App.drawing) return;
-      const d = `M ${App.drawing.start.x} ${App.drawing.start.y} L ${App.drawing.cur.x} ${App.drawing.cur.y}`;
+      const p = App.drawing;
       const path = document.createElementNS('http://www.w3.org/2000/svg','path');
-      path.setAttribute('d', d);
-      path.setAttribute('stroke', arrowColorEl.value);
-      path.setAttribute('stroke-width', arrowWidthEl.value);
-      path.setAttribute('class','arrowLine');
-      path.setAttribute('stroke-opacity','0.8');
+      const style = arrowStyleEl.value;
+      if(style === 'curved'){
+        // create simple curved preview (auto control)
+        const mx = (p.start.x + p.cur.x)/2; const my = (p.start.y + p.cur.y)/2;
+        const dx = p.cur.x - p.start.x, dy = p.cur.y - p.start.y;
+        const dist = Math.hypot(dx,dy) || 1;
+        const nx = -dy/dist, ny = dx/dist; const offset = clamp(dist * 0.18, 30, 200);
+        const cx = mx + nx*offset, cy = my + ny*offset;
+        path.setAttribute('d', `M ${p.start.x} ${p.start.y} Q ${cx} ${cy} ${p.cur.x} ${p.cur.y}`);
+      } else {
+        path.setAttribute('d', `M ${p.start.x} ${p.start.y} L ${p.cur.x} ${p.cur.y}`);
+      }
+      path.setAttribute('stroke', arrowColorEl.value); path.setAttribute('stroke-width', arrowWidthEl.value);
+      path.setAttribute('fill', 'none'); path.setAttribute('class', 'arrowLine');
+      path.setAttribute('stroke-opacity', '0.9');
       path.setAttribute('marker-end', arrowStyleEl.value === 'glow' ? 'url(#arrowHeadGlow)' : 'url(#arrowHead)');
       tempLayer.appendChild(path);
       App.drawing.tempElem = path;
     }
 
-    document.addEventListener('pointermove', ev => {
+    document.addEventListener('pointermove', (ev) => {
       if(!App.drawing) return;
       const p = pxToSvg(ev.clientX, ev.clientY);
       App.drawing.cur.x = p.x; App.drawing.cur.y = p.y;
-      // curve preview if selected
-      if(arrowStyleEl.value === 'curved'){
-        const mx = (App.drawing.start.x + App.drawing.cur.x)/2;
-        const my = (App.drawing.start.y + App.drawing.cur.y)/2;
-        const dx = App.drawing.cur.x - App.drawing.start.x;
-        const dy = App.drawing.cur.y - App.drawing.start.y;
-        const dist = Math.hypot(dx,dy) || 1;
-        const nx = -dy/dist, ny = dx/dist;
-        const offset = clamp(dist * 0.18, 30, 200);
-        const cx = mx + nx * offset, cy = my + ny * offset;
-        App.drawing.tempElem.setAttribute('d', `M ${App.drawing.start.x} ${App.drawing.start.y} Q ${cx} ${cy} ${App.drawing.cur.x} ${App.drawing.cur.y}`);
-      } else {
-        App.drawing.tempElem.setAttribute('d', `M ${App.drawing.start.x} ${App.drawing.start.y} L ${App.drawing.cur.x} ${App.drawing.cur.y}`);
+      renderTemp();
+    });
+
+    // allow starting draw from right-click as requested: right-click on player -> start arrow,
+    // then left click to complete on target player or right-click to place free target.
+    document.addEventListener('contextmenu', (ev) => {
+      // right-click on player to start draw if mode is draw or context mode is active
+      const target = ev.target;
+      if(target && target.classList && target.classList.contains('player')){
+        ev.preventDefault();
+        const uid = target.dataset.uid;
+        const player = App.players.find(p => p.uid === uid);
+        if(player){
+          // If currently in select mode but user right-clicks, treat as draw-from
+          if(App.mode === 'select' || App.mode === 'draw' || App.mode === 'curve'){
+            startDrawFromPlayer(player, ev);
+          } else {
+            // show context menu
+            showContextMenuFor(player, ev.clientX, ev.clientY);
+          }
+        }
       }
     });
 
-    // complete draw on pointerup: if hitting a player, connect to player; else create free-arrow
-    document.addEventListener('pointerup', ev => {
+    document.addEventListener('pointerup', (ev) => {
+      // finalize drawing
       if(!App.drawing) return;
-      const target = ev.target;
-      if(target && target.classList && target.classList.contains('player')){
-        const toUid = target.dataset.uid;
+      const t = ev.target;
+      // if ended on a player => connect
+      if(t && t.classList && t.classList.contains('player')){
+        const toUid = t.dataset.uid;
         if(toUid && toUid !== App.drawing.fromUid){
-          const fromP = App.players.find(p => p.uid === App.drawing.fromUid);
-          const toP = App.players.find(p => p.uid === toUid);
+          const fromP = App.players.find(x => x.uid === App.drawing.fromUid);
+          const toP = App.players.find(x => x.uid === toUid);
           if(fromP && toP){
             pushUndo();
             const a = {
@@ -532,14 +726,14 @@
               style: arrowStyleEl.value,
               width: Number(arrowWidthEl.value),
               color: arrowColorEl.value,
-              control: arrowStyleEl.value==='curved' ? computeAutoControl(fromP, toP) : null
+              control: arrowStyleEl.value === 'curved' ? computeAutoControl(fromP, toP) : null
             };
             App.arrows.push(a);
             renderArrows(); saveLocal();
           }
         }
       } else {
-        // free arrow to point
+        // free arrow endpoint
         pushUndo();
         const a = {
           id: uid('a_'),
@@ -562,98 +756,204 @@
       const A = pctToSvg(fromP.xPct, fromP.yPct), B = pctToSvg(toP.xPct, toP.yPct);
       const mx = (A.x + B.x)/2, my = (A.y + B.y)/2;
       const dx = B.x - A.x, dy = B.y - A.y;
-      const dist = Math.hypot(dx, dy) || 1;
-      const nx = -dy/dist, ny = dx/dist;
-      const offset = clamp(dist * 0.18, 30, 200);
-      return {cx: mx + nx*offset, cy: my + ny*offset};
+      const dist = Math.hypot(dx,dy) || 1;
+      const nx = -dy/dist, ny = dx/dist; const offset = clamp(dist * 0.18, 30, 200);
+      return { cx: mx + nx*offset, cy: my + ny*offset };
     }
 
-    /* Undo / Redo */
+    /* ----------------------
+       Undo / Redo
+       ---------------------- */
     function pushUndo(){
-      App.undoStack.push(JSON.stringify({players: App.players, arrows: App.arrows}));
-      if(App.undoStack.length > 50) App.undoStack.shift();
+      App.undoStack.push(JSON.stringify({ players: App.players, arrows: App.arrows }));
+      if(App.undoStack.length > 80) App.undoStack.shift();
       App.redoStack = [];
+      updateUndoButtons();
     }
-    $('#btnUndo').addEventListener('click', () => {
+    function undo(){
       const s = App.undoStack.pop(); if(!s) return;
-      App.redoStack.push(JSON.stringify({players: App.players, arrows: App.arrows}));
+      App.redoStack.push(JSON.stringify({ players: App.players, arrows: App.arrows }));
       const parsed = JSON.parse(s);
       App.players = parsed.players || []; App.arrows = parsed.arrows || [];
-      renderPlayers(); renderArrows(); saveLocal();
-    });
-    $('#btnRedo').addEventListener('click', () => {
+      renderPlayers(); renderArrows(); saveLocal(); updateUndoButtons();
+    }
+    function redo(){
       const s = App.redoStack.pop(); if(!s) return;
-      App.undoStack.push(JSON.stringify({players: App.players, arrows: App.arrows}));
+      App.undoStack.push(JSON.stringify({ players: App.players, arrows: App.arrows }));
       const parsed = JSON.parse(s);
       App.players = parsed.players || []; App.arrows = parsed.arrows || [];
-      renderPlayers(); renderArrows(); saveLocal();
-    });
+      renderPlayers(); renderArrows(); saveLocal(); updateUndoButtons();
+    }
+    function updateUndoButtons(){
+      undoBtn.disabled = App.undoStack.length === 0;
+      redoBtn.disabled = App.redoStack.length === 0;
+    }
 
-    /* Save / load local */
+    undoBtn.addEventListener('click', undo);
+    redoBtn.addEventListener('click', redo);
+
+    /* ----------------------
+       Save / load (localStorage)
+       ---------------------- */
     function saveLocal(){
-      try{ localStorage.setItem('protactix_v1', JSON.stringify({players: App.players, arrows: App.arrows})); }catch(e){}
+      try{ localStorage.setItem('protactix_v2', JSON.stringify({ players: App.players, arrows: App.arrows, frames: App.frames })); }catch(e){}
     }
     function loadLocal(){
       try{
-        const raw = localStorage.getItem('protactix_v1'); if(!raw) return;
+        const raw = localStorage.getItem('protactix_v2'); if(!raw) return;
         const parsed = JSON.parse(raw);
-        App.players = parsed.players || []; App.arrows = parsed.arrows || [];
+        App.players = parsed.players || []; App.arrows = parsed.arrows || []; App.frames = parsed.frames || [];
       }catch(e){}
     }
+    saveBtn.addEventListener('click', () => { saveLocal(); alert('Saved locally'); });
 
-    /* Export / Import */
-    $('#btnExport').addEventListener('click', () => {
-      const data = JSON.stringify({players: App.players, arrows: App.arrows}, null, 2);
-      const blob = new Blob([data], {type:'application/json'}); const url = URL.createObjectURL(blob);
-      const a = document.createElement('a'); a.href = url; a.download = 'protactix_setup.json'; a.click(); URL.revokeObjectURL(url);
+    /* ----------------------
+       Export / Import JSON
+       ---------------------- */
+    exportBtn.addEventListener('click', () => {
+      const data = JSON.stringify({ players: App.players, arrows: App.arrows, frames: App.frames }, null, 2);
+      const blob = new Blob([data], { type: 'application/json' }); const url = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href = url; a.download = 'protactix_export.json'; a.click(); URL.revokeObjectURL(url);
     });
-    $('#btnImport').addEventListener('click', () => $('#fileInput').click());
-    $('#btnExportJSON').addEventListener('click', () => $('#btnExport').click());
-    $('#btnLoadJSON').addEventListener('click', () => $('#fileInput').click());
-    $('#fileInput').addEventListener('change', ev => {
+
+    $('#downloadJSON').addEventListener('click', () => exportBtn.click());
+    $('#loadJSON').addEventListener('click', () => fileInput.click());
+    fileInput.addEventListener('change', (ev) => {
       const f = ev.target.files[0]; if(!f) return;
-      const r = new FileReader(); r.onload = e => { try{ const parsed = JSON.parse(e.target.result); pushUndo(); App.players = parsed.players||[]; App.arrows = parsed.arrows||[]; renderPlayers(); renderArrows(); saveLocal(); alert('Loaded'); }catch(err){ alert('Invalid JSON'); }}; r.readAsText(f);
+      const r = new FileReader(); r.onload = e => {
+        try{
+          const parsed = JSON.parse(e.target.result);
+          pushUndo(); App.players = parsed.players || []; App.arrows = parsed.arrows || []; App.frames = parsed.frames || [];
+          renderPlayers(); renderArrows(); saveLocal(); alert('Loaded JSON');
+        }catch(err){ alert('Invalid JSON'); }
+      }; r.readAsText(f);
     });
 
-    /* UI bindings */
-    modeChips.forEach(chip => chip.addEventListener('click', () => {
-      modeChips.forEach(c=>c.classList.remove('active')); chip.classList.add('active');
-      App.mode = chip.dataset.mode;
-    }));
-    addHomeBtn.addEventListener('click', ()=> addPlayer('home'));
-    addAwayBtn.addEventListener('click', ()=> addPlayer('away'));
-    addBallBtn.addEventListener('click', ()=> addPlayer('ball'));
-
-    $('#btnClear').addEventListener('click', ()=> { if(confirm('Clear pitch?')){ pushUndo(); App.players=[]; App.arrows=[]; renderPlayers(); renderArrows(); saveLocal(); }});
-    $('#btnReset').addEventListener('click', ()=> { pitchCard.style.transform = ''; zoomRange.value = 1; zoomLabel.textContent = '100%'; });
-
-    zoomRange.addEventListener('input', e => { const s = parseFloat(e.target.value); pitchCard.style.transform = `scale(${s})`; zoomLabel.textContent = Math.round(s*100) + '%'; });
-
-    $('#btnDelete').addEventListener('click', ()=> { if(selectedUid && confirm('Delete selected?')) removePlayer(selectedUid); });
-
-    /* pitch click deselect */
-    pitchCard.addEventListener('pointerdown', ev => {
-      if(ev.target === pitchCard || ev.target === pitchSVG) { setSelected(null); }
+    /* ----------------------
+       Recording frames & replay timeline
+       ---------------------- */
+    $('#recordFrame').addEventListener('click', () => {
+      const snapshot = { players: JSON.parse(JSON.stringify(App.players)), arrows: JSON.parse(JSON.stringify(App.arrows)), ts: Date.now() };
+      App.frames.push(snapshot);
+      updateFramesUI();
+      saveLocal();
     });
+    $('#clearFrames').addEventListener('click', () => { if(confirm('Clear frames?')){ App.frames = []; App.playIndex = 0; updateFramesUI(); saveLocal(); } });
 
-    /* keyboard shortcuts */
-    document.addEventListener('keydown', ev => {
-      if(ev.key === 's') setModeUI('select');
-      if(ev.key === 'd') setModeUI('draw');
-      if(ev.key === 'c') setModeUI('curve');
-      if(ev.key === 'e') setModeUI('erase');
-      if(ev.key === 'Delete' && selectedUid) { if(confirm('Delete selected?')) removePlayer(selectedUid); }
-      if((ev.ctrlKey||ev.metaKey) && ev.key === 'z') $('#btnUndo').click();
-      if((ev.ctrlKey||ev.metaKey) && ev.key === 'y') $('#btnRedo').click();
-    });
-
-    function setModeUI(mode){
-      App.mode = mode;
-      modeChips.forEach(c => c.classList.toggle('active', c.dataset.mode === mode));
+    function updateFramesUI(){
+      totalFrames.textContent = App.frames.length;
+      frameCounter.textContent = App.playIndex;
+      const pct = App.frames.length === 0 ? 0 : (App.playIndex / Math.max(1, App.frames.length - 1)) * 100;
+      scrubProgress.style.width = pct + '%';
     }
 
-    /* keep arrows attached to players on loop */
-    function layoutLoop(){
+    // playback core: simple interpolation between frames
+    playBtn.addEventListener('click', () => {
+      if(App.playing){ stopPlayback(); } else { startPlayback(); }
+    });
+    rewindBtn.addEventListener('click', () => { if(App.frames.length){ App.playIndex = 0; seekFrame(0); } });
+    forwardBtn.addEventListener('click', () => { if(App.frames.length){ App.playIndex = Math.max(0, App.frames.length - 1); seekFrame(App.playIndex); } });
+
+    function startPlayback(){
+      if(App.frames.length < 2) { alert('Record at least 2 frames to play back'); return; }
+      App.playing = true; playBtn.classList.add('active');
+      const start = performance.now();
+      const duration = 1000 * App.frames.length / App.playSpeed; // simple
+      function tick(now){
+        const t = (now - start) / duration; const bounded = clamp(t, 0, 1);
+        const pos = bounded * (App.frames.length - 1);
+        const i0 = Math.floor(pos), i1 = Math.min(App.frames.length - 1, i0 + 1); const localT = pos - i0;
+        if(App.frames[i0] && App.frames[i1]){
+          // interpolate players
+          const map0 = Object.fromEntries((App.frames[i0].players || []).map(pp => [pp.uid, pp]));
+          const map1 = Object.fromEntries((App.frames[i1].players || []).map(pp => [pp.uid, pp]));
+          const allUids = Array.from(new Set([...(App.frames[i0].players||[]).map(p=>p.uid), ...(App.frames[i1].players||[]).map(p=>p.uid)]));
+          const interpPlayers = allUids.map(uid => {
+            const a = map0[uid] || map1[uid], b = map1[uid] || map0[uid];
+            const x = (a && b) ? (a.xPct*(1-localT) + b.xPct*localT) : (a ? a.xPct : b.xPct);
+            const y = (a && b) ? (a.yPct*(1-localT) + b.yPct*localT) : (a ? a.yPct : b.yPct);
+            const z = ((a && a.z) || 0)*(1-localT) + ((b && b.z) || 0)*localT;
+            return { ...a, xPct: x, yPct: y, z };
+          });
+          const snapArrows = App.frames[i0].arrows || [];
+          // render as playback (do not overwrite App.players)
+          renderPlayback(interpPlayers, snapArrows);
+          App.playIndex = Math.round(pos); updateFramesUI();
+        }
+        if(bounded < 1 && App.playing){
+          App.playRaf = requestAnimationFrame(tick);
+        } else {
+          App.playing = false; playBtn.classList.remove('active');
+        }
+      }
+      App.playRaf = requestAnimationFrame(tick);
+    }
+
+    function stopPlayback(){
+      App.playing = false; if(App.playRaf) cancelAnimationFrame(App.playRaf); renderPlayers(); renderArrows();
+    }
+
+    function renderPlayback(players, arrows){
+      // Render temporary players and arrows for playback
+      playerLayer.innerHTML = '';
+      players.forEach(p => {
+        const el = document.createElement('div');
+        el.className = 'player ' + (p.type === 'away' ? 'away' : (p.type === 'ball' ? 'ball' : 'home'));
+        el.style.left = p.xPct + '%';
+        el.style.top = p.yPct + '%';
+        el.textContent = p.type === 'ball' ? 'B' : (p.label || p.type.toUpperCase());
+        if(App.is3D && p.z) el.style.transform = `translate(-50%,-50%) translateZ(${p.z}px) scale(${1 + p.z/200})`;
+        playerLayer.appendChild(el);
+      });
+      // arrows
+      arrowsLayer.innerHTML = '';
+      arrows.forEach(a => {
+        const path = document.createElementNS('http://www.w3.org/2000/svg','path');
+        const start = { x: a.x1, y: a.y1 }, end = { x: a.x2, y: a.y2 };
+        let d = a.control ? `M ${start.x} ${start.y} Q ${a.control.cx} ${a.control.cy} ${end.x} ${end.y}` : `M ${start.x} ${start.y} L ${end.x} ${end.y}`;
+        path.setAttribute('d', d);
+        path.setAttribute('stroke', a.color || '#ffd166'); path.setAttribute('stroke-width', a.width || 3);
+        path.setAttribute('class', 'arrowLine'); if(a.style === 'dashed') path.setAttribute('stroke-dasharray','12 8');
+        if(a.style === 'glow') path.setAttribute('filter','url(#glow)');
+        path.setAttribute('marker-end', a.style === 'glow' ? 'url(#arrowHeadGlow)' : 'url(#arrowHead)');
+        arrowsLayer.appendChild(path);
+      });
+    }
+
+    function seekFrame(index){
+      if(!App.frames[index]) return;
+      const snap = App.frames[index];
+      renderPlayback(snap.players, snap.arrows);
+      App.playIndex = index; updateFramesUI();
+    }
+
+    exportFramesBtn.addEventListener('click', () => {
+      if(App.frames.length === 0){ alert('No frames to export'); return; }
+      // Provide export as JSON of frames (images would require canvas libs)
+      const blob = new Blob([JSON.stringify(App.frames, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href = url; a.download = 'protactix_frames.json'; a.click(); URL.revokeObjectURL(url);
+      alert('Frames exported as JSON. For PNG/MP4 export, include html2canvas or CCapture flow.');
+    });
+
+    /* Scrub interaction */
+    let scrubbing = false;
+    scrub.addEventListener('pointerdown', (ev) => { scrubbing = true; handleScrub(ev); });
+    window.addEventListener('pointermove', ev => { if(scrubbing) handleScrub(ev); });
+    window.addEventListener('pointerup', ev => { if(scrubbing) scrubbing = false; });
+    function handleScrub(ev){
+      const r = scrub.getBoundingClientRect();
+      const x = clamp(ev.clientX - r.left, 0, r.width);
+      const pct = x / r.width;
+      const idx = Math.round(pct * Math.max(0, App.frames.length - 1));
+      if(idx >= 0 && idx < App.frames.length){ seekFrame(idx); }
+    }
+
+    /* ----------------------
+       Auto-attach arrows to moving players (layout loop)
+       ---------------------- */
+    (function layoutLoop(){
+      // update arrow endpoints if they reference players
       App.arrows.forEach(a => {
         if(a.fromUid){
           const f = App.players.find(p => p.uid === a.fromUid);
@@ -666,32 +966,95 @@
       });
       renderArrows();
       requestAnimationFrame(layoutLoop);
+    })();
+
+    /* ----------------------
+       Helpers
+       ---------------------- */
+    function pctToSvg(xPct, yPct){ return { x: xPct * (VB.w/100), y: yPct * (VB.h/100) }; }
+
+    /* ----------------------
+       UI wiring
+       ---------------------- */
+    // mode chips
+    modeChips.forEach(chip => chip.addEventListener('click', () => {
+      modeChips.forEach(c => c.classList.remove('active'));
+      chip.classList.add('active'); App.mode = chip.dataset.mode;
+    }));
+    addHome.addEventListener('click', () => addPlayer('home'));
+    addAway.addEventListener('click', () => addPlayer('away'));
+    addBall.addEventListener('click', () => addPlayer('ball'));
+
+    arrowStyleEl.addEventListener('change', () => { /* style change */ });
+    arrowWidthEl.addEventListener('input', () => {});
+    arrowColorEl.addEventListener('input', () => {});
+
+    $('#toggle3D').addEventListener('click', () => { App.is3D = !App.is3D; renderPlayers(); });
+
+    zoomRange.addEventListener('input', (ev) => {
+      const v = parseFloat(ev.target.value);
+      pitchCard.style.transform = `scale(${v})`;
+      zoomLabel.textContent = Math.round(v * 100) + '%';
+    });
+
+    // undo/redo already wired
+    // save/export wired
+
+    // play buttons wired above
+
+    // delete / clear / reset
+    clearBtn.addEventListener('click', () => { if(confirm('Clear pitch (players + arrows)?')){ pushUndo(); App.players = []; App.arrows = []; renderPlayers(); renderArrows(); saveLocal(); }});
+    resetViewBtn.addEventListener('click', () => { pitchCard.style.transform = ''; zoomRange.value = 1; zoomLabel.textContent = '100%'; });
+
+    /* Keyboard shortcuts */
+    document.addEventListener('keydown', (ev) => {
+      if(ev.code === 'KeyS') setModeUI('select');
+      if(ev.code === 'KeyD') setModeUI('draw');
+      if(ev.code === 'KeyC') setModeUI('curve');
+      if(ev.code === 'KeyE') setModeUI('erase');
+      if(ev.code === 'Space'){ ev.preventDefault(); if(App.playing) stopPlayback(); else startPlayback(); }
+      if((ev.ctrlKey || ev.metaKey) && ev.key === 'z'){ undo(); }
+      if((ev.ctrlKey || ev.metaKey) && (ev.key === 'y' || (ev.shiftKey && ev.key === 'Z'))){ redo(); }
+      if(ev.code === 'KeyR'){ $('#recordFrame').click(); }
+      if(ev.key === 'Delete' && App.selectedUid){ if(confirm('Delete selected player?')) removePlayer(App.selectedUid); }
+    });
+
+    function setModeUI(mode){
+      App.mode = mode; modeChips.forEach(c => c.classList.toggle('active', c.dataset.mode === mode));
     }
-    layoutLoop();
 
-    /* helpers */
-    function pctToSvg(xPct, yPct){ return {x: xPct * (VB.w/100), y: yPct * (VB.h/100)}; }
-
-    /* initial data */
+    /* ----------------------
+       Initialization: load or seed
+       ---------------------- */
     (function init(){
-      // sample players if none saved
       loadLocal();
       if(App.players.length === 0){
         App.players = [
-          {uid:uid('p_'), type:'home', xPct:20, yPct:50, label:'ST'},
-          {uid:uid('p_'), type:'home', xPct:35, yPct:30, label:'LW'},
-          {uid:uid('p_'), type:'home', xPct:35, yPct:70, label:'RW'},
-          {uid:uid('p_'), type:'away', xPct:80, yPct:50, label:'CB'},
-          {uid:uid('p_'), type:'away', xPct:65, yPct:30, label:'LB'},
-          {uid:uid('p_'), type:'ball', xPct:50, yPct:50, label:'B'}
+          { uid: uid('p_'), type: 'home', xPct: 18, yPct: 50, label: 'GK', z: 0},
+          { uid: uid('p_'), type: 'home', xPct: 34, yPct: 30, label: 'LB', z: 0},
+          { uid: uid('p_'), type: 'home', xPct: 34, yPct: 50, label: 'CB', z: 0},
+          { uid: uid('p_'), type: 'home', xPct: 34, yPct: 70, label: 'RB', z: 0},
+          { uid: uid('p_'), type: 'home', xPct: 60, yPct: 25, label: 'LW', z: 0},
+          { uid: uid('p_'), type: 'home', xPct: 65, yPct: 50, label: 'ST', z: 4},
+          { uid: uid('p_'), type: 'home', xPct: 60, yPct: 75, label: 'RW', z: 0},
+          { uid: uid('p_'), type: 'away', xPct: 80, yPct: 50, label: 'CB', z: 0 },
+          { uid: uid('p_'), type: 'ball', xPct: 55, yPct: 50, label: 'B', z: 0 }
         ];
       }
-      renderPlayers(); renderArrows(); updateSelectionInfo();
+      renderPlayers(); renderArrows(); updateSelectionPanel(); updateFramesUI();
     })();
 
-    /* small UX: remove selection on window blur to avoid stuck states */
-    window.addEventListener('blur', () => { setSelected(null); App.drawing = null; tempLayer.innerHTML = ''; });
+    /* ----------------------
+       Small UX: prevent accidental drag on double-tap mobile
+       ---------------------- */
+    let lastTap = 0;
+    document.addEventListener('touchend', (ev) => {
+      const now = Date.now();
+      if(now - lastTap < 300) ev.preventDefault();
+      lastTap = now;
+    });
 
+    /* End of script */
   </script>
 </body>
 </html>
