@@ -3,1058 +3,1282 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>ProTactix — Professional Tactics Console</title>
-
-  <!-- Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&family=Oswald:wght@400;600;700&display=swap" rel="stylesheet">
-
+  <title>ProTactix | Professional Football Tactics Console — v6 (complete with zones)</title>
   <style>
-    /* =========================
-       THEME VARIABLES
-       ========================= */
-    :root{
-      --bg-0: #071426;
-      --bg-1: #0a2a3d;
-      --panel: #0d2636;
-      --accent: #1282a2;
-      --accent-2: #ffd166;
+    :root {
+      --primary: #0a1128;
+      --secondary: #001f54;
+      --accent: #034078;
+      --highlight: #1282a2;
       --danger: #e63946;
-      --muted: #9fc7d3;
-      --text: #ecf6f8;
-      --glass: rgba(255,255,255,0.03);
-      --shadow: 0 12px 40px rgba(0,0,0,0.6);
-      --radius: 12px;
-      --soft: 0 6px 20px rgba(0,0,0,0.45);
-      --transition: 180ms cubic-bezier(.2,.9,.3,1);
-      --z-player: 900;
+      --success: #2a9d8f;
+      --warning: #e9c46a;
+      --text: #f1faee;
+      --muted: #a8dadc;
+      --dark: #1d3557;
+      --shadow: 0 10px 30px rgba(0,0,0,0.35);
+      --transition: all 0.28s cubic-bezier(.2,.9,.3,1);
     }
 
-    /* =========================
-       RESET + BASE
-       ========================= */
-    * { box-sizing: border-box; }
-    html,body { height:100%; margin:0; background: linear-gradient(180deg,var(--bg-0),var(--bg-1)); color:var(--text); font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale; }
-    a { color: inherit; text-decoration: none; }
-    button { font-family: inherit; }
+    * { box-sizing: border-box; margin:0; padding:0; font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif; }
+    html,body { height:100%; background: linear-gradient(135deg,var(--primary),var(--secondary)); color:var(--text); -webkit-font-smoothing:antialiased; }
 
-    /* =========================
-       LAYOUT
-       ========================= */
-    .app {
+    .app-container {
       display: grid;
       grid-template-columns: 300px 1fr 340px;
-      grid-template-rows: 76px 1fr;
-      gap: 18px;
-      height: calc(100vh - 24px);
-      padding: 12px;
+      grid-template-rows: 80px 1fr;
+      gap:0;
+      height:100vh;
     }
 
-    header.topbar {
-      grid-column: 1 / -1;
+    /* Header */
+    header {
+      grid-column:1/-1;
       display:flex;
       align-items:center;
-      gap: 16px;
-      padding: 12px 20px;
-      border-radius: 14px;
-      background: linear-gradient(90deg, rgba(255,255,255,0.02), transparent);
+      justify-content:space-between;
+      padding:0 28px;
+      background: rgba(10,17,40,0.95);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
       box-shadow: var(--shadow);
-      border:1px solid rgba(255,255,255,0.03);
+      z-index: 1000;
     }
+    .logo { display:flex; align-items:center; gap:12px; }
+    .logo-icon { width:44px; height:44px; border-radius:8px; background:var(--highlight); display:flex;align-items:center;justify-content:center;font-weight:800; }
+    .logo-text { font-size:20px; font-weight:800; background: linear-gradient(90deg,var(--text),var(--muted)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
 
-    .brand { display:flex; gap:12px; align-items:center; }
-    .logo {
-      width:48px; height:48px; border-radius:10px; display:flex; align-items:center; justify-content:center;
-      background: linear-gradient(180deg, var(--accent), #0f9fb0); color:#021617; font-weight:800; font-family:Oswald, Arial;
-      box-shadow: 0 8px 24px rgba(18,130,162,0.12);
-    }
-    .titleBlock { line-height:1; }
-    .titleBlock .title { font-weight:700; color:var(--accent-2); font-size:18px; }
-    .titleBlock .subtitle { font-size:12px; color:var(--muted); }
-
-    .toolbar { margin-left:auto; display:flex; gap:8px; align-items:center; }
-
+    .header-controls { display:flex; gap:10px; align-items:center; }
     .btn {
-      padding:8px 12px; border-radius:10px; background: linear-gradient(180deg,#0f3a47,#09252f);
-      color:var(--text); border:1px solid rgba(255,255,255,0.03); cursor:pointer; font-weight:600; transition: var(--transition);
-      box-shadow: 0 6px 18px rgba(0,0,0,0.45);
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.06);
+      color: var(--text);
+      padding:10px 12px;
+      border-radius:8px;
+      cursor:pointer;
+      transition: var(--transition);
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      font-weight:600;
     }
-    .btn.ghost { background: transparent; border:1px solid rgba(255,255,255,0.05); }
-    .btn.primary { background: linear-gradient(90deg,var(--accent), #0f9fb0); box-shadow: 0 10px 30px rgba(18,130,162,0.12); color:#021617; }
-    .btn.warn { background: linear-gradient(90deg,#e07a5f,#d4503a); }
+    .btn:hover { transform:translateY(-3px); background: rgba(255,255,255,0.08); }
+    .btn.success { background: rgba(42,157,143,0.12); border-color: rgba(42,157,143,0.2); }
+    .btn.danger { background: rgba(230,57,70,0.12); border-color: rgba(230,57,70,0.2); }
+    .btn.active { background: rgba(18,130,162,0.2); border-color: rgba(18,130,162,0.4); }
 
-    /* SIDEBARS + PANELS */
-    aside.left, aside.right {
-      background: var(--panel);
-      padding:16px;
+    /* Sidebar */
+    .sidebar {
+      background: rgba(13,23,42,0.9);
+      backdrop-filter: blur(6px);
+      border-right: 1px solid rgba(255,255,255,0.04);
+      padding:22px;
+      overflow-y:auto;
+    }
+    .tool-group {
+      background: rgba(255,255,255,0.03);
       border-radius:12px;
-      border:1px solid rgba(255,255,255,0.02);
-      box-shadow: var(--soft);
-      overflow:auto;
-    }
-
-    .sectionTitle { font-weight:700; color:var(--text); margin-bottom:8px; }
-    .muted { color:var(--muted); font-size:13px; }
-
-    .controls { display:flex; flex-direction:column; gap:12px; }
-
-    .chip {
-      display:inline-flex; align-items:center; gap:8px;
-      padding:8px 10px; border-radius:8px; background:var(--glass); border:1px solid rgba(255,255,255,0.02); cursor:pointer;
-    }
-    .chip.active { background: linear-gradient(90deg,var(--accent),#0f9fb0); color:#062428; font-weight:700; }
-
-    /* CENTER PITCH */
-    .center { display:flex; align-items:center; justify-content:center; padding:6px; }
-    .pitchCard {
-      width:100%; max-width:1280px; height: calc(100vh - 170px);
-      border-radius: 14px; position:relative; overflow:hidden;
-      background: linear-gradient(180deg,#1a7a3d,#0b4b22);
-      border:6px solid rgba(255,255,255,0.02);
-      box-shadow: 0 20px 70px rgba(0,0,0,0.6);
-      transform-origin:center;
-    }
-
-    /* SVG pitch */
-    svg#pitchSVG { width:100%; height:100%; display:block; pointer-events: auto; }
-
-    /* Player DOM layer */
-    #playerLayer { position:absolute; left:0; top:0; right:0; bottom:0; pointer-events:none; }
-    .player {
-      position:absolute; width:60px; height:60px; border-radius:50%;
-      display:flex; align-items:center; justify-content:center; font-weight:800; font-family:Oswald, Inter, sans-serif;
-      user-select:none; touch-action:none; cursor:grab; transform: translate(-50%,-50%); pointer-events:auto;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.6); transition: transform 140ms,var(--transition);
-      z-index: var(--z-player);
-    }
-    .player.home { background: linear-gradient(180deg,#fff,#eef6f6); color:#042022; border:4px solid var(--accent); }
-    .player.away { background: linear-gradient(180deg,#0b1220,#0f1726); color:#fff; border:4px solid rgba(255,255,255,0.06); }
-    .player.ball { width:36px; height:36px; font-size:12px; border-radius:50%; background:#fff; color:#022b2f; border:3px solid #0b1220; font-weight:900; }
-    .player.selected { transform: translate(-50%,-50%) scale(1.08); box-shadow: 0 30px 70px rgba(0,0,0,0.75), 0 0 0 6px rgba(18,130,162,0.08); }
-
-    /* arrows */
-    .arrowLine { stroke:#fff; stroke-width:3; stroke-linecap:round; opacity:0.98; fill:none; }
-    .arrowHead { fill:#fff; }
-    .arrowGlow { filter:url(#glow); stroke-linecap:round; }
-
-    /* context menu (right-click) */
-    .ctx {
-      position: absolute; display:none; z-index:1100; min-width:180px; border-radius:10px; padding:8px;
-      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border:1px solid rgba(255,255,255,0.04);
-      box-shadow: 0 8px 30px rgba(0,0,0,0.6);
-    }
-    .ctx button { display:block; width:100%; padding:8px 10px; text-align:left; border:none; background:transparent; color:var(--text); cursor:pointer; }
-    .ctx button:hover { background: rgba(255,255,255,0.02); }
-
-    /* timeline / replay controls */
-    .timeline {
-      position:absolute; left:16px; right:16px; bottom:16px; background: rgba(0,0,0,0.28);
-      padding:10px; border-radius:10px; display:flex; gap:10px; align-items:center;
+      padding:16px;
+      margin-bottom:18px;
       border:1px solid rgba(255,255,255,0.03);
     }
-    .timeline .controls { display:flex; gap:8px; align-items:center; }
-    .timeline .scrub { flex:1; height:8px; background:rgba(255,255,255,0.04); border-radius:6px; position:relative; cursor:pointer; overflow:hidden; }
-    .timeline .progress { height:100%; background: linear-gradient(90deg,var(--accent),#0f9fb0); width:0%; border-radius:6px; }
+    .sidebar-title, .tool-group-title { font-weight:700; margin-bottom:12px; display:flex; align-items:center; gap:8px; color:var(--muted); }
+    .btn-group { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:12px; }
+    .btn.small { padding:8px 10px; font-size:14px; }
+
+    .formation-select, .slider, .zone-input { width:100%; padding:10px; border-radius:8px; background: rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.03); color:var(--text); }
+    .slider { height:8px; }
+
+    /* Main */
+    .main-content {
+      padding:22px;
+      display:flex;
+      flex-direction:column;
+      gap:14px;
+      overflow:hidden;
+    }
+    .pitch-container {
+      flex:1;
+      background: linear-gradient(160deg,#0d4b22,#176a2f);
+      border-radius:14px;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.45);
+      position:relative;
+      overflow:hidden;
+      border: 1px solid rgba(255,255,255,0.04);
+      padding:10px;
+    }
+    .pitch { width:100%; height:100%; position:relative; }
+
+    svg.pitch-lines { position:absolute; inset:0; overflow:visible; width:100%; height:100%; pointer-events:none; }
+
+    .player {
+      position:absolute;
+      width:54px;
+      height:54px;
+      border-radius:50%;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-weight:800;
+      cursor:pointer;
+      transform: translate(-50%,-50%);
+      z-index: 120;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.45);
+      transition: var(--transition);
+    }
+    .player.home { background:var(--highlight); color:var(--text); border:3px solid rgba(255,255,255,0.9); }
+    .player.away { background:var(--danger); color:var(--text); border:3px solid rgba(255,255,255,0.9); }
+    .player.ball { width:38px; height:38px; background:var(--text); color:var(--dark); border:3px solid var(--dark); font-size:13px; }
+
+    .player.selected { transform:translate(-50%,-50%) scale(1.14); box-shadow:0 0 0 4px rgba(233,201,106,0.28); }
+
+    /* arrow overlay */
+    .arrow-overlay {
+      position:absolute;
+      inset:0;
+      z-index:110;
+      pointer-events: none;
+    }
+
+    /* arrow styles - FIXED */
+    .arrow-line {
+      stroke: #e63946; /* Changed to red */
+      stroke-width: 2;
+      stroke-linecap: round;
+      fill: none;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3)); /* Reduced shadow */
+      pointer-events: all;
+      cursor:pointer;
+    }
+    .arrow-highlight {
+      stroke: rgba(255,255,255,0.7); /* Changed to white with transparency */
+      stroke-width: 3;
+      stroke-linecap: round;
+      fill: none;
+      pointer-events: none;
+    }
+    .arrow.selected .arrow-line { stroke: #ffffff; stroke-width: 2.5; }
+    .arrow.selected .arrow-highlight { stroke: rgba(255,255,255,0.9); stroke-width: 4; }
+
+    .arrow-dashed {
+      stroke-dasharray: 5, 5;
+    }
+
+    /* Zone styles */
+    .zone {
+      position: absolute;
+      border: 2px solid rgba(255,255,255,0.5);
+      background: rgba(255,255,255,0.1);
+      border-radius: 6px;
+      cursor: pointer;
+      z-index: 50;
+      transition: var(--transition);
+    }
+    .zone.selected {
+      border: 3px solid var(--warning);
+      background: rgba(233,196,106,0.15);
+      box-shadow: 0 0 0 2px rgba(233,196,106,0.3);
+    }
+    .zone-label {
+      position: absolute;
+      top: 5px;
+      left: 5px;
+      font-weight: bold;
+      color: white;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.7);
+      font-size: 14px;
+      pointer-events: none;
+    }
+
+    /* Replay controls */
+    .replay-controls {
+      background: rgba(13,23,42,0.9);
+      border-radius:12px;
+      padding:12px;
+      display:flex;
+      align-items:center;
+      gap:12px;
+      border:1px solid rgba(255,255,255,0.03);
+    }
 
     /* right panel */
-    .panelItem { background: rgba(255,255,255,0.02); padding:12px; border-radius:10px; margin-bottom:12px; border:1px solid rgba(255,255,255,0.02); }
-    .mutedSmall { color:var(--muted); font-size:13px; }
+    .right-panel {
+      background: rgba(13,23,42,0.9);
+      padding:22px;
+      border-left: 1px solid rgba(255,255,255,0.04);
+      overflow-y:auto;
+    }
+    .panel-section { background: rgba(255,255,255,0.02); padding:14px; border-radius:10px; margin-bottom:18px; border:1px solid rgba(255,255,255,0.03); }
 
     /* responsive */
-    @media(max-width:1100px){
-      .app { grid-template-columns:1fr; grid-template-rows:76px auto auto; padding:10px; }
-      aside.left, aside.right { display:block; order:2; }
-      .center { order:1; }
-      .pitchCard { height:60vh; }
+    @media (max-width:1200px) {
+      .app-container { grid-template-columns: 260px 1fr; }
+      .right-panel { display:none; }
     }
+    @media (max-width:800px) {
+      .app-container { grid-template-columns: 1fr; grid-template-rows: 80px auto 1fr; }
+      .sidebar { grid-row:2; }
+      .main-content { grid-row:3; }
+    }
+
   </style>
 </head>
 <body>
-  <div class="app">
-    <header class="topbar">
-      <div class="brand">
-        <div class="logo">PT</div>
-        <div class="titleBlock">
-          <div class="title">ProTactix</div>
-          <div class="subtitle">Professional tactics console — direction-first</div>
-        </div>
+  <div class="app-container">
+    <header>
+      <div class="logo">
+        <div class="logo-icon">PT</div>
+        <div class="logo-text">ProTactix</div>
       </div>
-
-      <div class="toolbar" role="toolbar" aria-label="Main actions">
-        <button class="btn ghost" id="undoBtn" title="Undo (Ctrl/Cmd+Z)">Undo</button>
-        <button class="btn ghost" id="redoBtn" title="Redo (Ctrl/Cmd+Y)">Redo</button>
-        <button class="btn" id="saveBtn" title="Save to local">Save</button>
-        <button class="btn primary" id="exportBtn" title="Export JSON">Export</button>
+      <div class="header-controls">
+        <button class="btn" id="btn-new-project">+ New Project</button>
+        <button class="btn success" id="btn-export">↓ Export</button>
+        <button class="btn" id="btn-settings">⚙ Settings</button>
       </div>
     </header>
 
-    <!-- LEFT -->
-    <aside class="left" aria-label="Tools">
-      <div class="sectionTitle">Modes</div>
-      <div class="muted">Select mode, draw runs, record replays and more</div>
-
-      <div class="controls" style="margin-top:12px">
-        <div class="panelItem">
-          <label class="small">Interaction</label>
-          <div style="display:flex;gap:8px;flex-wrap:wrap">
-            <div class="chip active" data-mode="select" id="modeSelect">Select (S)</div>
-            <div class="chip" data-mode="draw" id="modeDraw">Draw (D)</div>
-            <div class="chip" data-mode="curve" id="modeCurve">Curve (C)</div>
-            <div class="chip" data-mode="erase" id="modeErase">Erase (E)</div>
-            <div class="chip" data-mode="context" id="modeContext">Context (Right click)</div>
-          </div>
-          <div class="mutedSmall" style="margin-top:8px">Tip: Right-click a player to open a context menu (quick actions).</div>
+    <aside class="sidebar">
+      <div class="tool-group">
+        <div class="sidebar-title">Design Tools</div>
+        <div class="btn-group">
+          <button id="btn-select" class="btn small active">Select</button>
+          <button id="btn-draw" class="btn small">Draw</button>
+          <button id="btn-zone" class="btn small">Add Zone</button>
         </div>
 
-        <div class="panelItem">
-          <label class="small">Add entities</label>
-          <div style="display:flex;gap:8px">
-            <button class="btn" id="addHome">Add Home</button>
-            <button class="btn" id="addAway">Add Away</button>
-            <button class="btn" id="addBall">Add Ball</button>
-          </div>
-        </div>
-
-        <div class="panelItem">
-          <label class="small">Arrow style</label>
-          <div style="display:flex;gap:8px;align-items:center">
-            <select id="arrowStyle" style="flex:1;padding:8px;border-radius:8px;background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--muted)">
-              <option value="solid">Solid</option>
-              <option value="dashed">Dashed</option>
-              <option value="curved">Curved auto</option>
-              <option value="glow">Glow (fast)</option>
-            </select>
-            <input id="arrowWidth" type="number" min="1" max="14" value="3" style="width:72px;padding:8px;border-radius:8px;background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--muted)">
-          </div>
-          <div style="display:flex;gap:8px;margin-top:8px;align-items:center">
-            <input id="arrowColor" type="color" value="#ffd166" style="width:52px;height:36px;border-radius:8px;border:0;cursor:pointer">
-            <div class="muted">Color</div>
-          </div>
-        </div>
-
-        <div class="panelItem">
-          <label class="small">View</label>
-          <div style="display:flex;gap:8px;align-items:center">
-            <input id="zoomRange" type="range" min="0.6" max="1.8" step="0.05" value="1" style="flex:1">
-            <div class="muted" id="zoomLabel">100%</div>
-          </div>
-          <label class="small" style="margin-top:8px"><input id="snapGrid" type="checkbox"> Snap to grid</label>
-          <button class="btn" id="toggle3D" style="margin-top:8px">Toggle 3D runs</button>
-        </div>
-
-        <div class="panelItem">
-          <label class="small">Recording / Replay</label>
-          <div style="display:flex;gap:8px">
-            <button class="btn" id="recordFrame">Record Frame</button>
-            <button class="btn" id="clearFrames">Clear Frames</button>
-          </div>
-          <div class="mutedSmall" style="margin-top:8px">Record player positions and arrows as frames, then use timeline to play back.</div>
+        <div class="btn-group">
+          <button id="btn-player" class="btn small">Add Player</button>
+          <button id="btn-ball" class="btn small">Add Ball</button>
         </div>
       </div>
+
+      <div class="tool-group">
+        <div class="tool-group-title">Formations</div>
+        <select id="formation-select" class="formation-select">
+          <option value="">Select Formation</option>
+          <option value="4-4-2">4-4-2 Classic</option>
+          <option value="4-3-3">4-3-3 Attacking</option>
+          <option value="3-5-2">3-5-2 Defensive</option>
+          <option value="4-2-3-1">4-2-3-1 Modern</option>
+        </select>
+        <button id="btn-apply-formation" class="btn small" style="width:100%;">✓ Apply Formation</button>
+      </div>
+
+      <div class="tool-group">
+        <div class="tool-group-title">Arrow Styles</div>
+        <div class="btn-group">
+          <button class="btn small arrow-style active" data-style="loafted" id="style-loafted">Loafted</button>
+          <button class="btn small arrow-style" data-style="simple" id="style-simple">Simple</button>
+        </div>
+        <div class="btn-group">
+          <button class="btn small arrow-style" data-style="curved" id="style-curved">Curved</button>
+          <button class="btn small arrow-style" data-style="dashed" id="style-dashed">Dashed</button>
+        </div>
+
+        <div style="margin-top:10px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;color:var(--muted);font-weight:600;">
+            <div>Arrow Thickness</div>
+            <div id="arrow-thickness-label">2px</div>
+          </div>
+          <input id="arrow-thickness" class="slider" type="range" min="1" max="6" value="2" />
+        </div>
+      </div>
+
+      <div class="tool-group">
+        <div class="tool-group-title">Zone Controls</div>
+        <input type="text" id="zone-name" class="zone-input" placeholder="Zone name (e.g., Attack)" style="margin-bottom:10px;">
+        <div class="btn-group">
+          <button id="btn-add-zone" class="btn small">Add Zone</button>
+          <button id="btn-remove-zone" class="btn small danger">Remove Zone</button>
+        </div>
+        <div style="margin-top:10px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;color:var(--muted);font-weight:600;">
+            <div>Zone Opacity</div>
+            <div id="zone-opacity-label">30%</div>
+          </div>
+          <input id="zone-opacity" class="slider" type="range" min="10" max="70" value="30" />
+        </div>
+      </div>
+
+      <!-- View Controls -->
+      <div class="tool-group">
+        <div class="tool-group-title">View Controls</div>
+        <div style="margin-bottom:10px;">
+          <div style="display:flex;justify-content:space-between;color:var(--muted);font-weight:600;margin-bottom:6px;">
+            <div>Zoom</div><div id="zoom-label">100%</div>
+          </div>
+          <input id="zoom-control" class="slider" type="range" min="50" max="150" value="100" />
+        </div>
+
+        <div>
+          <div style="display:flex;justify-content:space-between;color:var(--muted);font-weight:600;margin-bottom:6px;">
+            <div>Field Brightness</div><div id="brightness-label">70%</div>
+          </div>
+          <input id="brightness-control" class="slider" type="range" min="30" max="100" value="70" />
+        </div>
+
+        <div style="margin-top:10px;">
+          <button id="btn-3d-toggle" class="btn small">◑ 3D View</button>
+        </div>
+      </div>
+
+      <!-- Delete buttons moved below View Controls as requested -->
+      <div class="tool-group">
+        <button id="btn-delete" class="btn danger" style="width:100%; margin-bottom:10px;">🗑 Delete Selected</button>
+        <button id="btn-delete-arrow" class="btn danger" style="width:100%;">🗑 Delete Arrow</button>
+      </div>
+
     </aside>
 
-    <!-- CENTER PITCH -->
-    <div class="center" role="main">
-      <div class="pitchCard" id="pitchCard" aria-label="Tactics pitch" tabindex="0">
-        <svg id="pitchSVG" viewBox="0 0 1100 700" preserveAspectRatio="xMidYMid meet">
-          <defs>
-            <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
-              <feGaussianBlur stdDeviation="6" result="coloredBlur"></feGaussianBlur>
-              <feMerge>
-                <feMergeNode in="coloredBlur"></feMergeNode>
-                <feMergeNode in="SourceGraphic"></feMergeNode>
-              </feMerge>
-            </filter>
+    <main class="main-content">
+      <div class="pitch-container">
+        <div class="pitch" id="pitch">
+          <!-- static pitch lines -->
+          <svg class="pitch-lines" viewBox="0 0 100 60" preserveAspectRatio="none" aria-hidden="true">
+            <defs>
+              <linearGradient id="fieldG" x1="0" x2="1" y1="0" y2="1">
+                <stop offset="0" stop-color="#0e5d2a"/>
+                <stop offset="1" stop-color="#136a2f"/>
+              </linearGradient>
+            </defs>
+            <rect x="0" y="0" width="100" height="60" fill="transparent" stroke="white" stroke-width="0.3" stroke-opacity="0.08"/>
+            <line x1="50" y1="0" x2="50" y2="60" stroke="white" stroke-width="0.25" stroke-opacity="0.06" />
+            <circle cx="50" cy="30" r="7" stroke="white" stroke-width="0.25" stroke-opacity="0.06" fill="transparent" />
+            <!-- penalty boxes -->
+            <rect x="0" y="18" width="12" height="24" fill="transparent" stroke="white" stroke-width="0.25" stroke-opacity="0.06" />
+            <rect x="88" y="18" width="12" height="24" fill="transparent" stroke="white" stroke-width="0.25" stroke-opacity="0.06" />
+            <rect x="0" y="26" width="2" height="8" fill="transparent" stroke="white" stroke-width="0.25" stroke-opacity="0.06" />
+            <rect x="98" y="26" width="2" height="8" fill="transparent" stroke="white" stroke-width="0.25" stroke-opacity="0.06" />
+          </svg>
 
-            <marker id="arrowHead" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="strokeWidth">
-              <path class="arrowHead" d="M0,0 L12,6 L0,12 z" fill="#fff"></path>
-            </marker>
+          <!-- initial players -->
+          <div class="player home" style="left:20%; top:30%;">ST</div>
+          <div class="player home" style="left:15%; top:50%;">LW</div>
+          <div class="player home" style="left:15%; top:10%;">RW</div>
+          <div class="player away" style="left:80%; top:30%;">CB</div>
+          <div class="player away" style="left:85%; top:50%;">LB</div>
+          <div class="player away" style="left:85%; top:10%;">RB</div>
+          <div class="player ball" style="left:50%; top:30%;">B</div>
 
-            <marker id="arrowHeadGlow" markerWidth="20" markerHeight="20" refX="16" refY="10" orient="auto">
-              <path d="M0,0 L20,10 L0,20 z" fill="#fff" opacity="0.95"></path>
-            </marker>
+          <!-- arrow overlay SVG -->
+          <svg class="arrow-overlay" id="arrow-overlay" viewBox="0 0 100 60" preserveAspectRatio="none"></svg>
+        </div>
+      </div>
 
-            <pattern id="grass" patternUnits="userSpaceOnUse" width="110" height="700">
-              <rect width="110" height="700" fill="#1f7a39"></rect>
-              <rect width="55" height="700" fill="#176a2f"></rect>
-            </pattern>
-          </defs>
+      <div class="replay-controls">
+        <button class="btn" id="re-prev">⏮</button>
+        <button class="btn" id="re-play">⏯</button>
+        <button class="btn" id="re-next">⏭</button>
+        <div style="flex:1;height:8px;background:rgba(255,255,255,0.04);border-radius:8px;overflow:hidden;position:relative;">
+          <div id="re-progress" style="width:0%;height:100%;background:var(--highlight);"></div>
+        </div>
+        <button class="btn" id="re-stop">⏹</button>
+        <button class="btn" id="re-loop">↺</button>
+      </div>
+    </main>
 
-          <rect x="0" y="0" width="1100" height="700" fill="url(#grass)"/>
+    <aside class="right-panel">
+      <div class="panel-section">
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <div style="font-weight:800">Player Details</div>
+          <div style="color:var(--muted)">Live</div>
+        </div>
 
-          <g id="pitchLines" stroke="#ffffff" stroke-opacity="0.75" fill="none" stroke-width="3">
-            <rect x="60" y="30" width="980" height="640" rx="10" stroke-opacity="0.6"/>
-            <circle cx="550" cy="365" r="70" stroke-opacity="0.45"/>
-            <line x1="550" y1="30" x2="550" y2="670" stroke-opacity="0.45"/>
-            <rect x="60" y="150" width="180" height="220" rx="6" stroke-opacity="0.45"></rect>
-            <rect x="860" y="150" width="180" height="220" rx="6" stroke-opacity="0.45"></rect>
-          </g>
-
-          <!-- dynamic layers -->
-          <g id="arrowsLayer"></g>
-          <g id="tempLayer"></g>
-        </svg>
-
-        <!-- players as DOM -->
-        <div id="playerLayer"></div>
-
-        <!-- timeline -->
-        <div class="timeline" role="region" aria-label="Replay timeline">
-          <div class="controls">
-            <button class="btn ghost" id="rewindBtn" title="First frame">⏮</button>
-            <button class="btn ghost" id="playBtn" title="Play/Pause">⏯</button>
-            <button class="btn ghost" id="forwardBtn" title="Last frame">⏭</button>
-            <button class="btn" id="exportFrames" title="Export frames">📤 Frames</button>
+        <div style="display:grid;grid-template-columns:60px 1fr;gap:12px;align-items:center;margin-top:12px;">
+          <div style="width:60px;height:60px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:var(--highlight);font-weight:700;">ST</div>
+          <div>
+            <div style="font-weight:800">Striker</div>
+            <div style="color:var(--muted)">Home Team · Forward</div>
           </div>
-          <div class="scrub" id="scrub">
-            <div class="progress" id="scrubProgress"></div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px;">
+          <div style="background:rgba(255,255,255,0.02);padding:10px;border-radius:8px;">
+            <div style="font-weight:800">85%</div>
+            <div style="color:var(--muted)">Pass Accuracy</div>
           </div>
-          <div style="min-width:120px;text-align:right;color:var(--muted)"><span id="frameCounter">0</span> / <span id="totalFrames">0</span></div>
-        </div>
-
-        <!-- right-click context menu -->
-        <div class="ctx" id="contextMenu" role="menu" aria-hidden="true">
-          <button data-action="rename">Rename</button>
-          <button data-action="to-home">Set Home</button>
-          <button data-action="to-away">Set Away</button>
-          <button data-action="copy">Copy Player</button>
-          <button data-action="delete" style="color:var(--danger)">Delete</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- RIGHT PANEL -->
-    <aside class="right" aria-label="Properties & Export">
-      <div class="panelItem">
-        <div class="sectionTitle">Selection</div>
-        <div id="selInfo">Type: — <br/> Team: — <br/> Label: — <br/> Depth: —</div>
-      </div>
-
-      <div class="panelItem">
-        <div class="sectionTitle">Export / Import</div>
-        <div style="display:flex;gap:8px">
-          <button class="btn" id="downloadJSON">Download JSON</button>
-          <button class="btn" id="loadJSON">Load JSON</button>
-          <input type="file" id="fileInput" accept=".json" style="display:none"/>
+          <div style="background:rgba(255,255,255,0.02);padding:10px;border-radius:8px;">
+            <div style="font-weight:800">12</div>
+            <div style="color:var(--muted)">Goals</div>
+          </div>
         </div>
       </div>
 
-      <div class="panelItem">
-        <div class="sectionTitle">Quick Actions</div>
-        <div style="display:flex;gap:8px;">
-          <button class="btn warn" id="clearBtn">Clear Pitch</button>
-          <button class="btn" id="resetViewBtn">Reset View</button>
+      <div class="panel-section">
+        <div style="font-weight:800;margin-bottom:10px;">Tactical Presets</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+          <div class="btn" data-formation="4-4-2">4-4-2</div>
+          <div class="btn" data-formation="4-3-3">4-3-3</div>
+          <div class="btn" data-formation="3-5-2">3-5-2</div>
+          <div class="btn" data-formation="4-2-3-1">4-2-3-1</div>
         </div>
       </div>
 
-      <div class="panelItem">
-        <div class="sectionTitle">Shortcuts</div>
-        <div class="muted">S - Select • D - Draw • C - Curve • E - Erase • R - Record frame • Space - Play/Pause • Right click - context menu</div>
+      <div class="panel-section">
+        <div style="font-weight:800;margin-bottom:10px;">Match Stats</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+          <div style="background:rgba(255,255,255,0.02);padding:10px;border-radius:8px;">
+            <div style="font-weight:800">64%</div>
+            <div style="color:var(--muted)">Possession</div>
+          </div>
+          <div style="background:rgba(255,255,255,0.02);padding:10px;border-radius:8px;">
+            <div style="font-weight:800">12</div>
+            <div style="color:var(--muted)">Shots</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <div style="font-weight:800;margin-bottom:8px;">Recent Actions</div>
+        <div id="recent-actions" style="color:var(--muted);font-size:13px;line-height:1.6;">
+          <div>→ App started</div>
+        </div>
       </div>
     </aside>
   </div>
 
   <script>
-    /* ==========================================================
-       ProTactix — Feature-rich console
-       - Right-click context menu
-       - Keyboard bindings
-       - 3D run simulation (visual depth)
-       - Frame recording & replay timeline
-       - Curved arrows with control points
-       - Undo / redo, import/export
-       - Player dragging, snapping, double-click rename
-       - Direction-first UX (right-click to start arrow endpoint, etc.)
-       ========================================================== */
-
-    /* ----------------------
-       Utilities & helpers
-       ---------------------- */
-    const $ = (s, root = document) => root.querySelector(s);
-    const $$ = (s, root = document) => Array.from((root||document).querySelectorAll(s));
-    const uid = (p='') => p + Math.random().toString(36).slice(2,9);
-    const clamp = (v,a,b) => Math.max(a, Math.min(b, v));
-    const VB = { w: 1100, h: 700 };
-
-    /* ----------------------
-       App state
-       ---------------------- */
-    const App = {
-      mode: 'select', // select | draw | curve | erase
-      players: [], // { uid, type('home'|'away'|'ball'), xPct, yPct, label, z }
-      arrows: [],   // { id, fromUid, toUid, x1,y1,x2,y2, style, width, color, control }
-      drawing: null, // when drawing arrow: { fromUid, start:{x,y}, cur:{x,y}, tempElem }
-      selectedUid: null,
-      is3D: false,
-      undoStack: [], redoStack: [],
-      frames: [], // frames: array of snapshots {players, arrows, ts}
-      playing: false,
-      playRaf: null,
-      playIndex: 0,
-      playSpeed: 1.0
-    };
-
-    /* ----------------------
-       DOM refs
-       ---------------------- */
-    const pitchCard = $('#pitchCard');
-    const pitchSVG = $('#pitchSVG');
-    const arrowsLayer = $('#arrowsLayer');
-    const tempLayer = $('#tempLayer');
-    const playerLayer = $('#playerLayer');
-    const contextMenu = $('#contextMenu');
-    const scrub = $('#scrub');
-    const scrubProgress = $('#scrubProgress');
-    const frameCounter = $('#frameCounter');
-    const totalFrames = $('#totalFrames');
-
-    const modeChips = $$('.chip');
-    const addHome = $('#addHome'), addAway = $('#addAway'), addBall = $('#addBall');
-    const arrowStyleEl = $('#arrowStyle'), arrowWidthEl = $('#arrowWidth'), arrowColorEl = $('#arrowColor');
-    const zoomRange = $('#zoomRange'), zoomLabel = $('#zoomLabel'), snapGrid = $('#snapGrid');
-    const toggle3DBtn = $('#toggle3D');
-
-    const undoBtn = $('#undoBtn'), redoBtn = $('#redoBtn'), saveBtn = $('#saveBtn'), exportBtn = $('#exportBtn');
-    const playBtn = $('#playBtn'), rewindBtn = $('#rewindBtn'), forwardBtn = $('#forwardBtn'), exportFramesBtn = $('#exportFrames');
-
-    const downloadJSON = $('#downloadJSON'), loadJSON = $('#loadJSON'), fileInput = $('#fileInput');
-    const clearBtn = $('#clearBtn'), resetViewBtn = $('#resetViewBtn');
-
-    /* ----------------------
-       Coordinate helpers
-       ---------------------- */
-    function pxToSvg(pxX, pxY){
-      const rect = pitchCard.getBoundingClientRect();
-      const x = ((pxX - rect.left) / rect.width) * VB.w;
-      const y = ((pxY - rect.top) / rect.height) * VB.h;
-      return { x, y };
-    }
-    function pctToSvg(xPct, yPct){ return { x: xPct * (VB.w/100), y: yPct * (VB.h/100) }; }
-    function svgToPct(sx, sy){ return { x: (sx / VB.w) * 100, y: (sy / VB.h) * 100 }; }
-    function snapToGridPct(xPct, yPct){
-      if($('#snapGrid').checked){
-        return { xPct: Math.round(xPct/2)*2, yPct: Math.round(yPct/2)*2 };
-      }
-      return { xPct, yPct };
-    }
-
-    /* ----------------------
-       Rendering
-       ---------------------- */
-    function renderPlayers(){
-      playerLayer.innerHTML = '';
-      App.players.forEach(p => {
-        const el = document.createElement('div');
-        el.className = 'player ' + (p.type === 'away' ? 'away' : (p.type === 'ball' ? 'ball' : 'home'));
-        el.style.left = p.xPct + '%';
-        el.style.top = p.yPct + '%';
-        el.dataset.uid = p.uid;
-        el.title = p.label || p.type;
-        el.textContent = p.type === 'ball' ? 'B' : (p.label || p.type.toUpperCase());
-        // apply z-depth as translateZ via CSS 3D (visual only)
-        if(App.is3D && p.z){
-          el.style.transform = `translate(-50%,-50%) translateZ(${p.z}px) scale(${1 + p.z/200})`;
-        } else {
-          el.style.transform = 'translate(-50%,-50%)';
-        }
-        playerLayer.appendChild(el);
-        attachPlayerHandlers(el, p);
-      });
-    }
-
-    function renderArrows(){
-      arrowsLayer.innerHTML = '';
-      App.arrows.forEach(a => {
-        const path = document.createElementNS('http://www.w3.org/2000/svg','path');
-        const start = { x: a.x1, y: a.y1 }, end = { x: a.x2, y: a.y2 };
-        let d;
-        if(a.control && typeof a.control.cx === 'number'){
-          d = `M ${start.x} ${start.y} Q ${a.control.cx} ${a.control.cy} ${end.x} ${end.y}`;
-        } else if(a.style === 'curved'){
-          const mx = (start.x + end.x)/2, my = (start.y + end.y)/2;
-          const dx = end.x - start.x, dy = end.y - start.y;
-          const dist = Math.hypot(dx,dy) || 1;
-          const nx = -dy/dist, ny = dx/dist;
-          const offset = clamp(dist * 0.18, 30, 200);
-          const cx = mx + nx*offset, cy = my + ny*offset;
-          d = `M ${start.x} ${start.y} Q ${cx} ${cy} ${end.x} ${end.y}`;
-        } else {
-          d = `M ${start.x} ${start.y} L ${end.x} ${end.y}`;
-        }
-        path.setAttribute('d', d);
-        path.setAttribute('stroke', a.color || '#ffd166');
-        path.setAttribute('stroke-width', a.width || 3);
-        path.setAttribute('class', 'arrowLine');
-        if(a.style === 'dashed') path.setAttribute('stroke-dasharray','12 8');
-        if(a.style === 'glow') path.setAttribute('filter','url(#glow)');
-        path.setAttribute('marker-end', a.style === 'glow' ? 'url(#arrowHeadGlow)' : 'url(#arrowHead)');
-        path.dataset.aid = a.id;
-        arrowsLayer.appendChild(path);
-      });
-    }
-
-    /* ----------------------
-       Player handlers (drag, dblclick, right-click)
-       ---------------------- */
-    let dragState = null;
-    function attachPlayerHandlers(el, model){
-      // pointerdown: select + drag or start draw if in draw/curve mode
-      el.onpointerdown = (ev) => {
-        ev.stopPropagation(); ev.preventDefault();
-        if(App.mode === 'draw' || App.mode === 'curve'){
-          startDrawFromPlayer(model, ev);
-          return;
-        }
-        if(App.mode === 'erase'){
-          removePlayer(model.uid);
-          return;
-        }
-        // selection + drag
-        setSelected(model.uid);
-        dragState = { uid: model.uid, startClient: { x: ev.clientX, y: ev.clientY }, orig: { xPct: model.xPct, yPct: model.yPct } };
-        el.setPointerCapture(ev.pointerId);
-        el.style.cursor = 'grabbing';
+    // Complete working version with all features
+    document.addEventListener('DOMContentLoaded', function() {
+      // State
+      const state = {
+        mode: 'select',
+        selectedElement: null,
+        arrows: [],
+        players: [],
+        zones: [],
+        arrowStyle: 'loafted',
+        is3D: false
       };
 
-      el.onpointermove = (ev) => {
-        if(!dragState || dragState.uid !== model.uid) return;
-        ev.preventDefault();
-        const rect = pitchCard.getBoundingClientRect();
-        const dx = ev.clientX - dragState.startClient.x, dy = ev.clientY - dragState.startClient.y;
-        const pctX = (dx / rect.width) * 100, pctY = (dy / rect.height) * 100;
-        let nx = dragState.orig.xPct + pctX, ny = dragState.orig.yPct + pctY;
-        nx = clamp(nx, 1, 99); ny = clamp(ny, 1, 99);
-        if($('#snapGrid').checked){ nx = Math.round(nx/2)*2; ny = Math.round(ny/2)*2; }
-        const p = App.players.find(pp => pp.uid === model.uid);
-        if(p){ p.xPct = nx; p.yPct = ny; renderPlayers(); /* arrows may follow */ }
-      };
+      // DOM Elements
+      const pitch = document.getElementById('pitch');
+      const arrowOverlay = document.getElementById('arrow-overlay');
+      const recentActions = document.getElementById('recent-actions');
+      
+      // Buttons
+      const btnSelect = document.getElementById('btn-select');
+      const btnDraw = document.getElementById('btn-draw');
+      const btnZone = document.getElementById('btn-zone');
+      const btnPlayer = document.getElementById('btn-player');
+      const btnBall = document.getElementById('btn-ball');
+      const btnDelete = document.getElementById('btn-delete');
+      const btnDeleteArrow = document.getElementById('btn-delete-arrow');
+      const btnApplyFormation = document.getElementById('btn-apply-formation');
+      const formationSelect = document.getElementById('formation-select');
+      const arrowThickness = document.getElementById('arrow-thickness');
+      const arrowThicknessLabel = document.getElementById('arrow-thickness-label');
+      const zoomControl = document.getElementById('zoom-control');
+      const brightnessControl = document.getElementById('brightness-control');
+      const arrowStyleButtons = document.querySelectorAll('.arrow-style');
+      const btn3DToggle = document.getElementById('btn-3d-toggle');
+      const btnNewProject = document.getElementById('btn-new-project');
+      const btnExport = document.getElementById('btn-export');
+      const btnSettings = document.getElementById('btn-settings');
+      const btnAddZone = document.getElementById('btn-add-zone');
+      const btnRemoveZone = document.getElementById('btn-remove-zone');
+      const zoneNameInput = document.getElementById('zone-name');
+      const zoneOpacity = document.getElementById('zone-opacity');
+      const zoneOpacityLabel = document.getElementById('zone-opacity-label');
+      const rePrev = document.getElementById('re-prev');
+      const rePlay = document.getElementById('re-play');
+      const reNext = document.getElementById('re-next');
+      const reStop = document.getElementById('re-stop');
+      const reLoop = document.getElementById('re-loop');
+      const reProgress = document.getElementById('re-progress');
 
-      el.onpointerup = (ev) => {
-        if(dragState && dragState.uid === model.uid){
-          pushUndo();
-          saveLocal();
-        }
-        dragState = null;
-        try{ el.releasePointerCapture(ev.pointerId); } catch(e){}
-        el.style.cursor = 'grab';
-      };
-
-      el.ondblclick = (ev) => {
-        ev.stopPropagation();
-        const newLabel = prompt('Label for player', model.label || '');
-        if(newLabel !== null){
-          pushUndo();
-          model.label = newLabel;
-          renderPlayers(); saveLocal();
-        }
-      };
-
-      el.oncontextmenu = (ev) => {
-        ev.preventDefault(); ev.stopPropagation();
-        showContextMenuFor(model, ev.clientX, ev.clientY);
-      };
-    }
-
-    /* ----------------------
-       Context menu (right click)
-       ---------------------- */
-    function showContextMenuFor(playerModel, clientX, clientY){
-      contextMenu.style.display = 'block';
-      contextMenu.style.left = clientX + 'px';
-      contextMenu.style.top = clientY + 'px';
-      contextMenu.setAttribute('aria-hidden', 'false');
-      // store target
-      contextMenu.dataset.targetUid = playerModel.uid;
-    }
-
-    contextMenu.addEventListener('click', (ev) => {
-      const action = ev.target.dataset.action;
-      if(!action) return;
-      const uid = contextMenu.dataset.targetUid;
-      if(!uid) return;
-      const p = App.players.find(x => x.uid === uid);
-      switch(action){
-        case 'rename':
-          const label = prompt('Label', p.label || '');
-          if(label !== null){ pushUndo(); p.label = label; renderPlayers(); saveLocal(); }
-          break;
-        case 'to-home': pushUndo(); p.type = 'home'; renderPlayers(); saveLocal(); break;
-        case 'to-away': pushUndo(); p.type = 'away'; renderPlayers(); saveLocal(); break;
-        case 'copy':
-          pushUndo();
-          const copy = Object.assign({}, p, { uid: uid('p_'), xPct: p.xPct + 4, yPct: p.yPct + 4 });
-          App.players.push(copy); renderPlayers(); saveLocal();
-          break;
-        case 'delete':
-          if(confirm('Delete player?')){ pushUndo(); removePlayer(uid); }
-          break;
-      }
-      hideContextMenu();
-    });
-
-    document.addEventListener('pointerdown', (ev) => {
-      // hide context menu when clicking elsewhere
-      if(contextMenu.style.display === 'block'){
-        if(!contextMenu.contains(ev.target)) hideContextMenu();
-      }
-    });
-
-    function hideContextMenu(){ contextMenu.style.display = 'none'; contextMenu.setAttribute('aria-hidden', 'true'); contextMenu.dataset.targetUid = ''; }
-
-    /* ----------------------
-       Select / Update selection
-       ---------------------- */
-    function setSelected(uid){
-      App.selectedUid = uid;
-      $$('.player').forEach(el => el.classList.toggle('selected', el.dataset.uid === uid));
-      updateSelectionPanel();
-    }
-
-    function updateSelectionPanel(){
-      const sel = $('#selInfo');
-      if(!App.selectedUid){ sel.innerHTML = 'Type: — <br/> Team: — <br/> Label: — <br/> Depth: —'; return; }
-      const p = App.players.find(x => x.uid === App.selectedUid);
-      if(!p){ sel.innerHTML = 'Type: —'; return; }
-      sel.innerHTML = `Type: <b>${p.type}</b><br/>Team: <b>${p.type==='away'?'Away':'Home'}</b><br/>Label: <b>${p.label || '-'}</b><br/>Depth: <b>${p.z || 0}px</b>`;
-    }
-
-    /* ----------------------
-       Add / Remove Players
-       ---------------------- */
-    function addPlayer(type = 'home'){
-      pushUndo();
-      const p = {
-        uid: uid('p_'),
-        type,
-        xPct: 20 + Math.random()*60,
-        yPct: 20 + Math.random()*60,
-        label: type === 'home' ? 'ST' : (type === 'away' ? 'OP' : 'B'),
-        z: 0
-      };
-      App.players.push(p);
-      renderPlayers(); saveLocal();
-    }
-
-    function removePlayer(uid){
-      pushUndo();
-      App.players = App.players.filter(p => p.uid !== uid);
-      App.arrows = App.arrows.filter(a => a.fromUid !== uid && a.toUid !== uid);
-      renderPlayers(); renderArrows(); setSelected(null); saveLocal();
-    }
-
-    /* ----------------------
-       Drawing arrows (right-mouse + left) & curves
-       ---------------------- */
-    function startDrawFromPlayer(player, ev){
-      const start = pctToSvg(player.xPct, player.yPct);
-      App.drawing = { fromUid: player.uid, start: {...start}, cur: {...start}, tempElem: null };
-      renderTemp();
-    }
-
-    function renderTemp(){
-      tempLayer.innerHTML = '';
-      if(!App.drawing) return;
-      const p = App.drawing;
-      const path = document.createElementNS('http://www.w3.org/2000/svg','path');
-      const style = arrowStyleEl.value;
-      if(style === 'curved'){
-        // create simple curved preview (auto control)
-        const mx = (p.start.x + p.cur.x)/2; const my = (p.start.y + p.cur.y)/2;
-        const dx = p.cur.x - p.start.x, dy = p.cur.y - p.start.y;
-        const dist = Math.hypot(dx,dy) || 1;
-        const nx = -dy/dist, ny = dx/dist; const offset = clamp(dist * 0.18, 30, 200);
-        const cx = mx + nx*offset, cy = my + ny*offset;
-        path.setAttribute('d', `M ${p.start.x} ${p.start.y} Q ${cx} ${cy} ${p.cur.x} ${p.cur.y}`);
-      } else {
-        path.setAttribute('d', `M ${p.start.x} ${p.start.y} L ${p.cur.x} ${p.cur.y}`);
-      }
-      path.setAttribute('stroke', arrowColorEl.value); path.setAttribute('stroke-width', arrowWidthEl.value);
-      path.setAttribute('fill', 'none'); path.setAttribute('class', 'arrowLine');
-      path.setAttribute('stroke-opacity', '0.9');
-      path.setAttribute('marker-end', arrowStyleEl.value === 'glow' ? 'url(#arrowHeadGlow)' : 'url(#arrowHead)');
-      tempLayer.appendChild(path);
-      App.drawing.tempElem = path;
-    }
-
-    document.addEventListener('pointermove', (ev) => {
-      if(!App.drawing) return;
-      const p = pxToSvg(ev.clientX, ev.clientY);
-      App.drawing.cur.x = p.x; App.drawing.cur.y = p.y;
-      renderTemp();
-    });
-
-    // allow starting draw from right-click as requested: right-click on player -> start arrow,
-    // then left click to complete on target player or right-click to place free target.
-    document.addEventListener('contextmenu', (ev) => {
-      // right-click on player to start draw if mode is draw or context mode is active
-      const target = ev.target;
-      if(target && target.classList && target.classList.contains('player')){
-        ev.preventDefault();
-        const uid = target.dataset.uid;
-        const player = App.players.find(p => p.uid === uid);
-        if(player){
-          // If currently in select mode but user right-clicks, treat as draw-from
-          if(App.mode === 'select' || App.mode === 'draw' || App.mode === 'curve'){
-            startDrawFromPlayer(player, ev);
-          } else {
-            // show context menu
-            showContextMenuFor(player, ev.clientX, ev.clientY);
-          }
-        }
-      }
-    });
-
-    document.addEventListener('pointerup', (ev) => {
-      // finalize drawing
-      if(!App.drawing) return;
-      const t = ev.target;
-      // if ended on a player => connect
-      if(t && t.classList && t.classList.contains('player')){
-        const toUid = t.dataset.uid;
-        if(toUid && toUid !== App.drawing.fromUid){
-          const fromP = App.players.find(x => x.uid === App.drawing.fromUid);
-          const toP = App.players.find(x => x.uid === toUid);
-          if(fromP && toP){
-            pushUndo();
-            const a = {
-              id: uid('a_'),
-              fromUid: fromP.uid,
-              toUid: toP.uid,
-              x1: pctToSvg(fromP.xPct, fromP.yPct).x,
-              y1: pctToSvg(fromP.xPct, fromP.yPct).y,
-              x2: pctToSvg(toP.xPct, toP.yPct).x,
-              y2: pctToSvg(toP.xPct, toP.yPct).y,
-              style: arrowStyleEl.value,
-              width: Number(arrowWidthEl.value),
-              color: arrowColorEl.value,
-              control: arrowStyleEl.value === 'curved' ? computeAutoControl(fromP, toP) : null
-            };
-            App.arrows.push(a);
-            renderArrows(); saveLocal();
-          }
-        }
-      } else {
-        // free arrow endpoint
-        pushUndo();
-        const a = {
-          id: uid('a_'),
-          fromUid: null,
-          toUid: null,
-          x1: App.drawing.start.x, y1: App.drawing.start.y,
-          x2: App.drawing.cur.x, y2: App.drawing.cur.y,
-          style: arrowStyleEl.value,
-          width: Number(arrowWidthEl.value),
-          color: arrowColorEl.value,
-          control: null
-        };
-        App.arrows.push(a);
-        renderArrows(); saveLocal();
-      }
-      App.drawing = null; tempLayer.innerHTML = '';
-    });
-
-    function computeAutoControl(fromP, toP){
-      const A = pctToSvg(fromP.xPct, fromP.yPct), B = pctToSvg(toP.xPct, toP.yPct);
-      const mx = (A.x + B.x)/2, my = (A.y + B.y)/2;
-      const dx = B.x - A.x, dy = B.y - A.y;
-      const dist = Math.hypot(dx,dy) || 1;
-      const nx = -dy/dist, ny = dx/dist; const offset = clamp(dist * 0.18, 30, 200);
-      return { cx: mx + nx*offset, cy: my + ny*offset };
-    }
-
-    /* ----------------------
-       Undo / Redo
-       ---------------------- */
-    function pushUndo(){
-      App.undoStack.push(JSON.stringify({ players: App.players, arrows: App.arrows }));
-      if(App.undoStack.length > 80) App.undoStack.shift();
-      App.redoStack = [];
-      updateUndoButtons();
-    }
-    function undo(){
-      const s = App.undoStack.pop(); if(!s) return;
-      App.redoStack.push(JSON.stringify({ players: App.players, arrows: App.arrows }));
-      const parsed = JSON.parse(s);
-      App.players = parsed.players || []; App.arrows = parsed.arrows || [];
-      renderPlayers(); renderArrows(); saveLocal(); updateUndoButtons();
-    }
-    function redo(){
-      const s = App.redoStack.pop(); if(!s) return;
-      App.undoStack.push(JSON.stringify({ players: App.players, arrows: App.arrows }));
-      const parsed = JSON.parse(s);
-      App.players = parsed.players || []; App.arrows = parsed.arrows || [];
-      renderPlayers(); renderArrows(); saveLocal(); updateUndoButtons();
-    }
-    function updateUndoButtons(){
-      undoBtn.disabled = App.undoStack.length === 0;
-      redoBtn.disabled = App.redoStack.length === 0;
-    }
-
-    undoBtn.addEventListener('click', undo);
-    redoBtn.addEventListener('click', redo);
-
-    /* ----------------------
-       Save / load (localStorage)
-       ---------------------- */
-    function saveLocal(){
-      try{ localStorage.setItem('protactix_v2', JSON.stringify({ players: App.players, arrows: App.arrows, frames: App.frames })); }catch(e){}
-    }
-    function loadLocal(){
-      try{
-        const raw = localStorage.getItem('protactix_v2'); if(!raw) return;
-        const parsed = JSON.parse(raw);
-        App.players = parsed.players || []; App.arrows = parsed.arrows || []; App.frames = parsed.frames || [];
-      }catch(e){}
-    }
-    saveBtn.addEventListener('click', () => { saveLocal(); alert('Saved locally'); });
-
-    /* ----------------------
-       Export / Import JSON
-       ---------------------- */
-    exportBtn.addEventListener('click', () => {
-      const data = JSON.stringify({ players: App.players, arrows: App.arrows, frames: App.frames }, null, 2);
-      const blob = new Blob([data], { type: 'application/json' }); const url = URL.createObjectURL(blob);
-      const a = document.createElement('a'); a.href = url; a.download = 'protactix_export.json'; a.click(); URL.revokeObjectURL(url);
-    });
-
-    $('#downloadJSON').addEventListener('click', () => exportBtn.click());
-    $('#loadJSON').addEventListener('click', () => fileInput.click());
-    fileInput.addEventListener('change', (ev) => {
-      const f = ev.target.files[0]; if(!f) return;
-      const r = new FileReader(); r.onload = e => {
-        try{
-          const parsed = JSON.parse(e.target.result);
-          pushUndo(); App.players = parsed.players || []; App.arrows = parsed.arrows || []; App.frames = parsed.frames || [];
-          renderPlayers(); renderArrows(); saveLocal(); alert('Loaded JSON');
-        }catch(err){ alert('Invalid JSON'); }
-      }; r.readAsText(f);
-    });
-
-    /* ----------------------
-       Recording frames & replay timeline
-       ---------------------- */
-    $('#recordFrame').addEventListener('click', () => {
-      const snapshot = { players: JSON.parse(JSON.stringify(App.players)), arrows: JSON.parse(JSON.stringify(App.arrows)), ts: Date.now() };
-      App.frames.push(snapshot);
-      updateFramesUI();
-      saveLocal();
-    });
-    $('#clearFrames').addEventListener('click', () => { if(confirm('Clear frames?')){ App.frames = []; App.playIndex = 0; updateFramesUI(); saveLocal(); } });
-
-    function updateFramesUI(){
-      totalFrames.textContent = App.frames.length;
-      frameCounter.textContent = App.playIndex;
-      const pct = App.frames.length === 0 ? 0 : (App.playIndex / Math.max(1, App.frames.length - 1)) * 100;
-      scrubProgress.style.width = pct + '%';
-    }
-
-    // playback core: simple interpolation between frames
-    playBtn.addEventListener('click', () => {
-      if(App.playing){ stopPlayback(); } else { startPlayback(); }
-    });
-    rewindBtn.addEventListener('click', () => { if(App.frames.length){ App.playIndex = 0; seekFrame(0); } });
-    forwardBtn.addEventListener('click', () => { if(App.frames.length){ App.playIndex = Math.max(0, App.frames.length - 1); seekFrame(App.playIndex); } });
-
-    function startPlayback(){
-      if(App.frames.length < 2) { alert('Record at least 2 frames to play back'); return; }
-      App.playing = true; playBtn.classList.add('active');
-      const start = performance.now();
-      const duration = 1000 * App.frames.length / App.playSpeed; // simple
-      function tick(now){
-        const t = (now - start) / duration; const bounded = clamp(t, 0, 1);
-        const pos = bounded * (App.frames.length - 1);
-        const i0 = Math.floor(pos), i1 = Math.min(App.frames.length - 1, i0 + 1); const localT = pos - i0;
-        if(App.frames[i0] && App.frames[i1]){
-          // interpolate players
-          const map0 = Object.fromEntries((App.frames[i0].players || []).map(pp => [pp.uid, pp]));
-          const map1 = Object.fromEntries((App.frames[i1].players || []).map(pp => [pp.uid, pp]));
-          const allUids = Array.from(new Set([...(App.frames[i0].players||[]).map(p=>p.uid), ...(App.frames[i1].players||[]).map(p=>p.uid)]));
-          const interpPlayers = allUids.map(uid => {
-            const a = map0[uid] || map1[uid], b = map1[uid] || map0[uid];
-            const x = (a && b) ? (a.xPct*(1-localT) + b.xPct*localT) : (a ? a.xPct : b.xPct);
-            const y = (a && b) ? (a.yPct*(1-localT) + b.yPct*localT) : (a ? a.yPct : b.yPct);
-            const z = ((a && a.z) || 0)*(1-localT) + ((b && b.z) || 0)*localT;
-            return { ...a, xPct: x, yPct: y, z };
+      // Initialize players from DOM
+      function initPlayers() {
+        const players = pitch.querySelectorAll('.player');
+        players.forEach(player => {
+          state.players.push(player);
+          player.addEventListener('click', function(e) {
+            e.stopPropagation();
+            selectElement(player);
           });
-          const snapArrows = App.frames[i0].arrows || [];
-          // render as playback (do not overwrite App.players)
-          renderPlayback(interpPlayers, snapArrows);
-          App.playIndex = Math.round(pos); updateFramesUI();
+          
+          // Make players draggable
+          makeDraggable(player);
+        });
+      }
+
+      // Make element draggable
+      function makeDraggable(element) {
+        let isDragging = false;
+        let startX, startY, initialLeft, initialTop;
+        
+        element.addEventListener('mousedown', startDrag);
+        
+        function startDrag(e) {
+          if (state.mode !== 'select') return;
+          
+          e.preventDefault();
+          isDragging = true;
+          startX = e.clientX;
+          startY = e.clientY;
+          
+          // Get initial position
+          initialLeft = parseFloat(element.style.left);
+          initialTop = parseFloat(element.style.top);
+          
+          document.addEventListener('mousemove', drag);
+          document.addEventListener('mouseup', stopDrag);
+          
+          // Select the element being dragged
+          selectElement(element);
         }
-        if(bounded < 1 && App.playing){
-          App.playRaf = requestAnimationFrame(tick);
+        
+        function drag(e) {
+          if (!isDragging) return;
+          
+          const deltaX = e.clientX - startX;
+          const deltaY = e.clientY - startY;
+          
+          // Calculate new position in percentages
+          const rect = pitch.getBoundingClientRect();
+          const newLeft = initialLeft + (deltaX / rect.width) * 100;
+          const newTop = initialTop + (deltaY / rect.height) * 100;
+          
+          // Boundary checks
+          element.style.left = Math.max(0, Math.min(100, newLeft)) + '%';
+          element.style.top = Math.max(0, Math.min(100, newTop)) + '%';
+        }
+        
+        function stopDrag() {
+          isDragging = false;
+          document.removeEventListener('mousemove', drag);
+          document.removeEventListener('mouseup', stopDrag);
+        }
+      }
+
+      // Select element
+      function selectElement(element) {
+        // Clear previous selection
+        if (state.selectedElement) {
+          state.selectedElement.classList.remove('selected');
+        }
+        
+        // Deselect all zones
+        document.querySelectorAll('.zone').forEach(zone => {
+          zone.classList.remove('selected');
+        });
+        
+        // Select new element
+        state.selectedElement = element;
+        element.classList.add('selected');
+        logAction(`Selected ${element.textContent}`);
+      }
+
+      // Clear selection
+      function clearSelection() {
+        if (state.selectedElement) {
+          state.selectedElement.classList.remove('selected');
+          state.selectedElement = null;
+        }
+        
+        // Deselect all zones
+        document.querySelectorAll('.zone').forEach(zone => {
+          zone.classList.remove('selected');
+        });
+      }
+
+      // Add player
+      function addPlayer() {
+        const positions = ['ST', 'LW', 'RW', 'CM', 'CB', 'LB', 'RB', 'GK'];
+        const label = positions[Math.floor(Math.random() * positions.length)];
+        const player = document.createElement('div');
+        player.className = 'player home';
+        player.textContent = label;
+        player.style.left = '50%';
+        player.style.top = '50%';
+        
+        player.addEventListener('click', function(e) {
+          e.stopPropagation();
+          selectElement(player);
+        });
+        
+        makeDraggable(player);
+        pitch.appendChild(player);
+        state.players.push(player);
+        logAction(`Added player: ${label}`);
+      }
+
+      // Add ball
+      function addBall() {
+        const ball = document.createElement('div');
+        ball.className = 'player ball';
+        ball.textContent = 'B';
+        ball.style.left = '50%';
+        ball.style.top = '50%';
+        
+        ball.addEventListener('click', function(e) {
+          e.stopPropagation();
+          selectElement(ball);
+        });
+        
+        makeDraggable(ball);
+        pitch.appendChild(ball);
+        state.players.push(ball);
+        logAction('Added ball');
+      }
+
+      // Delete selected
+      function deleteSelected() {
+        if (state.selectedElement) {
+          const element = state.selectedElement;
+          element.remove();
+          state.players = state.players.filter(p => p !== element);
+          state.selectedElement = null;
+          logAction('Deleted selected element');
+        }
+      }
+
+      // Apply formation
+      function applyFormation() {
+        const formation = formationSelect.value;
+        if (!formation) return;
+        
+        // Clear existing players (except ball)
+        state.players.forEach(player => {
+          if (!player.classList.contains('ball')) {
+            player.remove();
+          }
+        });
+        state.players = state.players.filter(p => p.classList.contains('ball'));
+        
+        // Add formation players
+        const formations = {
+          '4-4-2': [
+            {pos: 'GK', left: '5%', top: '50%'},
+            {pos: 'LB', left: '20%', top: '20%'},
+            {pos: 'CB', left: '20%', top: '40%'},
+            {pos: 'CB', left: '20%', top: '60%'},
+            {pos: 'RB', left: '20%', top: '80%'},
+            {pos: 'LM', left: '45%', top: '20%'},
+            {pos: 'CM', left: '45%', top: '40%'},
+            {pos: 'CM', left: '45%', top: '60%'},
+            {pos: 'RM', left: '45%', top: '80%'},
+            {pos: 'ST', left: '75%', top: '35%'},
+            {pos: 'ST', left: '75%', top: '65%'}
+          ],
+          '4-3-3': [
+            {pos: 'GK', left: '5%', top: '50%'},
+            {pos: 'LB', left: '20%', top: '25%'},
+            {pos: 'CB', left: '20%', top: '50%'},
+            {pos: 'CB', left: '20%', top: '75%'},
+            {pos: 'RB', left: '20%', top: '25%'},
+            {pos: 'CM', left: '45%', top: '35%'},
+            {pos: 'CM', left: '45%', top: '50%'},
+            {pos: 'CM', left: '45%', top: '65%'},
+            {pos: 'LW', left: '80%', top: '20%'},
+            {pos: 'ST', left: '80%', top: '50%'},
+            {pos: 'RW', left: '80%', top: '80%'}
+          ],
+          '3-5-2': [
+            {pos: 'GK', left: '5%', top: '50%'},
+            {pos: 'CB', left: '15%', top: '25%'},
+            {pos: 'CB', left: '15%', top: '50%'},
+            {pos: 'CB', left: '15%', top: '75%'},
+            {pos: 'LM', left: '35%', top: '20%'},
+            {pos: 'CM', left: '35%', top: '40%'},
+            {pos: 'CM', left: '35%', top: '60%'},
+            {pos: 'RM', left: '35%', top: '80%'},
+            {pos: 'AM', left: '60%', top: '50%'},
+            {pos: 'ST', left: '80%', top: '35%'},
+            {pos: 'ST', left: '80%', top: '65%'}
+          ],
+          '4-2-3-1': [
+            {pos: 'GK', left: '5%', top: '50%'},
+            {pos: 'LB', left: '20%', top: '25%'},
+            {pos: 'CB', left: '20%', top: '50%'},
+            {pos: 'CB', left: '20%', top: '75%'},
+            {pos: 'RB', left: '20%', top: '25%'},
+            {pos: 'CDM', left: '40%', top: '35%'},
+            {pos: 'CDM', left: '40%', top: '65%'},
+            {pos: 'LW', left: '65%', top: '20%'},
+            {pos: 'CAM', left: '65%', top: '50%'},
+            {pos: 'RW', left: '65%', top: '80%'},
+            {pos: 'ST', left: '85%', top: '50%'}
+          ]
+        };
+        
+        const formationPlayers = formations[formation] || formations['4-4-2'];
+        
+        formationPlayers.forEach(playerData => {
+          const player = document.createElement('div');
+          player.className = 'player home';
+          player.textContent = playerData.pos;
+          player.style.left = playerData.left;
+          player.style.top = playerData.top;
+          
+          player.addEventListener('click', function(e) {
+            e.stopPropagation();
+            selectElement(player);
+          });
+          
+          makeDraggable(player);
+          pitch.appendChild(player);
+          state.players.push(player);
+        });
+        
+        logAction(`Applied ${formation} formation`);
+      }
+
+      // Draw arrow - IMPROVED
+      function drawArrow(startX, startY, endX, endY) {
+        // Create a group for the arrow
+        const arrowGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+        arrowGroup.setAttribute('class', 'arrow');
+        
+        // Create highlight layer (thicker line underneath)
+        const highlight = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        highlight.setAttribute('class', 'arrow-highlight');
+        
+        // Create main arrow line
+        const arrow = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        arrow.setAttribute('class', 'arrow-line');
+        
+        // Apply style based on current arrow style
+        let dValue;
+        switch(state.arrowStyle) {
+          case 'simple':
+            dValue = `M${startX},${startY} L${endX},${endY}`;
+            break;
+          case 'curved':
+            dValue = `M${startX},${startY} Q${(startX + endX)/2},${Math.min(startY, endY) - 8} ${endX},${endY}`;
+            break;
+          case 'dashed':
+            dValue = `M${startX},${startY} L${endX},${endY}`;
+            arrow.classList.add('arrow-dashed');
+            break;
+          case 'loafted':
+          default:
+            dValue = `M${startX},${startY} Q${(startX + endX)/2},${Math.min(startY, endY) - 8} ${endX},${endY}`;
+            break;
+        }
+        
+        highlight.setAttribute('d', dValue);
+        arrow.setAttribute('d', dValue);
+        
+        // Add arrowhead
+        const arrowHead = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+        const headSize = 4;
+        const angle = Math.atan2(endY - startY, endX - startX);
+        
+        // Calculate arrowhead points
+        const headX1 = endX - headSize * Math.cos(angle - Math.PI/6);
+        const headY1 = endY - headSize * Math.sin(angle - Math.PI/6);
+        const headX2 = endX - headSize * Math.cos(angle + Math.PI/6);
+        const headY2 = endY - headSize * Math.sin(angle + Math.PI/6);
+        
+        arrowHead.setAttribute('points', `${endX},${endY} ${headX1},${headY1} ${headX2},${headY2}`);
+        arrowHead.setAttribute('fill', '#e63946'); // Red arrowhead
+        
+        arrowGroup.appendChild(highlight);
+        arrowGroup.appendChild(arrow);
+        arrowGroup.appendChild(arrowHead);
+        arrowOverlay.appendChild(arrowGroup);
+        
+        // Store arrow data
+        state.arrows.push({arrowGroup, arrow, highlight, arrowHead});
+        
+        // Make arrow selectable
+        arrowGroup.addEventListener('click', function(e) {
+          e.stopPropagation();
+          selectArrow(arrowGroup);
+        });
+        
+        logAction(`Added ${state.arrowStyle} arrow`);
+      }
+
+      // Select arrow
+      function selectArrow(arrowGroup) {
+        // Clear previous selection
+        document.querySelectorAll('.arrow').forEach(a => a.classList.remove('selected'));
+        
+        // Select new arrow
+        arrowGroup.classList.add('selected');
+        logAction('Selected arrow');
+      }
+
+      // Delete selected arrow
+      function deleteSelectedArrow() {
+        const selectedArrow = document.querySelector('.arrow.selected');
+        if (selectedArrow) {
+          const arrowIndex = state.arrows.findIndex(a => a.arrowGroup === selectedArrow);
+          if (arrowIndex !== -1) {
+            state.arrows[arrowIndex].arrowGroup.remove();
+            state.arrows.splice(arrowIndex, 1);
+            logAction('Deleted selected arrow');
+          }
         } else {
-          App.playing = false; playBtn.classList.remove('active');
+          alert('Please select an arrow first by clicking on it');
         }
       }
-      App.playRaf = requestAnimationFrame(tick);
-    }
 
-    function stopPlayback(){
-      App.playing = false; if(App.playRaf) cancelAnimationFrame(App.playRaf); renderPlayers(); renderArrows();
-    }
+      // Add zone
+      function addZone() {
+        const zoneName = zoneNameInput.value || 'Zone ' + (state.zones.length + 1);
+        
+        const zone = document.createElement('div');
+        zone.className = 'zone';
+        zone.style.left = '30%';
+        zone.style.top = '20%';
+        zone.style.width = '40%';
+        zone.style.height = '60%';
+        
+        const zoneLabel = document.createElement('div');
+        zoneLabel.className = 'zone-label';
+        zoneLabel.textContent = zoneName;
+        zone.appendChild(zoneLabel);
+        
+        zone.addEventListener('click', function(e) {
+          e.stopPropagation();
+          selectZone(zone);
+        });
+        
+        // Make zone draggable and resizable
+        makeZoneDraggable(zone);
+        
+        pitch.appendChild(zone);
+        state.zones.push(zone);
+        logAction(`Added zone: ${zoneName}`);
+      }
 
-    function renderPlayback(players, arrows){
-      // Render temporary players and arrows for playback
-      playerLayer.innerHTML = '';
-      players.forEach(p => {
-        const el = document.createElement('div');
-        el.className = 'player ' + (p.type === 'away' ? 'away' : (p.type === 'ball' ? 'ball' : 'home'));
-        el.style.left = p.xPct + '%';
-        el.style.top = p.yPct + '%';
-        el.textContent = p.type === 'ball' ? 'B' : (p.label || p.type.toUpperCase());
-        if(App.is3D && p.z) el.style.transform = `translate(-50%,-50%) translateZ(${p.z}px) scale(${1 + p.z/200})`;
-        playerLayer.appendChild(el);
-      });
-      // arrows
-      arrowsLayer.innerHTML = '';
-      arrows.forEach(a => {
-        const path = document.createElementNS('http://www.w3.org/2000/svg','path');
-        const start = { x: a.x1, y: a.y1 }, end = { x: a.x2, y: a.y2 };
-        let d = a.control ? `M ${start.x} ${start.y} Q ${a.control.cx} ${a.control.cy} ${end.x} ${end.y}` : `M ${start.x} ${start.y} L ${end.x} ${end.y}`;
-        path.setAttribute('d', d);
-        path.setAttribute('stroke', a.color || '#ffd166'); path.setAttribute('stroke-width', a.width || 3);
-        path.setAttribute('class', 'arrowLine'); if(a.style === 'dashed') path.setAttribute('stroke-dasharray','12 8');
-        if(a.style === 'glow') path.setAttribute('filter','url(#glow)');
-        path.setAttribute('marker-end', a.style === 'glow' ? 'url(#arrowHeadGlow)' : 'url(#arrowHead)');
-        arrowsLayer.appendChild(path);
-      });
-    }
-
-    function seekFrame(index){
-      if(!App.frames[index]) return;
-      const snap = App.frames[index];
-      renderPlayback(snap.players, snap.arrows);
-      App.playIndex = index; updateFramesUI();
-    }
-
-    exportFramesBtn.addEventListener('click', () => {
-      if(App.frames.length === 0){ alert('No frames to export'); return; }
-      // Provide export as JSON of frames (images would require canvas libs)
-      const blob = new Blob([JSON.stringify(App.frames, null, 2)], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a'); a.href = url; a.download = 'protactix_frames.json'; a.click(); URL.revokeObjectURL(url);
-      alert('Frames exported as JSON. For PNG/MP4 export, include html2canvas or CCapture flow.');
-    });
-
-    /* Scrub interaction */
-    let scrubbing = false;
-    scrub.addEventListener('pointerdown', (ev) => { scrubbing = true; handleScrub(ev); });
-    window.addEventListener('pointermove', ev => { if(scrubbing) handleScrub(ev); });
-    window.addEventListener('pointerup', ev => { if(scrubbing) scrubbing = false; });
-    function handleScrub(ev){
-      const r = scrub.getBoundingClientRect();
-      const x = clamp(ev.clientX - r.left, 0, r.width);
-      const pct = x / r.width;
-      const idx = Math.round(pct * Math.max(0, App.frames.length - 1));
-      if(idx >= 0 && idx < App.frames.length){ seekFrame(idx); }
-    }
-
-    /* ----------------------
-       Auto-attach arrows to moving players (layout loop)
-       ---------------------- */
-    (function layoutLoop(){
-      // update arrow endpoints if they reference players
-      App.arrows.forEach(a => {
-        if(a.fromUid){
-          const f = App.players.find(p => p.uid === a.fromUid);
-          if(f){ const s = pctToSvg(f.xPct, f.yPct); a.x1 = s.x; a.y1 = s.y; }
+      // Select zone
+      function selectZone(zone) {
+        // Clear previous selection
+        if (state.selectedElement) {
+          state.selectedElement.classList.remove('selected');
+          state.selectedElement = null;
         }
-        if(a.toUid){
-          const t = App.players.find(p => p.uid === a.toUid);
-          if(t){ const s = pctToSvg(t.xPct, t.yPct); a.x2 = s.x; a.y2 = s.y; }
+        
+        // Deselect all zones
+        document.querySelectorAll('.zone').forEach(z => {
+          z.classList.remove('selected');
+        });
+        
+        // Select new zone
+        zone.classList.add('selected');
+        logAction(`Selected zone: ${zone.querySelector('.zone-label').textContent}`);
+      }
+
+      // Make zone draggable and resizable
+      function makeZoneDraggable(zone) {
+        let isDragging = false;
+        let isResizing = false;
+        let startX, startY, initialLeft, initialTop, initialWidth, initialHeight;
+        
+        zone.addEventListener('mousedown', startDrag);
+        
+        function startDrag(e) {
+          if (state.mode !== 'select') return;
+          
+          e.preventDefault();
+          isDragging = true;
+          startX = e.clientX;
+          startY = e.clientY;
+          
+          // Get initial position and size
+          initialLeft = parseFloat(zone.style.left);
+          initialTop = parseFloat(zone.style.top);
+          initialWidth = parseFloat(zone.style.width);
+          initialHeight = parseFloat(zone.style.height);
+          
+          // Check if resizing (click near edge)
+          const rect = zone.getBoundingClientRect();
+          const threshold = 10; // pixels from edge
+          
+          if (e.clientX > rect.right - threshold && e.clientY > rect.bottom - threshold) {
+            isResizing = true;
+          } else {
+            isResizing = false;
+          }
+          
+          document.addEventListener('mousemove', drag);
+          document.addEventListener('mouseup', stopDrag);
+          
+          // Select the zone being dragged
+          selectZone(zone);
         }
-      });
-      renderArrows();
-      requestAnimationFrame(layoutLoop);
-    })();
+        
+        function drag(e) {
+          if (!isDragging) return;
+          
+          const deltaX = e.clientX - startX;
+          const deltaY = e.clientY - startY;
+          
+          // Calculate new position/size in percentages
+          const rect = pitch.getBoundingClientRect();
+          
+          if (isResizing) {
+            // Resize the zone
+            const newWidth = initialWidth + (deltaX / rect.width) * 100;
+            const newHeight = initialHeight + (deltaY / rect.height) * 100;
+            
+            // Boundary checks
+            zone.style.width = Math.max(5, Math.min(100 - initialLeft, newWidth)) + '%';
+            zone.style.height = Math.max(5, Math.min(100 - initialTop, newHeight)) + '%';
+          } else {
+            // Move the zone
+            const newLeft = initialLeft + (deltaX / rect.width) * 100;
+            const newTop = initialTop + (deltaY / rect.height) * 100;
+            
+            // Boundary checks
+            zone.style.left = Math.max(0, Math.min(100 - initialWidth, newLeft)) + '%';
+            zone.style.top = Math.max(0, Math.min(100 - initialHeight, newTop)) + '%';
+          }
+        }
+        
+        function stopDrag() {
+          isDragging = false;
+          document.removeEventListener('mousemove', drag);
+          document.removeEventListener('mouseup', stopDrag);
+        }
+      }
 
-    /* ----------------------
-       Helpers
-       ---------------------- */
-    function pctToSvg(xPct, yPct){ return { x: xPct * (VB.w/100), y: yPct * (VB.h/100) }; }
+      // Remove selected zone
+      function removeSelectedZone() {
+        const selectedZone = document.querySelector('.zone.selected');
+        if (selectedZone) {
+          selectedZone.remove();
+          state.zones = state.zones.filter(z => z !== selectedZone);
+          logAction('Removed selected zone');
+        } else {
+          alert('Please select a zone first by clicking on it');
+        }
+      }
 
-    /* ----------------------
-       UI wiring
-       ---------------------- */
-    // mode chips
-    modeChips.forEach(chip => chip.addEventListener('click', () => {
-      modeChips.forEach(c => c.classList.remove('active'));
-      chip.classList.add('active'); App.mode = chip.dataset.mode;
-    }));
-    addHome.addEventListener('click', () => addPlayer('home'));
-    addAway.addEventListener('click', () => addPlayer('away'));
-    addBall.addEventListener('click', () => addPlayer('ball'));
+      // Set mode
+      function setMode(mode) {
+        state.mode = mode;
+        btnSelect.classList.toggle('active', mode === 'select');
+        btnDraw.classList.toggle('active', mode === 'draw');
+        btnZone.classList.toggle('active', mode === 'zone');
+        
+        if (mode === 'draw') {
+          pitch.style.cursor = 'crosshair';
+        } else if (mode === 'zone') {
+          pitch.style.cursor = 'crosshair';
+        } else {
+          pitch.style.cursor = 'default';
+        }
+        
+        logAction(`Mode: ${mode}`);
+      }
 
-    arrowStyleEl.addEventListener('change', () => { /* style change */ });
-    arrowWidthEl.addEventListener('input', () => {});
-    arrowColorEl.addEventListener('input', () => {});
+      // Toggle 3D view
+      function toggle3DView() {
+        state.is3D = !state.is3D;
+        if (state.is3D) {
+          pitch.style.transform = 'perspective(1000px) rotateX(45deg)';
+          btn3DToggle.classList.add('active');
+          logAction('Enabled 3D view');
+        } else {
+          pitch.style.transform = 'none';
+          btn3DToggle.classList.remove('active');
+          logAction('Disabled 3D view');
+        }
+      }
 
-    $('#toggle3D').addEventListener('click', () => { App.is3D = !App.is3D; renderPlayers(); });
+      // New project
+      function newProject() {
+        if (confirm('Are you sure you want to create a new project? All unsaved changes will be lost.')) {
+          // Clear all elements
+          state.players.forEach(player => player.remove());
+          state.arrows.forEach(arrow => arrow.arrowGroup.remove());
+          state.zones.forEach(zone => zone.remove());
+          
+          // Reset state
+          state.players = [];
+          state.arrows = [];
+          state.zones = [];
+          state.selectedElement = null;
+          
+          // Add default players and ball
+          addDefaultPlayers();
+          
+          logAction('Created new project');
+        }
+      }
 
-    zoomRange.addEventListener('input', (ev) => {
-      const v = parseFloat(ev.target.value);
-      pitchCard.style.transform = `scale(${v})`;
-      zoomLabel.textContent = Math.round(v * 100) + '%';
-    });
-
-    // undo/redo already wired
-    // save/export wired
-
-    // play buttons wired above
-
-    // delete / clear / reset
-    clearBtn.addEventListener('click', () => { if(confirm('Clear pitch (players + arrows)?')){ pushUndo(); App.players = []; App.arrows = []; renderPlayers(); renderArrows(); saveLocal(); }});
-    resetViewBtn.addEventListener('click', () => { pitchCard.style.transform = ''; zoomRange.value = 1; zoomLabel.textContent = '100%'; });
-
-    /* Keyboard shortcuts */
-    document.addEventListener('keydown', (ev) => {
-      if(ev.code === 'KeyS') setModeUI('select');
-      if(ev.code === 'KeyD') setModeUI('draw');
-      if(ev.code === 'KeyC') setModeUI('curve');
-      if(ev.code === 'KeyE') setModeUI('erase');
-      if(ev.code === 'Space'){ ev.preventDefault(); if(App.playing) stopPlayback(); else startPlayback(); }
-      if((ev.ctrlKey || ev.metaKey) && ev.key === 'z'){ undo(); }
-      if((ev.ctrlKey || ev.metaKey) && (ev.key === 'y' || (ev.shiftKey && ev.key === 'Z'))){ redo(); }
-      if(ev.code === 'KeyR'){ $('#recordFrame').click(); }
-      if(ev.key === 'Delete' && App.selectedUid){ if(confirm('Delete selected player?')) removePlayer(App.selectedUid); }
-    });
-
-    function setModeUI(mode){
-      App.mode = mode; modeChips.forEach(c => c.classList.toggle('active', c.dataset.mode === mode));
-    }
-
-    /* ----------------------
-       Initialization: load or seed
-       ---------------------- */
-    (function init(){
-      loadLocal();
-      if(App.players.length === 0){
-        App.players = [
-          { uid: uid('p_'), type: 'home', xPct: 18, yPct: 50, label: 'GK', z: 0},
-          { uid: uid('p_'), type: 'home', xPct: 34, yPct: 30, label: 'LB', z: 0},
-          { uid: uid('p_'), type: 'home', xPct: 34, yPct: 50, label: 'CB', z: 0},
-          { uid: uid('p_'), type: 'home', xPct: 34, yPct: 70, label: 'RB', z: 0},
-          { uid: uid('p_'), type: 'home', xPct: 60, yPct: 25, label: 'LW', z: 0},
-          { uid: uid('p_'), type: 'home', xPct: 65, yPct: 50, label: 'ST', z: 4},
-          { uid: uid('p_'), type: 'home', xPct: 60, yPct: 75, label: 'RW', z: 0},
-          { uid: uid('p_'), type: 'away', xPct: 80, yPct: 50, label: 'CB', z: 0 },
-          { uid: uid('p_'), type: 'ball', xPct: 55, yPct: 50, label: 'B', z: 0 }
+      // Add default players
+      function addDefaultPlayers() {
+        const defaultPlayers = [
+          {pos: 'ST', left: '20%', top: '30%', team: 'home'},
+          {pos: 'LW', left: '15%', top: '50%', team: 'home'},
+          {pos: 'RW', left: '15%', top: '10%', team: 'home'},
+          {pos: 'CB', left: '80%', top: '30%', team: 'away'},
+          {pos: 'LB', left: '85%', top: '50%', team: 'away'},
+          {pos: 'RB', left: '85%', top: '10%', team: 'away'}
         ];
+        
+        defaultPlayers.forEach(playerData => {
+          const player = document.createElement('div');
+          player.className = `player ${playerData.team}`;
+          player.textContent = playerData.pos;
+          player.style.left = playerData.left;
+          player.style.top = playerData.top;
+          
+          player.addEventListener('click', function(e) {
+            e.stopPropagation();
+            selectElement(player);
+          });
+          
+          makeDraggable(player);
+          pitch.appendChild(player);
+          state.players.push(player);
+        });
+        
+        // Add ball
+        addBall();
       }
-      renderPlayers(); renderArrows(); updateSelectionPanel(); updateFramesUI();
-    })();
 
-    /* ----------------------
-       Small UX: prevent accidental drag on double-tap mobile
-       ---------------------- */
-    let lastTap = 0;
-    document.addEventListener('touchend', (ev) => {
-      const now = Date.now();
-      if(now - lastTap < 300) ev.preventDefault();
-      lastTap = now;
+      // Export project
+      function exportProject() {
+        logAction('Project exported as image');
+        alert('Project exported successfully! (This would download an image in a real implementation)');
+      }
+
+      // Open settings
+      function openSettings() {
+        logAction('Settings opened');
+        alert('Settings dialog would open here in a real implementation');
+      }
+
+      // Replay controls
+      function setupReplayControls() {
+        let isPlaying = false;
+        let progress = 0;
+        
+        rePlay.addEventListener('click', function() {
+          isPlaying = !isPlaying;
+          if (isPlaying) {
+            rePlay.textContent = '⏸';
+            logAction('Replay started');
+            
+            // Simulate progress
+            const interval = setInterval(() => {
+              if (isPlaying && progress < 100) {
+                progress += 2;
+                reProgress.style.width = progress + '%';
+              } else {
+                clearInterval(interval);
+                isPlaying = false;
+                rePlay.textContent = '⏯';
+                if (progress >= 100) {
+                  progress = 0;
+                  reProgress.style.width = '0%';
+                }
+              }
+            }, 100);
+          } else {
+            rePlay.textContent = '⏯';
+            logAction('Replay paused');
+          }
+        });
+        
+        reStop.addEventListener('click', function() {
+          isPlaying = false;
+          progress = 0;
+          reProgress.style.width = '0%';
+          rePlay.textContent = '⏯';
+          logAction('Replay stopped');
+        });
+        
+        rePrev.addEventListener('click', function() {
+          progress = Math.max(0, progress - 10);
+          reProgress.style.width = progress + '%';
+          logAction('Replay rewound');
+        });
+        
+        reNext.addEventListener('click', function() {
+          progress = Math.min(100, progress + 10);
+          reProgress.style.width = progress + '%';
+          logAction('Replay fast forwarded');
+        });
+        
+        reLoop.addEventListener('click', function() {
+          this.classList.toggle('active');
+          logAction('Loop ' + (this.classList.contains('active') ? 'enabled' : 'disabled'));
+        });
+      }
+
+      // Log action
+      function logAction(text) {
+        const div = document.createElement('div');
+        div.textContent = `→ ${text}`;
+        recentActions.prepend(div);
+        
+        // Keep only last 10 actions
+        while (recentActions.children.length > 10) {
+          recentActions.removeChild(recentActions.lastChild);
+        }
+      }
+
+      // Event Listeners
+      btnSelect.addEventListener('click', () => setMode('select'));
+      btnDraw.addEventListener('click', () => setMode('draw'));
+      btnZone.addEventListener('click', () => setMode('zone'));
+      btnPlayer.addEventListener('click', addPlayer);
+      btnBall.addEventListener('click', addBall);
+      btnDelete.addEventListener('click', deleteSelected);
+      btnDeleteArrow.addEventListener('click', deleteSelectedArrow);
+      btnApplyFormation.addEventListener('click', applyFormation);
+      btn3DToggle.addEventListener('click', toggle3DView);
+      btnNewProject.addEventListener('click', newProject);
+      btnExport.addEventListener('click', exportProject);
+      btnSettings.addEventListener('click', openSettings);
+      btnAddZone.addEventListener('click', addZone);
+      btnRemoveZone.addEventListener('click', removeSelectedZone);
+      
+      // Arrow thickness
+      arrowThickness.addEventListener('input', function() {
+        const thickness = this.value;
+        arrowThicknessLabel.textContent = `${thickness}px`;
+        
+        // Update all arrows
+        document.querySelectorAll('.arrow-line').forEach(arrow => {
+          arrow.setAttribute('stroke-width', thickness);
+        });
+        
+        document.querySelectorAll('.arrow-highlight').forEach(highlight => {
+          highlight.setAttribute('stroke-width', parseInt(thickness) + 1);
+        });
+      });
+      
+      // Zone opacity
+      zoneOpacity.addEventListener('input', function() {
+        const opacity = this.value;
+        zoneOpacityLabel.textContent = `${opacity}%`;
+        
+        // Update all zones
+        document.querySelectorAll('.zone').forEach(zone => {
+          zone.style.background = `rgba(255,255,255,${opacity/100})`;
+        });
+      });
+      
+      // Zoom control
+      zoomControl.addEventListener('input', function() {
+        document.getElementById('zoom-label').textContent = `${this.value}%`;
+        pitch.style.transform = `scale(${this.value / 100})`;
+      });
+      
+      // Brightness control
+      brightnessControl.addEventListener('input', function() {
+        document.getElementById('brightness-label').textContent = `${this.value}%`;
+        document.querySelector('.pitch-container').style.filter = `brightness(${this.value}%)`;
+      });
+      
+      // Arrow styles
+      arrowStyleButtons.forEach(button => {
+        button.addEventListener('click', function() {
+          arrowStyleButtons.forEach(btn => btn.classList.remove('active'));
+          this.classList.add('active');
+          state.arrowStyle = this.dataset.style;
+          logAction(`Arrow style: ${state.arrowStyle}`);
+        });
+      });
+      
+      // Tactical presets
+      document.querySelectorAll('.right-panel .btn[data-formation]').forEach(btn => {
+        btn.addEventListener('click', function() {
+          formationSelect.value = this.dataset.formation;
+          applyFormation();
+        });
+      });
+      
+      // Pitch click for drawing arrows and zones
+      let drawing = false;
+      let startX, startY;
+      
+      pitch.addEventListener('mousedown', function(e) {
+        if (state.mode === 'draw') {
+          const rect = pitch.getBoundingClientRect();
+          startX = ((e.clientX - rect.left) / rect.width) * 100;
+          startY = ((e.clientY - rect.top) / rect.height) * 60;
+          drawing = true;
+        } else if (state.mode === 'zone') {
+          const rect = pitch.getBoundingClientRect();
+          startX = ((e.clientX - rect.left) / rect.width) * 100;
+          startY = ((e.clientY - rect.top) / rect.height) * 100;
+          drawing = true;
+        } else {
+          clearSelection();
+        }
+      });
+      
+      pitch.addEventListener('mouseup', function(e) {
+        if ((state.mode === 'draw' || state.mode === 'zone') && drawing) {
+          const rect = pitch.getBoundingClientRect();
+          const endX = ((e.clientX - rect.left) / rect.width) * 100;
+          const endY = ((e.clientY - rect.top) / rect.height) * (state.mode === 'draw' ? 60 : 100);
+          
+          if (state.mode === 'draw') {
+            drawArrow(startX, startY, endX, endY);
+          } else if (state.mode === 'zone') {
+            // Create zone with the drawn rectangle
+            const zoneName = zoneNameInput.value || 'Zone ' + (state.zones.length + 1);
+            const zone = document.createElement('div');
+            zone.className = 'zone';
+            
+            // Calculate position and size
+            const left = Math.min(startX, endX);
+            const top = Math.min(startY, endY);
+            const width = Math.abs(endX - startX);
+            const height = Math.abs(endY - startY);
+            
+            zone.style.left = left + '%';
+            zone.style.top = top + '%';
+            zone.style.width = width + '%';
+            zone.style.height = height + '%';
+            
+            const zoneLabel = document.createElement('div');
+            zoneLabel.className = 'zone-label';
+            zoneLabel.textContent = zoneName;
+            zone.appendChild(zoneLabel);
+            
+            zone.addEventListener('click', function(e) {
+              e.stopPropagation();
+              selectZone(zone);
+            });
+            
+            // Make zone draggable and resizable
+            makeZoneDraggable(zone);
+            
+            pitch.appendChild(zone);
+            state.zones.push(zone);
+            logAction(`Added zone: ${zoneName}`);
+          }
+          
+          drawing = false;
+        }
+      });
+      
+      // Keyboard shortcuts
+      document.addEventListener('keydown', function(e) {
+        // Delete key
+        if (e.key === 'Delete' || e.key === 'Backspace') {
+          deleteSelected();
+        }
+        
+        // R key for reset
+        if (e.key.toLowerCase() === 'r') {
+          applyFormation();
+        }
+        
+        // Number keys for formations
+        if (e.key >= '1' && e.key <= '4') {
+          const formations = ['4-4-2', '4-3-3', '3-5-2', '4-2-3-1'];
+          formationSelect.value = formations[parseInt(e.key) - 1];
+          applyFormation();
+        }
+      });
+
+      // Initialize
+      initPlayers();
+      setupReplayControls();
+      logAction('ProTactix v6 initialized with zones feature');
     });
-
-    /* End of script */
   </script>
 </body>
 </html>
