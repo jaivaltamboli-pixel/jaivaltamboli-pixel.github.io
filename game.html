@@ -1,1 +1,688 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Arsenal Football Game</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+        body {
+            font-family: 'Press Start 2P', cursive;
+            background: linear-gradient(135deg, #0a3a0a 0%, #1a5a1a 100%);
+            overflow: hidden;
+            margin: 0;
+            padding: 0;
+        }
+        #game-canvas {
+            background: #0a5c0a; /* Classic green pitch */
+            border: 5px solid #ff1744;
+            border-radius: 16px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            display: none;
+        }
+        #game-overlay {
+            position: absolute; 
+            top:0; 
+            left:0; 
+            right:0; 
+            bottom:0;
+            display: flex; 
+            justify-content: center; 
+            align-items: center;
+            z-index:10;
+        }
+        .game-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+<div class="game-container">
+    <div id="scoreboard" class="text-center text-4xl mb-4 font-bold" style="font-family:'Press Start 2P',cursive;display:none;">
+        <span id="teamA-score" style="color:#fff">0</span>
+        -
+        <span id="teamB-score" style="color:#2fd771">0</span>
+    </div>
+    <div id="game-overlay">
+        <div class="bg-gradient-to-br from-green-900 via-green-700 to-green-800 p-10 rounded-lg shadow-2xl text-center max-w-md border-4 border-red-600">
+            <h1 class="text-3xl font-bold mb-5 text-white">Arsenal Football</h1>
+            <p class="mb-5 text-md text-white">
+                Move: <span class="text-red-400 font-mono">Arrow Keys</span>
+                <br>Shoot: <span class="text-green-400 font-mono">Spacebar</span>
+                <br>Switch Player: <span class="text-yellow-400 font-mono">Tab</span>
+                <br><br>
+                <b class="text-yellow-300">Score on the opposite goal!</b>
+            </p>
+            <button id="start-button" class="w-full bg-green-500 hover:bg-red-500 text-white font-bold py-3 px-6 rounded-lg text-lg transition duration-300 transform hover:scale-105 border-2 border-white shadow-md">
+                Start Game
+            </button>
+        </div>
+    </div>
+    <canvas id="game-canvas" width="1000" height="600"></canvas>
+</div>
+<script>
+// Core setup
+const canvas = document.getElementById('game-canvas');
+const ctx = canvas.getContext('2d');
+const overlay = document.getElementById('game-overlay');
+const startButton = document.getElementById('start-button');
+const scoreboard = document.getElementById('scoreboard');
+const teamAScoreEl = document.getElementById('teamA-score');
+const teamBScoreEl = document.getElementById('teamB-score');
 
+let gameStarted = false;
+let keys = {};
+let selectedIdx = 0; // Which of your team is controlled
+let teams = [[],[]];
+let ball;
+let score = {teamA:0, teamB:0};
+const winningScore = 5;
+
+const MAIN_PLAYER_SPEED = 5;
+const AI_PLAYER_SPEED = 6.5; // Balanced AI speed
+
+// Color scheme
+const TEAM_A_COLOR = "#ff0000";        // Bright Red
+const TEAM_A_ACCENT = "#ffffff";       // White
+const TEAM_A_SECOND = "#0000ff";       // Blue
+const TEAM_B_COLOR = "#0000ff";        // Bright Blue
+const TEAM_B_ACCENT = "#ffffff";       // White
+const TEAM_B_SECOND = "#ff0000";       // Red
+const PITCH_LINE = "#ffffff";          // White lines
+const BALL_COLOR = "#ffffff";          // White ball
+const GOAL_COLOR = "#ffffff";
+
+// INPUT
+document.addEventListener('keydown', (e) => {
+    keys[e.key] = true;
+    // player switch (Tab)
+    if (e.key === "Tab") {
+        e.preventDefault();
+        selectedIdx = (selectedIdx+1)%teams[0].length;
+    }
+});
+document.addEventListener('keyup',e=>{keys[e.key]=false;});
+
+// START
+startButton.addEventListener('click', () => {
+    gameStarted = true;
+    overlay.style.display = 'none';
+    canvas.style.display = 'block';
+    scoreboard.style.display = 'block';
+    resetGame(true);
+    gameLoop();
+});
+
+// GAME LOOP
+function gameLoop() {
+    if (!gameStarted) return;
+    update();
+    draw();
+    requestAnimationFrame(gameLoop);
+}
+
+// RESET & INIT
+function resetGame(fullReset){
+    if(fullReset){
+        score.teamA=0; score.teamB=0;
+        teamAScoreEl.textContent='0';
+        teamBScoreEl.textContent='0';
+    }
+    // Team setup: 3 per side
+    teams=[[],[]];
+    const formationA = [{x:140,y:300},{x:200,y:150},{x:200,y:450}];
+    const formationB = [{x:canvas.width-140,y:300},{x:canvas.width-220,y:150},{x:canvas.width-220,y:450}];
+    for(let i=0;i<3;i++) {
+        teams[0].push({
+            x:formationA[i].x, 
+            y:formationA[i].y, 
+            width:36, 
+            height:36, 
+            color:TEAM_A_COLOR, 
+            accent:TEAM_A_ACCENT, 
+            second:TEAM_A_SECOND, 
+            speed:MAIN_PLAYER_SPEED, 
+            number:i+1, 
+            hasBall:i===0, 
+            lastDir:{x:1,y:0}
+        });
+        teams[1].push({
+            x:formationB[i].x, 
+            y:formationB[i].y, 
+            width:36, 
+            height:36, 
+            color:TEAM_B_COLOR, 
+            accent:TEAM_B_ACCENT, 
+            second:TEAM_B_SECOND, 
+            speed:AI_PLAYER_SPEED, 
+            number:i+4, 
+            hasBall:false, 
+            lastDir:{x:-1,y:0},
+            role: i===0 ? 'attacker' : i===1 ? 'midfielder' : 'defender',
+            assignedPlayer: null // Which player they're marking
+        });
+    }
+    selectedIdx = 0;
+    ball = {
+        x:teams[0][0].x+teams[0][0].width+14,
+        y:teams[0][0].y+teams[0][0].height/2,
+        radius:13, color:BALL_COLOR, speedX:0, speedY:0, friction:0.98
+    };
+    
+    // Assign defensive marking
+    assignDefensiveMarking();
+}
+
+function assignDefensiveMarking() {
+    // Assign each AI player to mark a specific opponent
+    teams[1][0].assignedPlayer = teams[0][0]; // Attacker marks their striker
+    teams[1][1].assignedPlayer = teams[0][1]; // Midfielder marks their midfielder
+    teams[1][2].assignedPlayer = teams[0][2]; // Defender marks their defender
+}
+
+function update(){
+    moveSelectedPlayer();
+    moveAIPlayers();
+    moveBall();
+    checkCollisions();
+    checkGoal();
+}
+
+function moveSelectedPlayer(){
+    let player = teams[0][selectedIdx];
+    let moved=false;
+    player.lastDir={x:0,y:0};
+    if(keys['ArrowUp'] && player.y>0){player.y-=player.speed; player.lastDir.y=-1; moved=true;}
+    if(keys['ArrowDown'] && player.y<canvas.height-player.height){player.y+=player.speed; player.lastDir.y=1; moved=true;}
+    if(keys['ArrowLeft'] && player.x>0){player.x-=player.speed; player.lastDir.x=-1; moved=true;}
+    if(keys['ArrowRight'] && player.x<canvas.width-player.width){player.x+=player.speed; player.lastDir.x=1; moved=true;}
+    if(moved && player.lastDir.x===0&&player.lastDir.y===0) player.lastDir.x=1;
+
+    // Dribble
+    if (player.hasBall) {
+        let dx=player.lastDir.x||1, dy=player.lastDir.y||0;
+        ball.x=player.x+player.width/2+dx*(player.width/2+ball.radius);
+        ball.y=player.y+player.height/2+dy*(player.height/2+ball.radius);
+        ball.speedX=ball.speedY=0;
+    }
+    // Shoot
+    if(keys[' ']&&player.hasBall){
+        player.hasBall=false;
+        ball.speedX=player.lastDir.x*15||15;
+        ball.speedY=player.lastDir.y*12||0;
+    }
+}
+
+// Enhanced AI for opponents with proper positioning
+function moveAIPlayers(){
+    // Team A (your team's AI, excluding controlled)
+    for(let i=0;i<teams[0].length;i++){
+        if(i===selectedIdx) continue;
+        let p=teams[0][i];
+        // AI possession: Auto pass to controlled player if they get ball
+        if(p.hasBall){
+            let target = teams[0][selectedIdx];
+            // Pass towards selected
+            let dx = target.x - p.x, dy=target.y-p.y, len=Math.sqrt(dx*dx+dy*dy);
+            dx/=len; dy/=len;
+            p.hasBall=false;
+            ball.speedX = dx*15;
+            ball.speedY = dy*12;
+        } else {
+            // Move toward ball, only if ball is in own half or free
+            let dx=ball.x-p.x,dy=ball.y-p.y,len=Math.sqrt(dx*dx+dy*dy);
+            if(len>1){ dx/=len; dy/=len; }
+            if(p.x<canvas.width/2-20||(dx>0)){
+                p.x+=p.speed*dx*0.25;
+                p.y+=p.speed*dy*0.25;
+            }
+        }
+    }
+    
+    // Enhanced Team B AI with proper positioning
+    teams[1].forEach((p, index) => {
+        // If has ball, make smarter decisions
+        if(p.hasBall){
+            // Calculate distance to goal
+            let goalTarget = {x:40, y:canvas.height/2};
+            let dx = goalTarget.x - p.x;
+            let dy = goalTarget.y - p.y;
+            let distToGoal = Math.sqrt(dx*dx+dy*dy);
+            
+            // Normalize direction
+            dx/=distToGoal; 
+            dy/=distToGoal;
+            
+            // Move toward goal with some randomness to make it less predictable
+            p.x += p.speed * dx * (0.9 + Math.random()*0.2);
+            p.y += p.speed * dy * (0.9 + Math.random()*0.2);
+            
+            // Dribble
+            ball.x = p.x + p.width/2 + dx*(p.width/2 + ball.radius);
+            ball.y = p.y + p.height/2 + dy*(p.height/2 + ball.radius);
+            ball.speedX = ball.speedY = 0;
+            
+            // Smart shooting - higher probability when closer to goal
+            let shootProbability = 0.02;
+            if(distToGoal < 200) shootProbability = 0.05;
+            if(distToGoal < 100) shootProbability = 0.08;
+            
+            // Also shoot if there's a clear path to goal
+            let hasClearShot = checkClearShot(p);
+            if(hasClearShot) shootProbability = 0.12;
+            
+            if(Math.random() < shootProbability || p.x < 150){
+                p.hasBall = false;
+                // More accurate shooting toward goal
+                let goalX = 40 + (Math.random()-0.5)*30;
+                let goalY = canvas.height/2 + (Math.random()-0.5)*60;
+                let shotDx = goalX - p.x;
+                let shotDy = goalY - p.y;
+                let shotDist = Math.sqrt(shotDx*shotDx+shotDy*shotDy);
+                shotDx /= shotDist;
+                shotDy /= shotDist;
+                
+                ball.speedX = shotDx * (18 + Math.random()*4);
+                ball.speedY = shotDy * (18 + Math.random()*4);
+            }
+        } else {
+            // Without ball, use role-based positioning
+            let ballDist = Math.sqrt((ball.x-p.x)**2 + (ball.y-p.y)**2);
+            let ballCarrier = findPlayerWithBall();
+            
+            // Different behavior based on role
+            if(p.role === 'attacker') {
+                // Attacker stays in offensive positions and pressures ball
+                if(ball.x > canvas.width/2 && ballDist < 300) {
+                    // Pressure the ball when it's in attacking half
+                    let dx = ball.x - p.x;
+                    let dy = ball.y - p.y;
+                    let len = Math.sqrt(dx*dx+dy*dy);
+                    if(len !== 0) { dx/=len; dy/=len; }
+                    p.x += p.speed * dx * 0.4;
+                    p.y += p.speed * dy * 0.4;
+                } else {
+                    // Maintain attacking position
+                    let targetX = canvas.width/2 + 150 + Math.random()*50;
+                    let targetY = canvas.height/2 + (Math.random()-0.5)*80;
+                    let dx = targetX - p.x;
+                    let dy = targetY - p.y;
+                    let len = Math.sqrt(dx*dx+dy*dy);
+                    if(len !== 0) { dx/=len; dy/=len; }
+                    p.x += p.speed * dx * 0.3;
+                    p.y += p.speed * dy * 0.3;
+                }
+            } else if(p.role === 'midfielder') {
+                // Midfielder covers central areas and supports both defense and attack
+                if(ballDist < 350) {
+                    // Move toward ball but maintain positioning
+                    let dx = ball.x - p.x;
+                    let dy = ball.y - p.y;
+                    let len = Math.sqrt(dx*dx+dy*dy);
+                    if(len !== 0) { dx/=len; dy/=len; }
+                    p.x += p.speed * dx * 0.35;
+                    p.y += p.speed * dy * 0.35;
+                } else {
+                    // Maintain midfield position and mark assigned player
+                    let target;
+                    if(p.assignedPlayer && p.assignedPlayer.x > canvas.width/2 - 100) {
+                        // Mark assigned player when they're in attacking position
+                        target = {
+                            x: p.assignedPlayer.x - 40,
+                            y: p.assignedPlayer.y
+                        };
+                    } else {
+                        // Default midfield position
+                        target = {
+                            x: canvas.width/2 + 50,
+                            y: canvas.height/2 + (index-1)*60
+                        };
+                    }
+                    
+                    let dx = target.x - p.x;
+                    let dy = target.y - p.y;
+                    let len = Math.sqrt(dx*dx+dy*dy);
+                    if(len !== 0) { dx/=len; dy/=len; }
+                    p.x += p.speed * dx * 0.25;
+                    p.y += p.speed * dy * 0.25;
+                }
+            } else if(p.role === 'defender') {
+                // Defender stays in defensive positions and marks players
+                if(ballDist < 300 || ball.x > canvas.width/2 - 100) {
+                    // Defend when ball is in defensive half
+                    let target;
+                    if(p.assignedPlayer) {
+                        // Mark assigned player
+                        target = {
+                            x: p.assignedPlayer.x - 30,
+                            y: p.assignedPlayer.y
+                        };
+                    } else {
+                        // Position between ball and goal
+                        target = {
+                            x: ball.x - 50,
+                            y: ball.y
+                        };
+                    }
+                    
+                    // Don't get too close to own goal
+                    target.x = Math.max(target.x, canvas.width - 350);
+                    
+                    let dx = target.x - p.x;
+                    let dy = target.y - p.y;
+                    let len = Math.sqrt(dx*dx+dy*dy);
+                    if(len !== 0) { dx/=len; dy/=len; }
+                    p.x += p.speed * dx * 0.4;
+                    p.y += p.speed * dy * 0.4;
+                } else {
+                    // Maintain defensive formation
+                    let targetX = canvas.width - 250;
+                    let targetY = canvas.height/2 + (index-2)*100;
+                    let dx = targetX - p.x;
+                    let dy = targetY - p.y;
+                    let len = Math.sqrt(dx*dx+dy*dy);
+                    if(len !== 0) { dx/=len; dy/=len; }
+                    p.x += p.speed * dx * 0.2;
+                    p.y += p.speed * dy * 0.2;
+                }
+            }
+            
+            // Only one AI should actively pressure the ball carrier at a time
+            if(ballCarrier && ballCarrier !== p) {
+                let isClosestDefender = isClosestToBallCarrier(p, ballCarrier);
+                
+                if(isClosestDefender && ballDist < 200) {
+                    // Only the closest defender actively pressures
+                    let dx = ballCarrier.x - p.x;
+                    let dy = ballCarrier.y - p.y;
+                    let len = Math.sqrt(dx*dx+dy*dy);
+                    if(len !== 0) { dx/=len; dy/=len; }
+                    p.x += p.speed * dx * 0.5;
+                    p.y += p.speed * dy * 0.5;
+                }
+            }
+            
+            // Intercept passes and shots
+            if(ball.speedX !== 0 || ball.speedY !== 0) {
+                let futureBallX = ball.x + ball.speedX * 10;
+                let futureBallY = ball.y + ball.speedY * 10;
+                let futureDist = Math.sqrt((futureBallX-p.x)**2 + (futureBallY-p.y)**2);
+                
+                if(futureDist < 100 && isInDefensiveArea(p)) {
+                    let dx = futureBallX - p.x;
+                    let dy = futureBallY - p.y;
+                    let len = Math.sqrt(dx*dx+dy*dy);
+                    if(len !== 0) { dx/=len; dy/=len; }
+                    p.x += p.speed * dx * 0.4;
+                    p.y += p.speed * dy * 0.4;
+                }
+            }
+        }
+    });
+}
+
+// Check if this AI is the closest to the ball carrier
+function isClosestToBallCarrier(ai, ballCarrier) {
+    let minDist = Infinity;
+    let closestAI = null;
+    
+    for(let i = 0; i < teams[1].length; i++) {
+        let otherAI = teams[1][i];
+        if(otherAI === ai) continue;
+        
+        let dist = Math.sqrt((otherAI.x - ballCarrier.x)**2 + (otherAI.y - ballCarrier.y)**2);
+        if(dist < minDist) {
+            minDist = dist;
+            closestAI = otherAI;
+        }
+    }
+    
+    let aiDist = Math.sqrt((ai.x - ballCarrier.x)**2 + (ai.y - ballCarrier.y)**2);
+    return aiDist <= minDist;
+}
+
+// Check if AI is in defensive area
+function isInDefensiveArea(ai) {
+    return ai.x > canvas.width/2;
+}
+
+// Check if AI has a clear shot at goal
+function checkClearShot(player) {
+    // Simple check - if there are no opponents between player and goal
+    let goalX = 40;
+    let goalY = canvas.height/2;
+    
+    for(let i = 0; i < teams[0].length; i++) {
+        let opponent = teams[0][i];
+        // Simple line intersection check
+        if(isBetween(opponent.x, player.x, goalX) && 
+           isBetween(opponent.y, player.y, goalY) &&
+           Math.abs((goalY - player.y)*(opponent.x - player.x) - (goalX - player.x)*(opponent.y - player.y)) < 100) {
+            return false;
+        }
+    }
+    return true;
+}
+
+// Helper function to check if value is between two others
+function isBetween(value, a, b) {
+    return (value >= Math.min(a, b) && value <= Math.max(a, b));
+}
+
+// Ball physics
+function moveBall(){
+    let carrier=findPlayerWithBall();
+    if(carrier) return; // Ball is attached
+    ball.x+=ball.speedX;ball.y+=ball.speedY;
+    ball.speedX*=ball.friction; ball.speedY*=ball.friction;
+    if(Math.abs(ball.speedX)<0.1)ball.speedX=0;
+    if(Math.abs(ball.speedY)<0.1)ball.speedY=0;
+    // Bounce walls
+    if(ball.y-ball.radius<0){ball.y=ball.radius;ball.speedY*=-0.7;}
+    if(ball.y+ball.radius>canvas.height){ball.y=canvas.height-ball.radius;ball.speedY*=-0.7;}
+    if(ball.x-ball.radius<0){ball.x=ball.radius;ball.speedX*=-0.7;}
+    if(ball.x+ball.radius>canvas.width){ball.x=canvas.width-ball.radius;ball.speedX*=-0.7;}
+}
+
+// Who has the ball?
+function findPlayerWithBall(){
+    for(let t=0;t<2;t++){
+        for(let p=0;p<3;p++){
+            if(teams[t][p].hasBall) return teams[t][p];
+        }
+    }
+    return null;
+}
+
+// Collisions (get ball, steal ball)
+function checkCollisions(){
+    let ballCarrier = findPlayerWithBall();
+    for(let t=0;t<2;t++){
+        for(let i=0;i<teams[t].length;i++){
+            let p = teams[t][i];
+            // Ball Pickup
+            if(!p.hasBall && !ballCarrier && rectCircleCollision(p,ball)) {
+                p.hasBall=true;
+            }
+            // Steal from other team - balanced for fair gameplay
+            if(p.hasBall && ballCarrier && ballCarrier!==p && rectCircleCollision(p,ball)){
+                ballCarrier.hasBall=false;
+                p.hasBall=true;
+                // Balanced steals
+                let stealPower = t === 1 ? 12 : 9;
+                ball.speedX = t==0?9:-stealPower;
+                ball.speedY = (Math.random()-0.5)*8;
+            }
+        }
+    }
+}
+
+// Score logic: Each team scores on the opposing goal
+function checkGoal(){
+    // Team A scores in right goal
+    if(ball.x + ball.radius > canvas.width-24 && ball.y > canvas.height/2-90 && ball.y < canvas.height/2+90){
+        score.teamA++;
+        teamAScoreEl.textContent = score.teamA;
+        if(checkWin()) return;
+        resetGame(false);
+    }
+    // Team B scores in left goal
+    if(ball.x-ball.radius < 24 && ball.y > canvas.height/2-90 && ball.y < canvas.height/2+90){
+        score.teamB++;
+        teamBScoreEl.textContent = score.teamB;
+        if(checkWin()) return;
+        resetGame(false);
+    }
+}
+
+// Win Condition - overlay
+function checkWin(){
+    if(score.teamA>=winningScore||score.teamB>=winningScore){
+        gameStarted=false;
+        let winText = score.teamA>=winningScore ?
+            `<span style='color:#fff'>You Win!</span>` :
+            `<span style='color:#2fd771'>Opponent Wins!</span>`;
+        overlay.innerHTML = `
+            <div class="bg-gradient-to-br from-green-900 via-green-700 to-green-800 p-10 rounded-lg shadow-2xl text-center max-w-md border-4 border-red-600">
+                <h1 class="text-3xl font-bold mb-5 text-white" style="font-family:'Press Start 2P',cursive;">${winText}</h1>
+                <p class="mb-6 text-2xl"><span style="color:#fff">${score.teamA}</span> - <span style="color:#2fd771">${score.teamB}</span></p>
+                <button id="restart-button" class="w-full bg-green-500 hover:bg-red-500 text-white font-bold py-3 px-6 rounded-lg text-lg border-2 border-white shadow-md">
+                    Play Again
+                </button>
+            </div>
+        `;
+        overlay.style.display = 'flex';
+        document.getElementById('restart-button').addEventListener('click',()=> {
+            gameStarted=true;
+            overlay.style.display='none';
+            resetGame(true);
+            gameLoop();
+        });
+        return true;
+    }
+    return false;
+}
+
+// --- Drawing ---
+function draw(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    drawPitch();
+    drawPlayers();
+    drawBall();
+}
+
+function drawPlayers(){
+    for(let t=0;t<2;t++){
+        for(let i=0;i<teams[t].length;i++){
+            let p = teams[t][i];
+            ctx.save();
+            // Accent strip: vertical line
+            ctx.fillStyle = p.accent;
+            ctx.fillRect(p.x+p.width/2-6,p.y,p.width/6, p.height);
+
+            if(t==0 && i==selectedIdx) {
+                ctx.lineWidth = 5;
+                ctx.strokeStyle = "#ff1744";
+                ctx.shadowColor = "#ff1744";
+                ctx.shadowBlur = 17;
+                ctx.strokeRect(p.x-4,p.y-4,p.width+8,p.height+8);
+            }
+            ctx.shadowColor = p.second;
+            ctx.shadowBlur = 12;
+            ctx.fillStyle = p.color;
+            ctx.fillRect(p.x,p.y,p.width,p.height);
+
+            // Jersey Number
+            ctx.fillStyle = p == teams[0][selectedIdx] ? "#ff1744" : "#111";
+            ctx.font = "bold 18px 'Press Start 2P',cursive";
+            ctx.textAlign="center";
+            ctx.fillText(p.number, p.x+p.width/2, p.y+p.height/2+5);
+            ctx.restore();
+        }
+    }
+}
+
+// Classic green pitch with grass pattern
+function drawPitch(){
+    ctx.save();
+    // Base green
+    ctx.fillStyle = "#0a5c0a";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    
+    // Grass pattern - subtle stripes
+    ctx.fillStyle = "#0c6c0c";
+    for(let i = 0; i < canvas.width; i += 40) {
+        ctx.fillRect(i, 0, 20, canvas.height);
+    }
+    
+    // White lines
+    ctx.lineWidth=4;
+    ctx.strokeStyle=PITCH_LINE;
+    // Outer border
+    ctx.strokeRect(10,10,canvas.width-20,canvas.height-20);
+    // Halfway line
+    ctx.beginPath();
+    ctx.moveTo(canvas.width/2,10);
+    ctx.lineTo(canvas.width/2,canvas.height-10);
+    ctx.stroke();
+    // Center circle
+    ctx.beginPath();
+    ctx.arc(canvas.width/2,canvas.height/2,78,0,2*Math.PI);
+    ctx.stroke();
+    // Center spot
+    ctx.beginPath();
+    ctx.arc(canvas.width/2,canvas.height/2,11,0,2*Math.PI);
+    ctx.fillStyle="#ffffff";
+    ctx.fill();
+
+    // Penalty areas & goal boxes
+    // Left
+    ctx.strokeRect(10,canvas.height/2-115,68,230);
+    ctx.strokeRect(10,canvas.height/2-70,38,140);
+    // Right
+    ctx.strokeRect(canvas.width-78,canvas.height/2-115,68,230);
+    ctx.strokeRect(canvas.width-48,canvas.height/2-70,38,140);
+
+    // Goals
+    ctx.fillStyle=GOAL_COLOR;
+    ctx.globalAlpha=0.3;
+    ctx.fillRect(0,canvas.height/2-90,24,180);
+    ctx.fillRect(canvas.width-24,canvas.height/2-90,24,180);
+    ctx.globalAlpha=1.0;
+    ctx.restore();
+}
+
+function drawBall(){
+    ctx.save();
+    ctx.shadowColor=BALL_COLOR;
+    ctx.shadowBlur=10;
+    ctx.fillStyle=ball.color;
+    ctx.beginPath();
+    ctx.arc(ball.x,ball.y,ball.radius,0,2*Math.PI);
+    ctx.fill();
+    ctx.closePath();
+    ctx.lineWidth=2;
+    ctx.strokeStyle = "#2fd771";
+    ctx.stroke();
+    ctx.restore();
+}
+
+// Utility: Rectangle-Circle collision
+function rectCircleCollision(rect, circle){
+    let testX=circle.x, testY=circle.y;
+    if(circle.x<rect.x)testX=rect.x;
+    else if(circle.x>rect.x+rect.width)testX=rect.x+rect.width;
+    if(circle.y<rect.y)testY=rect.y;
+    else if(circle.y>rect.y+rect.height)testY=rect.y+rect.height;
+    let distX=circle.x-testX, distY=circle.y-testY;
+    let dist=Math.sqrt(distX*distX+distY*distY);
+    return dist<=circle.radius;
+}
+</script>
+</body>
+</html>
