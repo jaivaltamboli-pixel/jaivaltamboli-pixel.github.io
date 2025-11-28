@@ -149,7 +149,8 @@ function resetGame(fullReset){
             speed:MAIN_PLAYER_SPEED, 
             number:i+1, 
             hasBall:i===0, 
-            lastDir:{x:1,y:0}
+            lastDir:{x:1,y:0},
+            tackleCooldown: 0
         });
         teams[1].push({
             x:formationB[i].x, 
@@ -164,7 +165,8 @@ function resetGame(fullReset){
             hasBall:false, 
             lastDir:{x:-1,y:0},
             role: i===0 ? 'attacker' : i===1 ? 'midfielder' : 'defender',
-            assignedPlayer: null // Which player they're marking
+            assignedPlayer: null, // Which player they're marking
+            tackleCooldown: 0
         });
     }
     selectedIdx = 0;
@@ -191,6 +193,19 @@ function update(){
     moveBall();
     checkCollisions();
     checkGoal();
+    
+    // Update tackle cooldowns
+    updateTackleCooldowns();
+}
+
+function updateTackleCooldowns() {
+    for(let t=0;t<2;t++){
+        for(let i=0;i<teams[t].length;i++){
+            if(teams[t][i].tackleCooldown > 0) {
+                teams[t][i].tackleCooldown--;
+            }
+        }
+    }
 }
 
 function moveSelectedPlayer(){
@@ -218,7 +233,7 @@ function moveSelectedPlayer(){
     }
 }
 
-// Enhanced AI for opponents with proper positioning
+// Enhanced AI for opponents with proper positioning and ACTIVE DEFENSE
 function moveAIPlayers(){
     // Team A (your team's AI, excluding controlled)
     for(let i=0;i<teams[0].length;i++){
@@ -244,7 +259,7 @@ function moveAIPlayers(){
         }
     }
     
-    // Enhanced Team B AI with proper positioning
+    // Enhanced Team B AI with ACTIVE DEFENSE
     teams[1].forEach((p, index) => {
         // If has ball, make smarter decisions
         if(p.hasBall){
@@ -291,119 +306,161 @@ function moveAIPlayers(){
                 ball.speedY = shotDy * (18 + Math.random()*4);
             }
         } else {
-            // Without ball, use role-based positioning
-            let ballDist = Math.sqrt((ball.x-p.x)**2 + (ball.y-p.y)**2);
+            // ACTIVE DEFENSE - AI will actively try to intercept and tackle
+            
+            // Check if player with ball is approaching
             let ballCarrier = findPlayerWithBall();
+            let isBallCarrierApproaching = ballCarrier && 
+                ballCarrier.x > canvas.width/2 && 
+                ballCarrier.hasBall;
             
-            // Different behavior based on role
-            if(p.role === 'attacker') {
-                // Attacker stays in offensive positions and pressures ball
-                if(ball.x > canvas.width/2 && ballDist < 300) {
-                    // Pressure the ball when it's in attacking half
-                    let dx = ball.x - p.x;
-                    let dy = ball.y - p.y;
-                    let len = Math.sqrt(dx*dx+dy*dy);
-                    if(len !== 0) { dx/=len; dy/=len; }
-                    p.x += p.speed * dx * 0.4;
-                    p.y += p.speed * dy * 0.4;
-                } else {
-                    // Maintain attacking position
-                    let targetX = canvas.width/2 + 150 + Math.random()*50;
-                    let targetY = canvas.height/2 + (Math.random()-0.5)*80;
-                    let dx = targetX - p.x;
-                    let dy = targetY - p.y;
-                    let len = Math.sqrt(dx*dx+dy*dy);
-                    if(len !== 0) { dx/=len; dy/=len; }
-                    p.x += p.speed * dx * 0.3;
-                    p.y += p.speed * dy * 0.3;
-                }
-            } else if(p.role === 'midfielder') {
-                // Midfielder covers central areas and supports both defense and attack
-                if(ballDist < 350) {
-                    // Move toward ball but maintain positioning
-                    let dx = ball.x - p.x;
-                    let dy = ball.y - p.y;
-                    let len = Math.sqrt(dx*dx+dy*dy);
-                    if(len !== 0) { dx/=len; dy/=len; }
-                    p.x += p.speed * dx * 0.35;
-                    p.y += p.speed * dy * 0.35;
-                } else {
-                    // Maintain midfield position and mark assigned player
-                    let target;
-                    if(p.assignedPlayer && p.assignedPlayer.x > canvas.width/2 - 100) {
-                        // Mark assigned player when they're in attacking position
-                        target = {
-                            x: p.assignedPlayer.x - 40,
-                            y: p.assignedPlayer.y
-                        };
-                    } else {
-                        // Default midfield position
-                        target = {
-                            x: canvas.width/2 + 50,
-                            y: canvas.height/2 + (index-1)*60
-                        };
-                    }
-                    
-                    let dx = target.x - p.x;
-                    let dy = target.y - p.y;
-                    let len = Math.sqrt(dx*dx+dy*dy);
-                    if(len !== 0) { dx/=len; dy/=len; }
-                    p.x += p.speed * dx * 0.25;
-                    p.y += p.speed * dy * 0.25;
-                }
-            } else if(p.role === 'defender') {
-                // Defender stays in defensive positions and marks players
-                if(ballDist < 300 || ball.x > canvas.width/2 - 100) {
-                    // Defend when ball is in defensive half
-                    let target;
-                    if(p.assignedPlayer) {
-                        // Mark assigned player
-                        target = {
-                            x: p.assignedPlayer.x - 30,
-                            y: p.assignedPlayer.y
-                        };
-                    } else {
-                        // Position between ball and goal
-                        target = {
-                            x: ball.x - 50,
-                            y: ball.y
-                        };
-                    }
-                    
-                    // Don't get too close to own goal
-                    target.x = Math.max(target.x, canvas.width - 350);
-                    
-                    let dx = target.x - p.x;
-                    let dy = target.y - p.y;
-                    let len = Math.sqrt(dx*dx+dy*dy);
-                    if(len !== 0) { dx/=len; dy/=len; }
-                    p.x += p.speed * dx * 0.4;
-                    p.y += p.speed * dy * 0.4;
-                } else {
-                    // Maintain defensive formation
-                    let targetX = canvas.width - 250;
-                    let targetY = canvas.height/2 + (index-2)*100;
-                    let dx = targetX - p.x;
-                    let dy = targetY - p.y;
-                    let len = Math.sqrt(dx*dx+dy*dy);
-                    if(len !== 0) { dx/=len; dy/=len; }
-                    p.x += p.speed * dx * 0.2;
-                    p.y += p.speed * dy * 0.2;
-                }
-            }
-            
-            // Only one AI should actively pressure the ball carrier at a time
-            if(ballCarrier && ballCarrier !== p) {
-                let isClosestDefender = isClosestToBallCarrier(p, ballCarrier);
+            // If ball carrier is approaching in AI's half, prioritize defense
+            if (isBallCarrierApproaching) {
+                let distToBallCarrier = Math.sqrt((ballCarrier.x - p.x)**2 + (ballCarrier.y - p.y)**2);
                 
-                if(isClosestDefender && ballDist < 200) {
-                    // Only the closest defender actively pressures
-                    let dx = ballCarrier.x - p.x;
-                    let dy = ballCarrier.y - p.y;
+                // If close enough to ball carrier, actively defend
+                if (distToBallCarrier < 200) {
+                    // Move to intercept ball carrier
+                    let interceptX = ballCarrier.x + ballCarrier.lastDir.x * 30;
+                    let interceptY = ballCarrier.y + ballCarrier.lastDir.y * 30;
+                    
+                    let dx = interceptX - p.x;
+                    let dy = interceptY - p.y;
                     let len = Math.sqrt(dx*dx+dy*dy);
-                    if(len !== 0) { dx/=len; dy/=len; }
-                    p.x += p.speed * dx * 0.5;
-                    p.y += p.speed * dy * 0.5;
+                    
+                    if(len > 0) {
+                        dx /= len;
+                        dy /= len;
+                        // Aggressive defense when close
+                        let defenseSpeed = distToBallCarrier < 80 ? 0.8 : 0.6;
+                        p.x += p.speed * dx * defenseSpeed;
+                        p.y += p.speed * dy * defenseSpeed;
+                        
+                        // ATTEMPT TACKLE when very close and not on cooldown
+                        if (distToBallCarrier < 50 && p.tackleCooldown === 0) {
+                            attemptTackle(p, ballCarrier);
+                        }
+                    }
+                } else {
+                    // Position to cut off paths to goal
+                    let goalX = canvas.width - 24;
+                    let goalY = canvas.height/2;
+                    
+                    // Calculate interception point between ball carrier and goal
+                    let t = 0.7; // How far along the path to position
+                    let cutOffX = ballCarrier.x + (goalX - ballCarrier.x) * t;
+                    let cutOffY = ballCarrier.y + (goalY - ballCarrier.y) * t;
+                    
+                    let dx = cutOffX - p.x;
+                    let dy = cutOffY - p.y;
+                    let len = Math.sqrt(dx*dx+dy*dy);
+                    
+                    if(len > 0) {
+                        dx /= len;
+                        dy /= len;
+                        p.x += p.speed * dx * 0.5;
+                        p.y += p.speed * dy * 0.5;
+                    }
+                }
+            } else {
+                // Without ball, use role-based positioning
+                let ballDist = Math.sqrt((ball.x-p.x)**2 + (ball.y-p.y)**2);
+                
+                // Different behavior based on role
+                if(p.role === 'attacker') {
+                    // Attacker stays in offensive positions and pressures ball
+                    if(ball.x > canvas.width/2 && ballDist < 300) {
+                        // Pressure the ball when it's in attacking half
+                        let dx = ball.x - p.x;
+                        let dy = ball.y - p.y;
+                        let len = Math.sqrt(dx*dx+dy*dy);
+                        if(len !== 0) { dx/=len; dy/=len; }
+                        p.x += p.speed * dx * 0.4;
+                        p.y += p.speed * dy * 0.4;
+                    } else {
+                        // Maintain attacking position
+                        let targetX = canvas.width/2 + 150 + Math.random()*50;
+                        let targetY = canvas.height/2 + (Math.random()-0.5)*80;
+                        let dx = targetX - p.x;
+                        let dy = targetY - p.y;
+                        let len = Math.sqrt(dx*dx+dy*dy);
+                        if(len !== 0) { dx/=len; dy/=len; }
+                        p.x += p.speed * dx * 0.3;
+                        p.y += p.speed * dy * 0.3;
+                    }
+                } else if(p.role === 'midfielder') {
+                    // Midfielder covers central areas and supports both defense and attack
+                    if(ballDist < 350) {
+                        // Move toward ball but maintain positioning
+                        let dx = ball.x - p.x;
+                        let dy = ball.y - p.y;
+                        let len = Math.sqrt(dx*dx+dy*dy);
+                        if(len !== 0) { dx/=len; dy/=len; }
+                        p.x += p.speed * dx * 0.35;
+                        p.y += p.speed * dy * 0.35;
+                    } else {
+                        // Maintain midfield position and mark assigned player
+                        let target;
+                        if(p.assignedPlayer && p.assignedPlayer.x > canvas.width/2 - 100) {
+                            // Mark assigned player when they're in attacking position
+                            target = {
+                                x: p.assignedPlayer.x - 40,
+                                y: p.assignedPlayer.y
+                            };
+                        } else {
+                            // Default midfield position
+                            target = {
+                                x: canvas.width/2 + 50,
+                                y: canvas.height/2 + (index-1)*60
+                            };
+                        }
+                        
+                        let dx = target.x - p.x;
+                        let dy = target.y - p.y;
+                        let len = Math.sqrt(dx*dx+dy*dy);
+                        if(len !== 0) { dx/=len; dy/=len; }
+                        p.x += p.speed * dx * 0.25;
+                        p.y += p.speed * dy * 0.25;
+                    }
+                } else if(p.role === 'defender') {
+                    // Defender stays in defensive positions and marks players
+                    if(ballDist < 300 || ball.x > canvas.width/2 - 100) {
+                        // Defend when ball is in defensive half
+                        let target;
+                        if(p.assignedPlayer) {
+                            // Mark assigned player
+                            target = {
+                                x: p.assignedPlayer.x - 30,
+                                y: p.assignedPlayer.y
+                            };
+                        } else {
+                            // Position between ball and goal
+                            target = {
+                                x: ball.x - 50,
+                                y: ball.y
+                            };
+                        }
+                        
+                        // Don't get too close to own goal
+                        target.x = Math.max(target.x, canvas.width - 350);
+                        
+                        let dx = target.x - p.x;
+                        let dy = target.y - p.y;
+                        let len = Math.sqrt(dx*dx+dy*dy);
+                        if(len !== 0) { dx/=len; dy/=len; }
+                        p.x += p.speed * dx * 0.4;
+                        p.y += p.speed * dy * 0.4;
+                    } else {
+                        // Maintain defensive formation
+                        let targetX = canvas.width - 250;
+                        let targetY = canvas.height/2 + (index-2)*100;
+                        let dx = targetX - p.x;
+                        let dy = targetY - p.y;
+                        let len = Math.sqrt(dx*dx+dy*dy);
+                        if(len !== 0) { dx/=len; dy/=len; }
+                        p.x += p.speed * dx * 0.2;
+                        p.y += p.speed * dy * 0.2;
+                    }
                 }
             }
             
@@ -426,24 +483,35 @@ function moveAIPlayers(){
     });
 }
 
-// Check if this AI is the closest to the ball carrier
-function isClosestToBallCarrier(ai, ballCarrier) {
-    let minDist = Infinity;
-    let closestAI = null;
+// NEW FUNCTION: Attempt tackle on ball carrier
+function attemptTackle(defender, ballCarrier) {
+    if (!ballCarrier.hasBall) return;
     
-    for(let i = 0; i < teams[1].length; i++) {
-        let otherAI = teams[1][i];
-        if(otherAI === ai) continue;
+    // Calculate tackle success based on angle and distance
+    let dx = ballCarrier.x - defender.x;
+    let dy = ballCarrier.y - defender.y;
+    let dist = Math.sqrt(dx*dx+dy*dy);
+    
+    if (dist < 50) { // Only attempt if very close
+        // Higher success rate from behind or sides
+        let successRate = 0.7; // 70% success rate when close
         
-        let dist = Math.sqrt((otherAI.x - ballCarrier.x)**2 + (otherAI.y - ballCarrier.y)**2);
-        if(dist < minDist) {
-            minDist = dist;
-            closestAI = otherAI;
+        if (Math.random() < successRate) {
+            // Successful tackle!
+            ballCarrier.hasBall = false;
+            defender.hasBall = true;
+            
+            // Add some physics to the tackle
+            ball.speedX = (Math.random()-0.5)*8;
+            ball.speedY = (Math.random()-0.5)*8;
+            
+            // Set cooldown to prevent spam tackling
+            defender.tackleCooldown = 30; // 0.5 seconds at 60fps
+        } else {
+            // Failed tackle - still set cooldown
+            defender.tackleCooldown = 20;
         }
     }
-    
-    let aiDist = Math.sqrt((ai.x - ballCarrier.x)**2 + (ai.y - ballCarrier.y)**2);
-    return aiDist <= minDist;
 }
 
 // Check if AI is in defensive area
@@ -499,7 +567,7 @@ function findPlayerWithBall(){
     return null;
 }
 
-// Collisions (get ball, steal ball)
+// IMPROVED Collisions with better stealing
 function checkCollisions(){
     let ballCarrier = findPlayerWithBall();
     for(let t=0;t<2;t++){
@@ -509,14 +577,21 @@ function checkCollisions(){
             if(!p.hasBall && !ballCarrier && rectCircleCollision(p,ball)) {
                 p.hasBall=true;
             }
-            // Steal from other team - balanced for fair gameplay
+            // IMPROVED: More effective stealing with cooldown
             if(p.hasBall && ballCarrier && ballCarrier!==p && rectCircleCollision(p,ball)){
-                ballCarrier.hasBall=false;
-                p.hasBall=true;
-                // Balanced steals
-                let stealPower = t === 1 ? 12 : 9;
-                ball.speedX = t==0?9:-stealPower;
-                ball.speedY = (Math.random()-0.5)*8;
+                // Only attempt steal if not on cooldown
+                if (ballCarrier.tackleCooldown === 0) {
+                    let stealSuccess = Math.random() < 0.6; // 60% success rate
+                    if (stealSuccess) {
+                        ballCarrier.hasBall=false;
+                        p.hasBall=true;
+                        // Realistic tackle physics
+                        ball.speedX = (t==0?1:-1) * 12;
+                        ball.speedY = (Math.random()-0.5)*10;
+                        // Set cooldown to prevent instant re-steal
+                        ballCarrier.tackleCooldown = 15;
+                    }
+                }
             }
         }
     }
