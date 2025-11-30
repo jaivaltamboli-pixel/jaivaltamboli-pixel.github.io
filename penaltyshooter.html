@@ -1,0 +1,1038 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Penalty Shooter Pro</title>
+<style>
+:root {
+  --bg: #0b1220;
+  --panel: #0f1724;
+  --accent: #ffcc00;
+  --muted: #98a0b3;
+  --good: #2ecc71;
+  --bad: #e74c3c;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+  background: linear-gradient(180deg, #071226 0%, #071b2d 100%);
+  color: #e6eef8;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+#app {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 20px;
+}
+
+.card {
+  background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(0,0,0,0.05));
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  border: 1px solid rgba(255,255,255,0.05);
+}
+
+#canvasWrapper {
+  position: relative;
+  aspect-ratio: 16/9;
+  background: linear-gradient(180deg, #113147, #0b1724);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+#canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.controls {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.section-title {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: #fff;
+}
+
+.subtitle {
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 12px;
+}
+
+.button-group {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.btn {
+  padding: 10px 16px;
+  border-radius: 8px;
+  background: linear-gradient(180deg, #1b2430, #11161c);
+  border: 1px solid rgba(255,255,255,0.08);
+  color: #e6eef8;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s;
+  user-select: none;
+}
+
+.btn:hover {
+  background: linear-gradient(180deg, #252d3a, #1a1f28);
+  border-color: rgba(255,255,255,0.12);
+}
+
+.btn.active {
+  background: linear-gradient(180deg, #2b2b1a, #18180f);
+  border-color: var(--accent);
+  box-shadow: 0 4px 16px rgba(255,204,0,0.2);
+  color: var(--accent);
+}
+
+.btn.shoot {
+  background: linear-gradient(180deg, var(--accent), #e6b800);
+  color: #000;
+  font-weight: 600;
+  flex: 1;
+  border-color: rgba(255,204,0,0.3);
+}
+
+.btn.shoot:hover {
+  background: linear-gradient(180deg, #ffd633, #ffcc00);
+}
+
+.btn.shoot:active {
+  transform: scale(0.98);
+}
+
+.zone-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.zone {
+  padding: 14px;
+  border-radius: 8px;
+  background: rgba(255,255,255,0.02);
+  border: 1px dashed rgba(255,255,255,0.08);
+  text-align: center;
+  font-size: 12px;
+  color: var(--muted);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.zone:hover {
+  background: rgba(255,255,255,0.04);
+}
+
+.zone.selected {
+  background: linear-gradient(180deg, rgba(255,204,0,0.08), rgba(255,204,0,0.02));
+  border-color: var(--accent);
+  color: var(--accent);
+  border-style: solid;
+}
+
+.power-bar {
+  height: 16px;
+  background: linear-gradient(90deg, 
+    #ff4444 0%,     /* Too weak - red */
+    #ffaa00 25%,    /* Getting better - orange */
+    #44ff44 45%,    /* Sweet spot start - green */
+    #00ff00 50%,    /* Perfect - bright green */
+    #44ff44 55%,    /* Sweet spot end - green */
+    #ffaa00 75%,    /* Too much - orange */
+    #ff4444 100%    /* Excessive - red */
+  );
+  border-radius: 8px;
+  overflow: visible;
+  margin-top: 8px;
+  position: relative;
+  border: 2px solid rgba(255,255,255,0.2);
+}
+
+.power-fill {
+  position: absolute;
+  left: 0;
+  top: -4px;
+  height: calc(100% + 8px);
+  width: 3%;
+  background: rgba(255, 255, 255, 0.9);
+  border: 2px solid rgba(255, 255, 255, 1);
+  border-radius: 4px;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.6);
+  transition: left 0.05s linear;
+}
+
+.stat-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.stat-label {
+  font-size: 12px;
+  color: var(--muted);
+  margin-bottom: 4px;
+}
+
+.stat-value {
+  font-size: 24px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.slider-group {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-top: 8px;
+}
+
+input[type="range"] {
+  flex: 1;
+  height: 6px;
+  border-radius: 3px;
+  background: rgba(255,255,255,0.1);
+  outline: none;
+  -webkit-appearance: none;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--accent);
+  cursor: pointer;
+}
+
+input[type="range"]::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: none;
+  cursor: pointer;
+}
+
+.button-row {
+  display: flex;
+  gap: 8px;
+}
+
+@media (max-width: 1024px) {
+  #app {
+    grid-template-columns: 1fr;
+  }
+}
+</style>
+</head>
+<body>
+
+<div id="app">
+  <div class="card">
+    <div id="canvasWrapper">
+      <canvas id="canvas"></canvas>
+    </div>
+  </div>
+
+  <div class="card controls">
+    <div>
+      <div class="section-title">Penalty Shooter Pro</div>
+      <div class="subtitle">Choose shot type, aim, and power to score!</div>
+    </div>
+
+    <div>
+      <div class="stat-label">Shot Type</div>
+      <div class="button-group" id="shotTypes">
+        <button class="btn active" data-type="power">Power</button>
+        <button class="btn" data-type="curve">Curve</button>
+        <button class="btn" data-type="knuckle">Knuckle</button>
+        <button class="btn" data-type="finesse">Finesse</button>
+      </div>
+    </div>
+
+    <div>
+      <div class="stat-label">Target Zone (or click on goal)</div>
+      <div class="zone-grid" id="zones">
+        <div class="zone" data-zone="tl">Top Left</div>
+        <div class="zone" data-zone="tm">Top Mid</div>
+        <div class="zone" data-zone="tr">Top Right</div>
+        <div class="zone" data-zone="ml">Mid Left</div>
+        <div class="zone selected" data-zone="mm">Center</div>
+        <div class="zone" data-zone="mr">Mid Right</div>
+        <div class="zone" data-zone="bl">Low Left</div>
+        <div class="zone" data-zone="bm">Low Mid</div>
+        <div class="zone" data-zone="br">Low Right</div>
+      </div>
+    </div>
+
+    <div>
+      <div class="stat-label">Power (Hold Shoot to charge)</div>
+      <div class="power-bar">
+        <div class="power-fill" id="powerFill"></div>
+      </div>
+    </div>
+
+    <div class="button-row">
+      <button class="btn shoot" id="shootBtn">Shoot</button>
+      <button class="btn" id="resetBtn">Reset</button>
+    </div>
+
+    <div>
+      <div class="stat-row">
+        <div>
+          <div class="stat-label">Goals</div>
+          <div class="stat-value" id="goals">0 / 0</div>
+        </div>
+        <div>
+          <div class="stat-label">Streak</div>
+          <div class="stat-value" id="streak">0</div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="stat-label">Difficulty</div>
+      <div class="slider-group">
+        <span style="color: var(--muted); font-size: 13px;">Easy</span>
+        <input type="range" id="difficulty" min="1" max="5" value="3">
+        <span style="color: var(--muted); font-size: 13px;">Hard</span>
+      </div>
+    </div>
+
+    <div class="button-row">
+      <button class="btn" id="soundBtn">Sound: ON</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// Configuration
+const CONFIG = {
+  width: 1200,
+  height: 675,
+  gravity: 1400,
+  ballRadius: 16,
+  goalX: 250,
+  goalY: 80,
+  goalWidth: 700,
+  goalHeight: 320,
+  penaltyDistance: 500 // realistic penalty distance
+};
+
+// Canvas setup
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+canvas.width = CONFIG.width;
+canvas.height = CONFIG.height;
+
+// Game state
+let shotType = 'power';
+let selectedZone = 'mm';
+let power = 0;
+let isCharging = false;
+let chargeStartTime = 0;
+let soundEnabled = true;
+
+let goals = 0;
+let attempts = 0;
+let streak = 0;
+
+let ball = {
+  x: CONFIG.width / 2,
+  y: CONFIG.height - 100,
+  z: 0,
+  vx: 0,
+  vy: 0,
+  vz: 0,
+  spin: 0,
+  active: false,
+  missedGoal: false,
+  inGoal: false,
+  scored: false,
+  trail: []
+};
+
+let keeper = {
+  x: CONFIG.goalX + CONFIG.goalWidth / 2,
+  y: CONFIG.goalY + CONFIG.goalHeight * 0.7,
+  targetX: CONFIG.goalX + CONFIG.goalWidth / 2,
+  targetY: CONFIG.goalY + CONFIG.goalHeight * 0.7,
+  diving: false,
+  diveTime: 0,
+  deflecting: false,
+  deflectTime: 0,
+  rotation: 0
+};
+
+let targetPoint = { x: CONFIG.width / 2, y: CONFIG.goalY + CONFIG.goalHeight / 2 };
+
+// Audio context
+let audioContext;
+function initAudio() {
+  if (!audioContext) {
+    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+  }
+}
+
+function playSound(freq, duration, type = 'sine') {
+  if (!soundEnabled) return;
+  initAudio();
+  const osc = audioContext.createOscillator();
+  const gain = audioContext.createGain();
+  osc.frequency.value = freq;
+  osc.type = type;
+  gain.gain.setValueAtTime(0.3, audioContext.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
+  osc.connect(gain);
+  gain.connect(audioContext.destination);
+  osc.start();
+  osc.stop(audioContext.currentTime + duration);
+}
+
+// UI Elements
+const shotButtons = document.querySelectorAll('#shotTypes .btn');
+shotButtons.forEach(btn => {
+  btn.addEventListener('click', () => {
+    shotButtons.forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    shotType = btn.dataset.type;
+  });
+});
+
+const zoneButtons = document.querySelectorAll('#zones .zone');
+zoneButtons.forEach(zone => {
+  zone.addEventListener('click', () => {
+    zoneButtons.forEach(z => z.classList.remove('selected'));
+    zone.classList.add('selected');
+    selectedZone = zone.dataset.zone;
+    updateTargetPoint();
+  });
+});
+
+const shootBtn = document.getElementById('shootBtn');
+const resetBtn = document.getElementById('resetBtn');
+const soundBtn = document.getElementById('soundBtn');
+const powerFill = document.getElementById('powerFill');
+const difficultySlider = document.getElementById('difficulty');
+
+// Update target point based on zone
+function updateTargetPoint() {
+  const zones = {
+    tl: { x: 0.2, y: 0.25 },
+    tm: { x: 0.5, y: 0.25 },
+    tr: { x: 0.8, y: 0.25 },
+    ml: { x: 0.2, y: 0.5 },
+    mm: { x: 0.5, y: 0.5 },
+    mr: { x: 0.8, y: 0.5 },
+    bl: { x: 0.2, y: 0.75 },
+    bm: { x: 0.5, y: 0.75 },
+    br: { x: 0.8, y: 0.75 }
+  };
+  
+  const zone = zones[selectedZone] || zones.mm;
+  targetPoint.x = CONFIG.goalX + CONFIG.goalWidth * zone.x;
+  targetPoint.y = CONFIG.goalY + CONFIG.goalHeight * zone.y;
+}
+
+updateTargetPoint();
+
+// Canvas click to set target
+canvas.addEventListener('click', (e) => {
+  const rect = canvas.getBoundingClientRect();
+  const scaleX = CONFIG.width / rect.width;
+  const scaleY = CONFIG.height / rect.height;
+  const x = (e.clientX - rect.left) * scaleX;
+  const y = (e.clientY - rect.top) * scaleY;
+  
+  if (x >= CONFIG.goalX && x <= CONFIG.goalX + CONFIG.goalWidth &&
+      y >= CONFIG.goalY && y <= CONFIG.goalY + CONFIG.goalHeight) {
+    targetPoint.x = x;
+    targetPoint.y = y;
+    zoneButtons.forEach(z => z.classList.remove('selected'));
+    selectedZone = null;
+  }
+});
+
+// Shoot button - hold to charge
+shootBtn.addEventListener('mousedown', () => {
+  if (ball.active) return;
+  isCharging = true;
+  chargeStartTime = Date.now();
+  initAudio();
+});
+
+shootBtn.addEventListener('touchstart', (e) => {
+  e.preventDefault();
+  if (ball.active) return;
+  isCharging = true;
+  chargeStartTime = Date.now();
+  initAudio();
+});
+
+function releaseShot() {
+  if (!isCharging) return;
+  isCharging = false;
+  shoot(power);
+  power = 0;
+  powerFill.style.width = '0%';
+}
+
+document.addEventListener('mouseup', releaseShot);
+document.addEventListener('touchend', releaseShot);
+
+resetBtn.addEventListener('click', resetGame);
+
+soundBtn.addEventListener('click', () => {
+  soundEnabled = !soundEnabled;
+  soundBtn.textContent = soundEnabled ? 'Sound: ON' : 'Sound: OFF';
+});
+
+// Shoot function with 3D physics
+function shoot(powerLevel) {
+  if (ball.active) return;
+  
+  attempts++;
+  ball.active = true;
+  ball.missedGoal = false;
+  ball.trail = [];
+  
+  const dx = targetPoint.x - ball.x;
+  const dy = targetPoint.y - ball.y;
+  
+  let speed = 600 + powerLevel * 700;
+  
+  // Shot type modifiers
+  if (shotType === 'power') {
+    speed *= 1.25;
+    ball.spin = (Math.random() - 0.5) * 200;
+  } else if (shotType === 'curve') {
+    speed *= 1.0;
+    ball.spin = (Math.random() > 0.5 ? 1 : -1) * 450;
+  } else if (shotType === 'knuckle') {
+    speed *= 1.1;
+    ball.spin = 0;
+  } else if (shotType === 'finesse') {
+    speed *= 0.9;
+    ball.spin = (Math.random() - 0.5) * 180;
+  }
+  
+  // Calculate velocities - shoot upward toward goal
+  const distance = Math.sqrt(dx * dx + dy * dy);
+  const timeToGoal = distance / speed;
+  
+  ball.vx = dx / timeToGoal;
+  ball.vy = (dy / timeToGoal) - (0.5 * CONFIG.gravity * timeToGoal); // arc upward
+  ball.vz = 0; // will be set when entering goal
+  
+  playSound(150, 0.2, 'sawtooth');
+  
+  // Only increment attempts after shot is taken
+  attempts++;
+  updateStats();
+  
+  // Keeper AI
+  const difficulty = parseInt(difficultySlider.value);
+  const reactionTime = 0.35 - difficulty * 0.04;
+  
+  setTimeout(() => {
+    keeper.diving = true;
+    keeper.diveTime = Date.now();
+    
+    // Predict where ball will be
+    const errorMargin = 80 * (6 - difficulty);
+    keeper.targetX = targetPoint.x + (Math.random() - 0.5) * errorMargin;
+    keeper.targetY = targetPoint.y + (Math.random() - 0.5) * errorMargin * 0.6;
+    
+    keeper.targetX = Math.max(CONFIG.goalX + 40, Math.min(CONFIG.goalX + CONFIG.goalWidth - 40, keeper.targetX));
+    keeper.targetY = Math.max(CONFIG.goalY + 40, Math.min(CONFIG.goalY + CONFIG.goalHeight - 40, keeper.targetY));
+    
+    // Calculate dive rotation
+    keeper.rotation = Math.atan2(keeper.targetY - keeper.y, keeper.targetX - keeper.x);
+  }, reactionTime * 1000);
+}
+
+function resetGame() {
+  ball.x = CONFIG.width / 2;
+  ball.y = CONFIG.height - 100;
+  ball.z = 0;
+  ball.vx = 0;
+  ball.vy = 0;
+  ball.vz = 0;
+  ball.spin = 0;
+  ball.active = false;
+  ball.missedGoal = false;
+  ball.inGoal = false;
+  ball.scored = false;
+  ball.trail = [];
+  
+  keeper.x = CONFIG.goalX + CONFIG.goalWidth / 2;
+  keeper.y = CONFIG.goalY + CONFIG.goalHeight * 0.7;
+  keeper.diving = false;
+  keeper.deflecting = false;
+  keeper.rotation = 0;
+}
+
+function updateStats() {
+  document.getElementById('goals').textContent = `${goals} / ${attempts}`;
+  document.getElementById('streak').textContent = streak;
+}
+
+// Physics update with 3D depth
+function update(dt) {
+  if (isCharging) {
+    const chargeTime = (Date.now() - chargeStartTime) / 1000;
+    power = Math.min(1, chargeTime / 1.2);
+    powerFill.style.width = (power * 100) + '%';
+  }
+  
+  if (ball.active) {
+    // Gravity
+    ball.vy += CONFIG.gravity * dt;
+    
+    // Spin effect
+    if (shotType === 'curve') {
+      ball.vx += ball.spin * dt * 1.2;
+    } else if (shotType === 'knuckle') {
+      ball.vx += (Math.random() - 0.5) * 800 * dt;
+      ball.vy += (Math.random() - 0.5) * 400 * dt;
+    }
+    
+    // Update position
+    ball.x += ball.vx * dt;
+    ball.y += ball.vy * dt;
+    
+    // If ball entered goal, move into net (z-depth)
+    if (ball.inGoal) {
+      ball.z += ball.vz * dt;
+      
+      // Smooth deceleration
+      const friction = 0.85;
+      ball.vx *= friction;
+      ball.vy *= friction;
+      ball.vz *= friction;
+      
+      // Stop when deep enough or slow enough
+      if (Math.abs(ball.z) > 120 || Math.abs(ball.vz) < 20) {
+        ball.vx = 0;
+        ball.vy = 0;
+        ball.vz = 0;
+        ball.active = false;
+        
+        if (!ball.scored) {
+          ball.scored = true;
+          // Goal celebration
+          setTimeout(() => {
+            goals++;
+            updateStats();
+            
+            // Check if game is over (5 attempts)
+            if (attempts >= 5) {
+              setTimeout(() => {
+                alert(`Game Over! Final Score: ${goals} / ${attempts}\nStreak: ${streak}`);
+                // Reset everything
+                goals = 0;
+                attempts = 0;
+                streak = 0;
+                updateStats();
+                resetGame();
+              }, 500);
+            } else {
+              resetGame();
+            }
+          }, 500);
+        }
+      }
+    }
+    
+    // Add to trail
+    ball.trail.push({ x: ball.x, y: ball.y, z: ball.z });
+    if (ball.trail.length > 20) ball.trail.shift();
+    
+    // Check if ball has reached goal area
+    if (ball.y <= CONFIG.goalY + CONFIG.goalHeight && !ball.missedGoal && !ball.inGoal) {
+      // Check if inside goal boundaries
+      if (ball.x > CONFIG.goalX + 20 && 
+          ball.x < CONFIG.goalX + CONFIG.goalWidth - 20 &&
+          ball.y > CONFIG.goalY + 10 && 
+          ball.y < CONFIG.goalY + CONFIG.goalHeight - 10) {
+        // Goal! Start going into net
+        ball.inGoal = true;
+        ball.vz = -Math.abs(ball.vy) * 0.8; // Move into goal depth
+        playSound(600, 0.5);
+        streak++;
+        updateStats();
+        return;
+      } else if (ball.y <= CONFIG.goalY) {
+        // Missed - turn ball red
+        ball.missedGoal = true;
+        streak = 0;
+        updateStats();
+      }
+    }
+    
+    // Check keeper collision with deflection
+    if (keeper.diving && !keeper.deflecting) {
+      const dist = Math.sqrt((ball.x - keeper.x) ** 2 + (ball.y - keeper.y) ** 2);
+      if (dist < 70) {
+        // Save with deflection!
+        keeper.deflecting = true;
+        keeper.deflectTime = Date.now();
+        
+        // Deflect ball away
+        const angle = Math.atan2(ball.y - keeper.y, ball.x - keeper.x);
+        ball.vx = Math.cos(angle) * 400;
+        ball.vy = Math.sin(angle) * 300 + 200; // bounce away and down
+        ball.missedGoal = true; // Turn red after save
+        
+        streak = 0;
+        playSound(300, 0.3);
+        
+        setTimeout(() => {
+          ball.active = false;
+          updateStats();
+          
+          // Check if game is over (5 attempts)
+          if (attempts >= 5) {
+            setTimeout(() => {
+              alert(`Game Over! Final Score: ${goals} / ${attempts}`);
+              // Reset everything
+              goals = 0;
+              attempts = 0;
+              streak = 0;
+              updateStats();
+              resetGame();
+            }, 500);
+          } else {
+            setTimeout(() => {
+              resetGame();
+            }, 800);
+          }
+        }, 600);
+        return;
+      }
+    }
+    
+    // Out of bounds
+    if (ball.y > CONFIG.height + 100 || ball.x < -100 || ball.x > CONFIG.width + 100 || ball.y < -100) {
+      if (!ball.missedGoal && !ball.inGoal) {
+        streak = 0;
+        updateStats();
+      }
+      ball.active = false;
+      
+      // Check if game is over (5 attempts)
+      if (attempts >= 5) {
+        setTimeout(() => {
+          alert(`Game Over! Final Score: ${goals} / ${attempts}`);
+          // Reset everything
+          goals = 0;
+          attempts = 0;
+          streak = 0;
+          updateStats();
+          resetGame();
+        }, 500);
+      } else {
+        setTimeout(() => {
+          resetGame();
+        }, 1000);
+      }
+    }
+  }
+  
+  // Update keeper
+  if (keeper.diving) {
+    const elapsed = (Date.now() - keeper.diveTime) / 1000;
+    const diveDuration = 0.6;
+    const progress = Math.min(1, elapsed / diveDuration);
+    
+    // Smooth dive motion
+    const easeProgress = 1 - Math.pow(1 - progress, 3);
+    keeper.x += (keeper.targetX - keeper.x) * easeProgress * 0.25;
+    keeper.y += (keeper.targetY - keeper.y) * easeProgress * 0.25;
+  } else if (!keeper.deflecting) {
+    // Idle animation
+    keeper.x = CONFIG.goalX + CONFIG.goalWidth / 2 + Math.sin(Date.now() / 800) * 12;
+    keeper.y = CONFIG.goalY + CONFIG.goalHeight * 0.7 + Math.sin(Date.now() / 600) * 5;
+  }
+  
+  // Reset deflecting state
+  if (keeper.deflecting && (Date.now() - keeper.deflectTime) > 1000) {
+    keeper.deflecting = false;
+  }
+}
+
+// Draw function with 3D perspective
+function draw() {
+  // Clear
+  ctx.fillStyle = '#0b1724';
+  ctx.fillRect(0, 0, CONFIG.width, CONFIG.height);
+  
+  // Sky gradient
+  const skyGrad = ctx.createLinearGradient(0, 0, 0, CONFIG.goalY + CONFIG.goalHeight);
+  skyGrad.addColorStop(0, '#1a3a52');
+  skyGrad.addColorStop(1, '#0d2233');
+  ctx.fillStyle = skyGrad;
+  ctx.fillRect(0, 0, CONFIG.width, CONFIG.goalY + CONFIG.goalHeight);
+  
+  // Field with perspective
+  ctx.fillStyle = '#0a3a1f';
+  ctx.fillRect(0, CONFIG.goalY + CONFIG.goalHeight, CONFIG.width, CONFIG.height);
+  
+  // Field lines
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+  ctx.lineWidth = 3;
+  ctx.beginPath();
+  ctx.moveTo(0, CONFIG.goalY + CONFIG.goalHeight);
+  ctx.lineTo(CONFIG.width, CONFIG.goalY + CONFIG.goalHeight);
+  ctx.stroke();
+  
+  // Penalty spot
+  ctx.beginPath();
+  ctx.arc(CONFIG.width / 2, CONFIG.height - 100, 8, 0, Math.PI * 2);
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+  ctx.fill();
+  
+  // Goal frame with 3D depth
+  drawGoal3D();
+  
+  // Target crosshair
+  if (!ball.active) {
+    ctx.strokeStyle = 'rgba(255, 204, 0, 0.8)';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.arc(targetPoint.x, targetPoint.y, 15, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(targetPoint.x - 20, targetPoint.y);
+    ctx.lineTo(targetPoint.x + 20, targetPoint.y);
+    ctx.moveTo(targetPoint.x, targetPoint.y - 20);
+    ctx.lineTo(targetPoint.x, targetPoint.y + 20);
+    ctx.stroke();
+  }
+  
+  // Goalkeeper with animation
+  drawGoalkeeper();
+  
+  // Ball with trail
+  drawBall3D();
+}
+
+function drawGoal3D() {
+  // Goal depth/shadow
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+  ctx.fillRect(CONFIG.goalX - 5, CONFIG.goalY - 5, CONFIG.goalWidth + 10, CONFIG.goalHeight + 10);
+  
+  // Net
+  ctx.strokeStyle = 'rgba(200, 220, 255, 0.12)';
+  ctx.lineWidth = 1;
+  for (let i = 0; i <= 12; i++) {
+    const x = CONFIG.goalX + (CONFIG.goalWidth / 12) * i;
+    ctx.beginPath();
+    ctx.moveTo(x, CONFIG.goalY);
+    ctx.lineTo(x - 8, CONFIG.goalY + CONFIG.goalHeight);
+    ctx.stroke();
+  }
+  for (let i = 0; i <= 10; i++) {
+    const y = CONFIG.goalY + (CONFIG.goalHeight / 10) * i;
+    ctx.beginPath();
+    ctx.moveTo(CONFIG.goalX, y);
+    ctx.lineTo(CONFIG.goalX + CONFIG.goalWidth, y);
+    ctx.stroke();
+  }
+  
+  // Goal posts (white)
+  ctx.fillStyle = '#ffffff';
+  // Left post
+  ctx.fillRect(CONFIG.goalX - 8, CONFIG.goalY, 8, CONFIG.goalHeight + 8);
+  // Right post
+  ctx.fillRect(CONFIG.goalX + CONFIG.goalWidth, CONFIG.goalY, 8, CONFIG.goalHeight + 8);
+  // Top bar
+  ctx.fillRect(CONFIG.goalX - 8, CONFIG.goalY - 8, CONFIG.goalWidth + 16, 8);
+  
+  // Post highlights
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+  ctx.fillRect(CONFIG.goalX - 6, CONFIG.goalY, 2, CONFIG.goalHeight);
+  ctx.fillRect(CONFIG.goalX + CONFIG.goalWidth, CONFIG.goalY, 2, CONFIG.goalHeight);
+}
+
+function drawGoalkeeper() {
+  ctx.save();
+  ctx.translate(keeper.x, keeper.y);
+  
+  if (keeper.diving || keeper.deflecting) {
+    ctx.rotate(keeper.rotation);
+  }
+  
+  // Shadow
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+  ctx.beginPath();
+  ctx.ellipse(0, 50, 35, 12, 0, 0, Math.PI * 2);
+  ctx.fill();
+  
+  // Body
+  ctx.fillStyle = '#2f7be3';
+  if (keeper.deflecting) {
+    // Extended pose when deflecting
+    ctx.fillRect(-45, -30, 90, 50);
+    // Arms extended
+    ctx.fillRect(-60, -20, 20, 15);
+    ctx.fillRect(40, -20, 20, 15);
+  } else {
+    ctx.fillRect(-30, -40, 60, 70);
+    // Arms
+    ctx.fillRect(-45, -25, 18, 30);
+    ctx.fillRect(27, -25, 18, 30);
+  }
+  
+  // Head
+  ctx.beginPath();
+  ctx.arc(0, -50, 18, 0, Math.PI * 2);
+  ctx.fillStyle = '#ffd8b0';
+  ctx.fill();
+  
+  // Gloves
+  ctx.fillStyle = '#90EE90';
+  ctx.beginPath();
+  ctx.arc(-45, -10, 12, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.beginPath();
+  ctx.arc(45, -10, 12, 0, Math.PI * 2);
+  ctx.fill();
+  
+  ctx.restore();
+}
+
+function drawBall3D() {
+  // Draw trail with depth perspective
+  ctx.save();
+  for (let i = 0; i < ball.trail.length; i++) {
+    const t = ball.trail[i];
+    const alpha = (i / ball.trail.length) * 0.2;
+    
+    // Scale based on depth - farther into goal = smaller
+    const depthScale = 1 - (Math.abs(t.z || 0) / 200) * 0.5;
+    const size = CONFIG.ballRadius * (0.5 + (i / ball.trail.length) * 0.5) * depthScale;
+    
+    // Offset position based on depth for 3D effect
+    const depthOffset = (t.z || 0) * 0.15;
+    
+    ctx.globalAlpha = alpha;
+    ctx.beginPath();
+    ctx.arc(t.x - depthOffset, t.y + depthOffset * 0.5, size, 0, Math.PI * 2);
+    ctx.fillStyle = ball.missedGoal ? '#ff6b6b' : '#e0e0e0';
+    ctx.fill();
+  }
+  ctx.restore();
+  
+  // Calculate depth scale for 3D effect
+  const depthScale = 1 - (Math.abs(ball.z) / 200) * 0.6;
+  const ballSize = CONFIG.ballRadius * depthScale;
+  const depthOffset = ball.z * 0.15;
+  
+  // Ball shadow on field/net
+  if (ball.y > CONFIG.goalY + CONFIG.goalHeight || ball.inGoal) {
+    ctx.save();
+    ctx.globalAlpha = 0.3 * depthScale;
+    ctx.fillStyle = '#000';
+    ctx.beginPath();
+    const shadowX = ball.x - depthOffset;
+    const shadowY = ball.y + depthOffset * 0.5 + 20;
+    ctx.ellipse(shadowX, shadowY, ballSize * 1.2, ballSize * 0.4, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+  }
+  
+  // Ball with depth offset for 3D
+  const drawX = ball.x - depthOffset;
+  const drawY = ball.y + depthOffset * 0.5;
+  
+  ctx.save();
+  ctx.beginPath();
+  ctx.arc(drawX, drawY, ballSize, 0, Math.PI * 2);
+  
+  // Ball color - green if scored in goal, red if missed
+  const gradient = ctx.createRadialGradient(
+    drawX - ballSize * 0.3, 
+    drawY - ballSize * 0.3, 
+    ballSize * 0.1, 
+    drawX, 
+    drawY, 
+    ballSize
+  );
+  
+  if (ball.inGoal && !ball.active) {
+    // Green for successful goal
+    gradient.addColorStop(0, '#99ff99');
+    gradient.addColorStop(0.5, '#44ff44');
+    gradient.addColorStop(1, '#00cc00');
+  } else if (ball.missedGoal) {
+    // Red for missed
+    gradient.addColorStop(0, '#ff9999');
+    gradient.addColorStop(0.5, '#ff4444');
+    gradient.addColorStop(1, '#cc0000');
+  } else {
+    // White for active
+    gradient.addColorStop(0, '#ffffff');
+    gradient.addColorStop(0.6, '#f0f0f0');
+    gradient.addColorStop(1, '#cccccc');
+  }
+  
+  ctx.fillStyle = gradient;
+  ctx.fill();
+  
+  // Ball pattern
+  ctx.strokeStyle = ball.missedGoal ? 'rgba(100, 0, 0, 0.3)' : 'rgba(0, 0, 0, 0.15)';
+  ctx.lineWidth = 2;
+  const rotation = Date.now() / 500;
+  for (let i = 0; i < 5; i++) {
+    ctx.beginPath();
+    const angle = (i / 5) * Math.PI * 2 + rotation;
+    const x1 = drawX + Math.cos(angle) * ballSize * 0.7;
+    const y1 = drawY + Math.sin(angle) * ballSize * 0.7;
+    const x2 = drawX - Math.cos(angle) * ballSize * 0.7;
+    const y2 = drawY - Math.sin(angle) * ballSize * 0.7;
+    ctx.moveTo(x1, y1);
+    ctx.lineTo(x2, y2);
+    ctx.stroke();
+  }
+  
+  ctx.restore();
+}
+
+// Game loop
+let lastTime = Date.now();
+function gameLoop() {
+  const now = Date.now();
+  const dt = Math.min((now - lastTime) / 1000, 0.1);
+  lastTime = now;
+  
+  update(dt);
+  draw();
+  
+  requestAnimationFrame(gameLoop);
+}
+
+gameLoop();
+</script>
+
+</body>
+</html>
