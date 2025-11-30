@@ -1,4 +1,4 @@
-Put your HTML text here<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -102,11 +102,32 @@ body {
     text-transform: uppercase;
 }
 
+/* Featured Section */
+.featured-section {
+    margin-bottom: 50px;
+}
+
+.featured-section h3 {
+    font-family: 'Oswald', sans-serif;
+    color: var(--navy-blue);
+    font-size: 1.8em;
+    text-align: center;
+    margin-bottom: 25px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
 /* Grid */
 .cards {
     display: grid;
     gap: 1.5rem;
     grid-template-columns: repeat(2, 1fr);
+}
+
+.featured-grid {
+    display: grid;
+    gap: 1.5rem;
+    grid-template-columns: repeat(3, 1fr);
 }
 
 .card {
@@ -120,6 +141,7 @@ body {
     justify-content: center;
     border: 2px solid transparent;
     transition: 0.25s;
+    text-align: center;
 }
 .card:hover {
     transform: translateY(-6px);
@@ -140,19 +162,25 @@ body {
     margin: 0;
 }
 
-/* Featured Console Card */
+/* Featured Cards - Larger and more prominent */
 .feature-card {
-    grid-column: span 2;
-    text-align: center;
-    padding: 40px;
-    border: 2px solid var(--gold-accent);
+    padding: 35px;
+    border: 3px solid var(--gold-accent);
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
 }
+
 .feature-card h2 {
-    border-bottom: none;
-    padding-bottom: 0;
+    font-size: 2em;
+    margin-bottom: 15px;
 }
+
+.feature-card .icon {
+    font-size: 3em;
+    margin-bottom: 10px;
+}
+
 .btn-primary {
-    margin-top: 10px;
+    margin-top: 15px;
     padding: 12px 25px;
     border-radius: 10px;
     font-weight: bold;
@@ -165,6 +193,14 @@ body {
 }
 .btn-primary:hover {
     transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(255, 165, 0, 0.4);
+}
+
+/* Section Divider */
+.section-divider {
+    height: 3px;
+    background: linear-gradient(90deg, transparent, var(--gold-accent), transparent);
+    margin: 40px 0;
 }
 
 /* Mobile */
@@ -205,13 +241,12 @@ body {
         margin-bottom: 20px;
     }
     
-    .cards { 
+    .cards, .featured-grid { 
         grid-template-columns: 1fr; 
         gap: 1rem;
     }
     
     .feature-card { 
-        grid-column: span 1; 
         padding: 25px;
     }
     
@@ -272,52 +307,73 @@ body {
         <a href="power-shot.html">POWER SHOT</a>
         <a href="whip.html">WHIP CROSS</a>
         <a href="defense.html">DEFENDING</a>
-        <a href="game.html">GAME</a>
+        <a href="penaltyshooter.html">PENALTY SHOOTER</a>
     </nav>
 </div>
 
 <div class="container">
     <h2>Master Modern Football by Jaival Tamboli</h2>
 
-    <section class="cards">
-
-        <!-- Featured Console -->
-        <a href="tactics_console.html" class="card feature-card">
-            <h2>Tactics Console 🧠</h2>
-            <p>Interactive 2D strategy board — drag players & simulate plays.</p>
-            <button class="btn-primary">Launch Console</button>
-        </a>
-        <a href="game.html" class="card feature-card">
-            <h2>2D Soccer star  🎮</h2>
-            <p>Interactive game to play in school- Unblocked</p>
-            <button class="btn-primary">Launch Console</button>
-        </a>
-
-        <a href="possession.html" class="card">
-            <h2>Possession ⚙️</h2>
-            <p>Tempo control, spacing & overloads.</p>
-        </a>
-
-        <a href="finesse.html" class="card">
-            <h2>Finesse Finishing 🎯</h2>
-            <p>Precision, bend & smart shooting angles.</p>
-        </a>
-
-        <a href="whip.html" class="card">
-            <h2>Whipped Crossing 🌪️</h2>
-            <p>Driven, curled & lethal service into the box.</p>
-        </a>
-
-        <a href="power-shot.html" class="card">
-            <h2>Powershot  💥️</h2>
-            <p>Velocity and Striking with Power into Goal.</p>
-        </a>
+    <!-- Featured Interactive Tools -->
+    <section class="featured-section">
+        <h3>🎮 Featured Interactive Tools</h3>
         
-        <a href="defense.html" class="card">
-            <h2>Defending & Pressing 🛡️</h2>
-            <p>Press triggers, shape, offside trap & duels.</p>
-        </a>
+        <div class="featured-grid">
+            <a href="tactics_console.html" class="card feature-card">
+                <div class="icon">🧠</div>
+                <h2>Tactics Console</h2>
+                <p>Interactive 2D strategy board — drag players & simulate plays.</p>
+                <button class="btn-primary">Launch Console</button>
+            </a>
 
+            <a href="penaltyshooter.html" class="card feature-card">
+                <div class="icon">⚽</div>
+                <h2>Penalty Shooter</h2>
+                <p>Test your shooting skills! Aim, power up & score past the keeper.</p>
+                <button class="btn-primary">Play Now</button>
+            </a>
+
+            <a href="game.html" class="card feature-card">
+                <div class="icon">🎮</div>
+                <h2>2D Soccer Star</h2>
+                <p>Full football game — dribble, pass & score!</p>
+                <button class="btn-primary">Start Game</button>
+            </a>
+        </div>
+    </section>
+
+    <div class="section-divider"></div>
+
+    <!-- Learning Modules -->
+    <section>
+        <h3 style="font-family: 'Oswald', sans-serif; color: var(--navy-blue); font-size: 1.8em; text-align: center; margin-bottom: 25px; text-transform: uppercase;">📚 Training Modules</h3>
+        
+        <div class="cards">
+            <a href="possession.html" class="card">
+                <h2>Possession ⚙️</h2>
+                <p>Tempo control, spacing & overloads.</p>
+            </a>
+
+            <a href="finesse.html" class="card">
+                <h2>Finesse Finishing 🎯</h2>
+                <p>Precision, bend & smart shooting angles.</p>
+            </a>
+
+            <a href="whip.html" class="card">
+                <h2>Whipped Crossing 🌪️</h2>
+                <p>Driven, curled & lethal service into the box.</p>
+            </a>
+
+            <a href="power-shot.html" class="card">
+                <h2>Powershot 💥</h2>
+                <p>Velocity and Striking with Power into Goal.</p>
+            </a>
+            
+            <a href="defense.html" class="card">
+                <h2>Defending & Pressing 🛡️</h2>
+                <p>Press triggers, shape, offside trap & duels.</p>
+            </a>
+        </div>
     </section>
 </div>
 
