@@ -66,6 +66,7 @@
                 <br>Slide Tackle: <span class="text-blue-400 font-mono">Q Key</span>
                 <br><br>
                 <b class="text-yellow-300">Score on the opposite goal!</b>
+                <br><span class="text-red-300 text-sm">BEWARE: AI has a super goalkeeper!</span>
             </p>
             <button id="start-button" class="w-full bg-green-500 hover:bg-red-500 text-white font-bold py-3 px-6 rounded-lg text-lg transition duration-300 transform hover:scale-105 border-2 border-white shadow-md">
                 Start Game
@@ -99,11 +100,13 @@ let slideTackles = []; // Array to track active slide tackles
 let score = {teamA:0, teamB:0};
 const winningScore = 5;
 
-const MAIN_PLAYER_SPEED = 9;
+const MAIN_PLAYER_SPEED = 7;
 const AI_PLAYER_SPEED = 9; // Balanced AI speed
 const SLIDE_TACKLE_SPEED = 10; // Speed of slide tackle
 const SLIDE_TACKLE_DURATION = 30; // Frames slide tackle lasts
 const SLIDE_TACKLE_COOLDOWN = 90; // Frames before next slide tackle
+const GOALKEEPER_SPEED = 15; // Very fast goalkeeper
+const GOALKEEPER_REACTION_TIME = 0.1; // How quickly keeper reacts (lower = faster)
 
 // Color scheme
 const TEAM_A_COLOR = "#ff0000";        // Bright Red
@@ -116,6 +119,13 @@ const PITCH_LINE = "#ffffff";          // White lines
 const BALL_COLOR = "#ffffff";          // White ball
 const GOAL_COLOR = "#ffffff";
 const SLIDE_TACKLE_COLOR = "#ffff00";  // Yellow for slide tackle
+const GOALKEEPER_COLOR = "#ffff00";    // Bright yellow for goalkeeper
+const GOALKEEPER_ACCENT = "#000000";   // Black accents for goalkeeper
+
+// Goalkeeper specific variables
+let goalkeeper = null;
+let lastBallSpeedX = 0;
+let lastBallSpeedY = 0;
 
 // INPUT
 document.addEventListener('keydown', (e) => {
@@ -216,6 +226,27 @@ function resetGame(fullReset){
             assignedPlayer: null
         });
     }
+    
+    // Initialize SUPER GOALKEEPER
+    goalkeeper = {
+        x: canvas.width - 70, // Position in goal area
+        y: canvas.height/2,
+        width: 40,
+        height: 80, // Taller goalkeeper
+        color: GOALKEEPER_COLOR,
+        accent: GOALKEEPER_ACCENT,
+        speed: GOALKEEPER_SPEED,
+        number: 1,
+        hasBall: false,
+        reactionTime: GOALKEEPER_REACTION_TIME,
+        divePower: 25, // How far/fast he can dive
+        saveSkill: 0.95, // 95% chance to save shots in his reach
+        isDiving: false,
+        diveDirection: {x:0, y:0},
+        diveFrames: 0,
+        maxDiveFrames: 20
+    };
+    
     selectedIdx = 0;
     slideTackles = [];
     ball = {
@@ -239,10 +270,12 @@ function assignDefensiveMarking() {
 function update(){
     moveSelectedPlayer();
     moveAIPlayers();
+    updateGoalkeeper();
     updateSlideTackles();
     moveBall();
     checkCollisions();
     checkGoal();
+    checkGoalkeeperSave();
     
     // Update tackle cooldowns
     updateTackleCooldowns();
@@ -265,6 +298,14 @@ function updateTackleCooldowns() {
                     teams[t][i].slideTackleCooldown = SLIDE_TACKLE_COOLDOWN;
                 }
             }
+        }
+    }
+    
+    // Update goalkeeper dive
+    if (goalkeeper.isDiving) {
+        goalkeeper.diveFrames--;
+        if (goalkeeper.diveFrames <= 0) {
+            goalkeeper.isDiving = false;
         }
     }
 }
@@ -304,6 +345,131 @@ function moveSelectedPlayer(){
         player.hasBall=false;
         ball.speedX=player.lastDir.x*20||20;
         ball.speedY=player.lastDir.y*15||0;
+    }
+}
+
+// SUPER GOALKEEPER AI
+function updateGoalkeeper() {
+    if (!goalkeeper) return;
+    
+    // Track ball speed for prediction
+    lastBallSpeedX = ball.speedX;
+    lastBallSpeedY = ball.speedY;
+    
+    // Only move goalkeeper if ball is in his half
+    if (ball.x > canvas.width/2) {
+        // Predict where the ball will be if shot toward goal
+        let predictedY = ball.y;
+        let ballSpeed = Math.sqrt(ball.speedX*ball.speedX + ball.speedY*ball.speedY);
+        
+        // If ball is moving fast toward goal, predict intercept point
+        if (ball.speedX < -10) { // Ball moving left toward goal
+            let framesToGoal = (ball.x - 24) / Math.abs(ball.speedX);
+            predictedY = ball.y + (ball.speedY * framesToGoal);
+            
+            // Constrain prediction to goal area
+            predictedY = Math.max(canvas.height/2 - 80, Math.min(canvas.height/2 + 80, predictedY));
+        }
+        
+        // Move toward predicted position or ball position
+        let targetY = predictedY;
+        
+        // If ball is in penalty area, be more aggressive
+        if (ball.x > canvas.width - 100) {
+            targetY = ball.y;
+        }
+        
+        // Smooth movement with anticipation
+        let dy = targetY - goalkeeper.y;
+        goalkeeper.y += dy * goalkeeper.reactionTime;
+        
+        // Keep goalkeeper within goal bounds
+        goalkeeper.y = Math.max(canvas.height/2 - 70, Math.min(canvas.height/2 + 70, goalkeeper.y));
+        
+        // Perform dive if ball is close and moving fast toward goal
+        if (!goalkeeper.isDiving && ballSpeed > 15 && ball.speedX < -12 && ball.x > canvas.width - 150) {
+            // Calculate if dive is needed
+            let ballToGoalCenterDist = Math.abs(ball.y - canvas.height/2);
+            let keeperToBallDist = Math.abs(goalkeeper.y - ball.y);
+            
+            if (keeperToBallDist > 40 || ballToGoalCenterDist > 50) {
+                // Perform dive toward ball
+                goalkeeper.isDiving = true;
+                goalkeeper.diveFrames = goalkeeper.maxDiveFrames;
+                goalkeeper.diveDirection = {
+                    x: -1, // Always dive toward ball
+                    y: (ball.y - goalkeeper.y) > 0 ? 1 : -1
+                };
+            }
+        }
+        
+        // Update position if diving
+        if (goalkeeper.isDiving) {
+            goalkeeper.x += goalkeeper.diveDirection.x * goalkeeper.divePower * 0.8;
+            goalkeeper.y += goalkeeper.diveDirection.y * goalkeeper.divePower;
+        } else {
+            // Return to goal position when not diving
+            goalkeeper.x = canvas.width - 70;
+        }
+        
+        // Constrain goalkeeper position
+        goalkeeper.x = Math.max(canvas.width - 90, Math.min(canvas.width - 50, goalkeeper.x));
+    }
+}
+
+// Check if goalkeeper saves a shot
+function checkGoalkeeperSave() {
+    if (!goalkeeper || findPlayerWithBall()) return false;
+    
+    // Only check saves when ball is in goal area
+    if (ball.x > canvas.width - 50 && ball.y > canvas.height/2 - 90 && ball.y < canvas.height/2 + 90) {
+        // Check collision with goalkeeper
+        if (rectCircleCollision(goalkeeper, ball)) {
+            // SUPER GOALKEEPER: Very high save probability
+            let saveProbability = goalkeeper.saveSkill;
+            
+            // Adjust based on shot speed and angle
+            let shotSpeed = Math.sqrt(ball.speedX*ball.speedX + ball.speedY*ball.speedY);
+            let angleToCenter = Math.abs(ball.y - canvas.height/2) / 90; // 0 to 1
+            
+            // Harder to save fast shots to corners
+            if (shotSpeed > 20 && angleToCenter > 0.7) {
+                saveProbability *= 0.85; // 85% of normal save skill
+            }
+            
+            if (Math.random() < saveProbability) {
+                // SAVE!
+                // Calculate rebound angle
+                let reboundAngle = Math.atan2(ball.speedY, ball.speedX);
+                reboundAngle += Math.PI + (Math.random() - 0.5) * 0.5; // Reverse with some randomness
+                
+                let reboundSpeed = Math.min(30, shotSpeed * 0.8 + 10); // Powerful rebound
+                
+                ball.speedX = Math.cos(reboundAngle) * reboundSpeed;
+                ball.speedY = Math.sin(reboundAngle) * reboundSpeed;
+                
+                // Add some visual feedback
+                createSaveEffect();
+                
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+function createSaveEffect() {
+    // Create visual effect for save
+    for(let i = 0; i < 10; i++) {
+        setTimeout(() => {
+            slideTackles.push({
+                x: goalkeeper.x + goalkeeper.width/2,
+                y: goalkeeper.y + goalkeeper.height/2,
+                radius: 15 + Math.random() * 20,
+                frames: 15,
+                color: "#ffff00"
+            });
+        }, i * 30);
     }
 }
 
@@ -810,14 +976,17 @@ function checkCollisions(){
 
 // Score logic: Each team scores on the opposing goal
 function checkGoal(){
-    // Team A scores in right goal
+    // Team A scores in right goal (AI side with goalkeeper)
     if(ball.x + ball.radius > canvas.width-24 && ball.y > canvas.height/2-90 && ball.y < canvas.height/2+90){
-        score.teamA++;
-        teamAScoreEl.textContent = score.teamA;
-        if(checkWin()) return;
-        resetGame(false);
+        // Check if goalkeeper saved it
+        if (!checkGoalkeeperSave()) {
+            score.teamA++;
+            teamAScoreEl.textContent = score.teamA;
+            if(checkWin()) return;
+            resetGame(false);
+        }
     }
-    // Team B scores in left goal
+    // Team B scores in left goal (your side - no goalkeeper)
     if(ball.x-ball.radius < 24 && ball.y > canvas.height/2-90 && ball.y < canvas.height/2+90){
         score.teamB++;
         teamBScoreEl.textContent = score.teamB;
@@ -831,7 +1000,7 @@ function checkWin(){
     if(score.teamA>=winningScore||score.teamB>=winningScore){
         gameStarted=false;
         let winText = score.teamA>=winningScore ?
-            `<span style='color:#fff'>You Win!</span>` :
+            `<span style='color:#fff'>AMAZING! You Beat the Super Keeper!</span>` :
             `<span style='color:#2fd771'>Opponent Wins!</span>`;
         overlay.innerHTML = `
             <div class="bg-gradient-to-br from-green-900 via-green-700 to-green-800 p-10 rounded-lg shadow-2xl text-center max-w-md border-4 border-red-600">
@@ -859,6 +1028,7 @@ function draw(){
     ctx.clearRect(0,0,canvas.width,canvas.height);
     drawPitch();
     drawPlayers();
+    drawGoalkeeper();
     drawSlideTackles();
     drawBall();
 }
@@ -917,12 +1087,75 @@ function drawPlayers(){
     }
 }
 
+// Draw SUPER GOALKEEPER
+function drawGoalkeeper() {
+    if (!goalkeeper) return;
+    
+    ctx.save();
+    
+    // Goalkeeper appearance
+    if (goalkeeper.isDiving) {
+        // Diving animation
+        ctx.fillStyle = "#ff9900"; // Brighter when diving
+        ctx.shadowColor = "#ff9900";
+        ctx.shadowBlur = 20;
+    } else {
+        ctx.fillStyle = goalkeeper.color;
+        ctx.shadowColor = "#ffff00";
+        ctx.shadowBlur = 15;
+    }
+    
+    // Draw goalkeeper body
+    ctx.fillRect(goalkeeper.x, goalkeeper.y, goalkeeper.width, goalkeeper.height);
+    
+    // Draw goalkeeper accent (gloves)
+    ctx.fillStyle = goalkeeper.accent;
+    // Left glove
+    ctx.fillRect(goalkeeper.x - 5, goalkeeper.y + goalkeeper.height/3, 8, 15);
+    // Right glove
+    ctx.fillRect(goalkeeper.x + goalkeeper.width - 3, goalkeeper.y + goalkeeper.height/3, 8, 15);
+    
+    // Draw goalkeeper number
+    ctx.fillStyle = "#000000";
+    ctx.font = "bold 20px 'Press Start 2P',cursive";
+    ctx.textAlign = "center";
+    ctx.fillText(goalkeeper.number.toString(), goalkeeper.x + goalkeeper.width/2, goalkeeper.y + goalkeeper.height/2 + 7);
+    
+    // Draw diving trail effect
+    if (goalkeeper.isDiving) {
+        ctx.globalAlpha = 0.3;
+        ctx.fillStyle = "#ffff00";
+        for(let i = 1; i <= 3; i++) {
+            ctx.fillRect(
+                goalkeeper.x - goalkeeper.diveDirection.x * i * 5,
+                goalkeeper.y - goalkeeper.diveDirection.y * i * 5,
+                goalkeeper.width,
+                goalkeeper.height
+            );
+        }
+        ctx.globalAlpha = 1.0;
+    }
+    
+    // Draw goalkeeper aura (super keeper effect)
+    if (goalkeeper.isDiving) {
+        ctx.beginPath();
+        ctx.arc(goalkeeper.x + goalkeeper.width/2, goalkeeper.y + goalkeeper.height/2, 50, 0, Math.PI * 2);
+        ctx.strokeStyle = "#ffff00";
+        ctx.lineWidth = 2;
+        ctx.setLineDash([5, 5]);
+        ctx.stroke();
+        ctx.setLineDash([]);
+    }
+    
+    ctx.restore();
+}
+
 function drawSlideTackles() {
     for(let i = 0; i < slideTackles.length; i++) {
         let tackle = slideTackles[i];
         ctx.save();
         ctx.globalAlpha = tackle.frames / SLIDE_TACKLE_DURATION;
-        ctx.fillStyle = SLIDE_TACKLE_COLOR;
+        ctx.fillStyle = tackle.color || SLIDE_TACKLE_COLOR;
         ctx.beginPath();
         ctx.arc(tackle.x, tackle.y, tackle.radius, 0, Math.PI * 2);
         ctx.fill();
@@ -1017,4 +1250,3 @@ function rectRectCollision(rect1, rect2){
 </script>
 </body>
 </html>
-
