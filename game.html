@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -40,6 +39,14 @@
             min-height: 100vh;
             padding: 20px;
         }
+        .controls-info {
+            background: rgba(0, 0, 0, 0.7);
+            padding: 10px;
+            border-radius: 8px;
+            margin-top: 10px;
+            color: white;
+            font-size: 12px;
+        }
     </style>
 </head>
 <body>
@@ -56,6 +63,7 @@
                 Move: <span class="text-red-400 font-mono">Arrow Keys</span>
                 <br>Shoot: <span class="text-green-400 font-mono">Spacebar</span>
                 <br>Switch Player: <span class="text-yellow-400 font-mono">Tab</span>
+                <br>Slide Tackle: <span class="text-blue-400 font-mono">Q Key</span>
                 <br><br>
                 <b class="text-yellow-300">Score on the opposite goal!</b>
             </p>
@@ -65,6 +73,11 @@
         </div>
     </div>
     <canvas id="game-canvas" width="1000" height="600"></canvas>
+    <div id="controls-info" class="controls-info" style="display:none;">
+        <span class="text-red-400">Q</span> - Slide Tackle | 
+        <span class="text-yellow-400">SPACE</span> - Shoot | 
+        <span class="text-green-400">TAB</span> - Switch Player
+    </div>
 </div>
 <script>
 // Core setup
@@ -73,6 +86,7 @@ const ctx = canvas.getContext('2d');
 const overlay = document.getElementById('game-overlay');
 const startButton = document.getElementById('start-button');
 const scoreboard = document.getElementById('scoreboard');
+const controlsInfo = document.getElementById('controls-info');
 const teamAScoreEl = document.getElementById('teamA-score');
 const teamBScoreEl = document.getElementById('teamB-score');
 
@@ -81,11 +95,15 @@ let keys = {};
 let selectedIdx = 0; // Which of your team is controlled
 let teams = [[],[]];
 let ball;
+let slideTackles = []; // Array to track active slide tackles
 let score = {teamA:0, teamB:0};
 const winningScore = 5;
 
-const MAIN_PLAYER_SPEED = 5;
-const AI_PLAYER_SPEED = 6.5; // Balanced AI speed
+const MAIN_PLAYER_SPEED = 9;
+const AI_PLAYER_SPEED = 9; // Balanced AI speed
+const SLIDE_TACKLE_SPEED = 10; // Speed of slide tackle
+const SLIDE_TACKLE_DURATION = 30; // Frames slide tackle lasts
+const SLIDE_TACKLE_COOLDOWN = 90; // Frames before next slide tackle
 
 // Color scheme
 const TEAM_A_COLOR = "#ff0000";        // Bright Red
@@ -97,17 +115,25 @@ const TEAM_B_SECOND = "#ff0000";       // Red
 const PITCH_LINE = "#ffffff";          // White lines
 const BALL_COLOR = "#ffffff";          // White ball
 const GOAL_COLOR = "#ffffff";
+const SLIDE_TACKLE_COLOR = "#ffff00";  // Yellow for slide tackle
 
 // INPUT
 document.addEventListener('keydown', (e) => {
-    keys[e.key] = true;
+    keys[e.key.toLowerCase()] = true;
     // player switch (Tab)
     if (e.key === "Tab") {
         e.preventDefault();
         selectedIdx = (selectedIdx+1)%teams[0].length;
     }
+    // Slide tackle (Q)
+    if (e.key.toLowerCase() === 'q') {
+        e.preventDefault();
+        attemptSlideTackle();
+    }
 });
-document.addEventListener('keyup',e=>{keys[e.key]=false;});
+document.addEventListener('keyup',e=>{
+    keys[e.key.toLowerCase()]=false;
+});
 
 // START
 startButton.addEventListener('click', () => {
@@ -115,6 +141,7 @@ startButton.addEventListener('click', () => {
     overlay.style.display = 'none';
     canvas.style.display = 'block';
     scoreboard.style.display = 'block';
+    controlsInfo.style.display = 'block';
     resetGame(true);
     gameLoop();
 });
@@ -134,11 +161,21 @@ function resetGame(fullReset){
         teamAScoreEl.textContent='0';
         teamBScoreEl.textContent='0';
     }
-    // Team setup: 3 per side
+    // Team setup: 4 per side (increased from 3)
     teams=[[],[]];
-    const formationA = [{x:140,y:300},{x:200,y:150},{x:200,y:450}];
-    const formationB = [{x:canvas.width-140,y:300},{x:canvas.width-220,y:150},{x:canvas.width-220,y:450}];
-    for(let i=0;i<3;i++) {
+    const formationA = [
+        {x:140,y:300},   // Striker
+        {x:200,y:150},   // Left midfielder
+        {x:200,y:450},   // Right midfielder
+        {x:100,y:300}    // Defender
+    ];
+    const formationB = [
+        {x:canvas.width-140,y:300},   // Striker
+        {x:canvas.width-220,y:150},   // Left midfielder
+        {x:canvas.width-220,y:450},   // Right midfielder
+        {x:canvas.width-100,y:300}    // Defender
+    ];
+    for(let i=0;i<4;i++) {
         teams[0].push({
             x:formationA[i].x, 
             y:formationA[i].y, 
@@ -151,7 +188,12 @@ function resetGame(fullReset){
             number:i+1, 
             hasBall:i===0, 
             lastDir:{x:1,y:0},
-            tackleCooldown: 0
+            tackleCooldown: 0,
+            slideTackleCooldown: 0,
+            isSliding: false,
+            slideDir: {x:0,y:0},
+            slideFrames: 0,
+            role: i===0 ? 'striker' : i===1 ? 'leftMid' : i===2 ? 'rightMid' : 'defender'
         });
         teams[1].push({
             x:formationB[i].x, 
@@ -162,15 +204,20 @@ function resetGame(fullReset){
             accent:TEAM_B_ACCENT, 
             second:TEAM_B_SECOND, 
             speed:AI_PLAYER_SPEED, 
-            number:i+4, 
+            number:i+5, 
             hasBall:false, 
             lastDir:{x:-1,y:0},
-            role: i===0 ? 'attacker' : i===1 ? 'midfielder' : 'defender',
-            assignedPlayer: null, // Which player they're marking
-            tackleCooldown: 0
+            tackleCooldown: 0,
+            slideTackleCooldown: 0,
+            isSliding: false,
+            slideDir: {x:0,y:0},
+            slideFrames: 0,
+            role: i===0 ? 'striker' : i===1 ? 'leftMid' : i===2 ? 'rightMid' : 'defender',
+            assignedPlayer: null
         });
     }
     selectedIdx = 0;
+    slideTackles = [];
     ball = {
         x:teams[0][0].x+teams[0][0].width+14,
         y:teams[0][0].y+teams[0][0].height/2,
@@ -183,14 +230,16 @@ function resetGame(fullReset){
 
 function assignDefensiveMarking() {
     // Assign each AI player to mark a specific opponent
-    teams[1][0].assignedPlayer = teams[0][0]; // Attacker marks their striker
-    teams[1][1].assignedPlayer = teams[0][1]; // Midfielder marks their midfielder
-    teams[1][2].assignedPlayer = teams[0][2]; // Defender marks their defender
+    teams[1][0].assignedPlayer = teams[0][0]; // Striker marks their striker
+    teams[1][1].assignedPlayer = teams[0][1]; // Left mid marks their left mid
+    teams[1][2].assignedPlayer = teams[0][2]; // Right mid marks their right mid
+    teams[1][3].assignedPlayer = teams[0][3]; // Defender marks their defender
 }
 
 function update(){
     moveSelectedPlayer();
     moveAIPlayers();
+    updateSlideTackles();
     moveBall();
     checkCollisions();
     checkGoal();
@@ -205,18 +254,42 @@ function updateTackleCooldowns() {
             if(teams[t][i].tackleCooldown > 0) {
                 teams[t][i].tackleCooldown--;
             }
+            if(teams[t][i].slideTackleCooldown > 0) {
+                teams[t][i].slideTackleCooldown--;
+            }
+            // Update slide animation
+            if(teams[t][i].isSliding) {
+                teams[t][i].slideFrames--;
+                if(teams[t][i].slideFrames <= 0) {
+                    teams[t][i].isSliding = false;
+                    teams[t][i].slideTackleCooldown = SLIDE_TACKLE_COOLDOWN;
+                }
+            }
         }
     }
 }
 
 function moveSelectedPlayer(){
     let player = teams[0][selectedIdx];
+    
+    // Don't move if sliding
+    if(player.isSliding) {
+        // Continue sliding in the slide direction
+        player.x += player.slideDir.x * SLIDE_TACKLE_SPEED;
+        player.y += player.slideDir.y * SLIDE_TACKLE_SPEED;
+        
+        // Keep within bounds
+        player.x = Math.max(0, Math.min(canvas.width - player.width, player.x));
+        player.y = Math.max(0, Math.min(canvas.height - player.height, player.y));
+        return;
+    }
+    
     let moved=false;
     player.lastDir={x:0,y:0};
-    if(keys['ArrowUp'] && player.y>0){player.y-=player.speed; player.lastDir.y=-1; moved=true;}
-    if(keys['ArrowDown'] && player.y<canvas.height-player.height){player.y+=player.speed; player.lastDir.y=1; moved=true;}
-    if(keys['ArrowLeft'] && player.x>0){player.x-=player.speed; player.lastDir.x=-1; moved=true;}
-    if(keys['ArrowRight'] && player.x<canvas.width-player.width){player.x+=player.speed; player.lastDir.x=1; moved=true;}
+    if(keys['arrowup'] && player.y>0){player.y-=player.speed; player.lastDir.y=-1; moved=true;}
+    if(keys['arrowdown'] && player.y<canvas.height-player.height){player.y+=player.speed; player.lastDir.y=1; moved=true;}
+    if(keys['arrowleft'] && player.x>0){player.x-=player.speed; player.lastDir.x=-1; moved=true;}
+    if(keys['arrowright'] && player.x<canvas.width-player.width){player.x+=player.speed; player.lastDir.x=1; moved=true;}
     if(moved && player.lastDir.x===0&&player.lastDir.y===0) player.lastDir.x=1;
 
     // Dribble
@@ -229,8 +302,92 @@ function moveSelectedPlayer(){
     // Shoot
     if(keys[' ']&&player.hasBall){
         player.hasBall=false;
-        ball.speedX=player.lastDir.x*15||15;
-        ball.speedY=player.lastDir.y*12||0;
+        ball.speedX=player.lastDir.x*20||20;
+        ball.speedY=player.lastDir.y*15||0;
+    }
+}
+
+// Attempt slide tackle with Q key
+function attemptSlideTackle() {
+    let player = teams[0][selectedIdx];
+    
+    // Check if slide tackle is available (not on cooldown and not already sliding)
+    if(player.slideTackleCooldown > 0 || player.isSliding || player.hasBall) {
+        return;
+    }
+    
+    // Start slide tackle
+    player.isSliding = true;
+    player.slideFrames = SLIDE_TACKLE_DURATION;
+    
+    // Set slide direction based on last movement direction
+    if(player.lastDir.x === 0 && player.lastDir.y === 0) {
+        player.slideDir = {x:1, y:0}; // Default to right if no movement
+    } else {
+        player.slideDir = {x:player.lastDir.x, y:player.lastDir.y};
+    }
+    
+    // Normalize slide direction
+    let len = Math.sqrt(player.slideDir.x**2 + player.slideDir.y**2);
+    if(len > 0) {
+        player.slideDir.x /= len;
+        player.slideDir.y /= len;
+    }
+    
+    // Add visual effect
+    slideTackles.push({
+        x: player.x + player.width/2,
+        y: player.y + player.height/2,
+        radius: 25,
+        frames: SLIDE_TACKLE_DURATION
+    });
+}
+
+function updateSlideTackles() {
+    // Update slide tackle visual effects
+    for(let i = slideTackles.length - 1; i >= 0; i--) {
+        slideTackles[i].frames--;
+        if(slideTackles[i].frames <= 0) {
+            slideTackles.splice(i, 1);
+        }
+    }
+    
+    // Check for slide tackle collisions
+    for(let t = 0; t < 2; t++) {
+        for(let i = 0; i < teams[t].length; i++) {
+            let player = teams[t][i];
+            if(player.isSliding) {
+                // Check collision with opponents
+                let opponentTeam = t === 0 ? teams[1] : teams[0];
+                for(let j = 0; j < opponentTeam.length; j++) {
+                    let opponent = opponentTeam[j];
+                    if(opponent.hasBall && rectRectCollision(player, opponent)) {
+                        // Successful slide tackle!
+                        opponent.hasBall = false;
+                        player.hasBall = true;
+                        
+                        // Knock the opponent back
+                        let knockbackX = (opponent.x - player.x) * 0.5;
+                        let knockbackY = (opponent.y - player.y) * 0.5;
+                        opponent.x += knockbackX;
+                        opponent.y += knockbackY;
+                        
+                        // Keep opponent in bounds
+                        opponent.x = Math.max(0, Math.min(canvas.width - opponent.width, opponent.x));
+                        opponent.y = Math.max(0, Math.min(canvas.height - opponent.height, opponent.y));
+                        
+                        // Add ball physics
+                        ball.speedX = knockbackX * 2;
+                        ball.speedY = knockbackY * 2;
+                        
+                        // End slide tackle early
+                        player.isSliding = false;
+                        player.slideFrames = 0;
+                        player.slideTackleCooldown = SLIDE_TACKLE_COOLDOWN;
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -240,6 +397,15 @@ function moveAIPlayers(){
     for(let i=0;i<teams[0].length;i++){
         if(i===selectedIdx) continue;
         let p=teams[0][i];
+        // Don't move if sliding
+        if(p.isSliding) {
+            p.x += p.slideDir.x * SLIDE_TACKLE_SPEED;
+            p.y += p.slideDir.y * SLIDE_TACKLE_SPEED;
+            p.x = Math.max(0, Math.min(canvas.width - p.width, p.x));
+            p.y = Math.max(0, Math.min(canvas.height - p.height, p.y));
+            continue;
+        }
+        
         // AI possession: Auto pass to controlled player if they get ball
         if(p.hasBall){
             let target = teams[0][selectedIdx];
@@ -262,6 +428,15 @@ function moveAIPlayers(){
     
     // Enhanced Team B AI with ACTIVE DEFENSE
     teams[1].forEach((p, index) => {
+        // Don't move if sliding
+        if(p.isSliding) {
+            p.x += p.slideDir.x * SLIDE_TACKLE_SPEED;
+            p.y += p.slideDir.y * SLIDE_TACKLE_SPEED;
+            p.x = Math.max(0, Math.min(canvas.width - p.width, p.x));
+            p.y = Math.max(0, Math.min(canvas.height - p.height, p.y));
+            return;
+        }
+        
         // If has ball, make smarter decisions
         if(p.hasBall){
             // Calculate distance to goal
@@ -303,8 +478,8 @@ function moveAIPlayers(){
                 shotDx /= shotDist;
                 shotDy /= shotDist;
                 
-                ball.speedX = shotDx * (18 + Math.random()*4);
-                ball.speedY = shotDy * (18 + Math.random()*4);
+                ball.speedX = shotDx * (22 + Math.random()*4);
+                ball.speedY = shotDy * (22 + Math.random()*4);
             }
         } else {
             // ACTIVE DEFENSE - AI will actively try to intercept and tackle
@@ -341,6 +516,11 @@ function moveAIPlayers(){
                         if (distToBallCarrier < 50 && p.tackleCooldown === 0) {
                             attemptTackle(p, ballCarrier);
                         }
+                        
+                        // AI slide tackle (occasionally)
+                        if (distToBallCarrier < 60 && Math.random() < 0.005 && p.slideTackleCooldown === 0) {
+                            attemptAISlideTackle(p, ballCarrier);
+                        }
                     }
                 } else {
                     // Position to cut off paths to goal
@@ -368,8 +548,8 @@ function moveAIPlayers(){
                 let ballDist = Math.sqrt((ball.x-p.x)**2 + (ball.y-p.y)**2);
                 
                 // Different behavior based on role
-                if(p.role === 'attacker') {
-                    // Attacker stays in offensive positions and pressures ball
+                if(p.role === 'striker') {
+                    // Striker stays in offensive positions and pressures ball
                     if(ball.x > canvas.width/2 && ballDist < 300) {
                         // Pressure the ball when it's in attacking half
                         let dx = ball.x - p.x;
@@ -389,8 +569,8 @@ function moveAIPlayers(){
                         p.x += p.speed * dx * 0.3;
                         p.y += p.speed * dy * 0.3;
                     }
-                } else if(p.role === 'midfielder') {
-                    // Midfielder covers central areas and supports both defense and attack
+                } else if(p.role === 'leftMid' || p.role === 'rightMid') {
+                    // Midfielder covers wing areas and supports both defense and attack
                     if(ballDist < 350) {
                         // Move toward ball but maintain positioning
                         let dx = ball.x - p.x;
@@ -400,7 +580,7 @@ function moveAIPlayers(){
                         p.x += p.speed * dx * 0.35;
                         p.y += p.speed * dy * 0.35;
                     } else {
-                        // Maintain midfield position and mark assigned player
+                        // Maintain wing position and mark assigned player
                         let target;
                         if(p.assignedPlayer && p.assignedPlayer.x > canvas.width/2 - 100) {
                             // Mark assigned player when they're in attacking position
@@ -409,10 +589,10 @@ function moveAIPlayers(){
                                 y: p.assignedPlayer.y
                             };
                         } else {
-                            // Default midfield position
+                            // Default wing position
                             target = {
                                 x: canvas.width/2 + 50,
-                                y: canvas.height/2 + (index-1)*60
+                                y: p.role === 'leftMid' ? canvas.height/3 : 2*canvas.height/3
                             };
                         }
                         
@@ -454,7 +634,7 @@ function moveAIPlayers(){
                     } else {
                         // Maintain defensive formation
                         let targetX = canvas.width - 250;
-                        let targetY = canvas.height/2 + (index-2)*100;
+                        let targetY = canvas.height/2 + (index-3)*60;
                         let dx = targetX - p.x;
                         let dy = targetY - p.y;
                         let len = Math.sqrt(dx*dx+dy*dy);
@@ -481,6 +661,33 @@ function moveAIPlayers(){
                 }
             }
         }
+    });
+}
+
+// AI slide tackle function
+function attemptAISlideTackle(ai, ballCarrier) {
+    if (!ballCarrier.hasBall || ai.slideTackleCooldown > 0) return;
+    
+    // Start slide tackle
+    ai.isSliding = true;
+    ai.slideFrames = SLIDE_TACKLE_DURATION;
+    
+    // Slide toward ball carrier
+    let dx = ballCarrier.x - ai.x;
+    let dy = ballCarrier.y - ai.y;
+    let len = Math.sqrt(dx*dx + dy*dy);
+    if(len > 0) {
+        ai.slideDir = {x: dx/len, y: dy/len};
+    } else {
+        ai.slideDir = {x:1, y:0};
+    }
+    
+    // Add visual effect
+    slideTackles.push({
+        x: ai.x + ai.width/2,
+        y: ai.y + ai.height/2,
+        radius: 25,
+        frames: SLIDE_TACKLE_DURATION
     });
 }
 
@@ -561,7 +768,7 @@ function moveBall(){
 // Who has the ball?
 function findPlayerWithBall(){
     for(let t=0;t<2;t++){
-        for(let p=0;p<3;p++){
+        for(let p=0;p<4;p++){
             if(teams[t][p].hasBall) return teams[t][p];
         }
     }
@@ -574,6 +781,9 @@ function checkCollisions(){
     for(let t=0;t<2;t++){
         for(let i=0;i<teams[t].length;i++){
             let p = teams[t][i];
+            // Don't check collisions while sliding (handled separately)
+            if(p.isSliding) continue;
+            
             // Ball Pickup
             if(!p.hasBall && !ballCarrier && rectCircleCollision(p,ball)) {
                 p.hasBall=true;
@@ -649,6 +859,7 @@ function draw(){
     ctx.clearRect(0,0,canvas.width,canvas.height);
     drawPitch();
     drawPlayers();
+    drawSlideTackles();
     drawBall();
 }
 
@@ -657,29 +868,65 @@ function drawPlayers(){
         for(let i=0;i<teams[t].length;i++){
             let p = teams[t][i];
             ctx.save();
-            // Accent strip: vertical line
-            ctx.fillStyle = p.accent;
-            ctx.fillRect(p.x+p.width/2-6,p.y,p.width/6, p.height);
+            
+            // Different appearance when sliding
+            if(p.isSliding) {
+                ctx.fillStyle = SLIDE_TACKLE_COLOR;
+                ctx.fillRect(p.x, p.y, p.width, p.height);
+                
+                // Draw slide trail
+                ctx.globalAlpha = 0.5;
+                ctx.fillStyle = "#ffff99";
+                for(let j = 0; j < 3; j++) {
+                    ctx.fillRect(
+                        p.x - p.slideDir.x * 10 * (j+1),
+                        p.y - p.slideDir.y * 10 * (j+1),
+                        p.width,
+                        p.height
+                    );
+                }
+                ctx.globalAlpha = 1.0;
+            } else {
+                // Normal appearance
+                // Accent strip: vertical line
+                ctx.fillStyle = p.accent;
+                ctx.fillRect(p.x+p.width/2-6,p.y,p.width/6, p.height);
 
+                ctx.shadowColor = p.second;
+                ctx.shadowBlur = 12;
+                ctx.fillStyle = p.color;
+                ctx.fillRect(p.x,p.y,p.width,p.height);
+            }
+
+            // Highlight selected player
             if(t==0 && i==selectedIdx) {
                 ctx.lineWidth = 5;
-                ctx.strokeStyle = "#ff1744";
-                ctx.shadowColor = "#ff1744";
+                ctx.strokeStyle = p.isSliding ? "#ff9900" : "#ff1744";
+                ctx.shadowColor = p.isSliding ? "#ff9900" : "#ff1744";
                 ctx.shadowBlur = 17;
                 ctx.strokeRect(p.x-4,p.y-4,p.width+8,p.height+8);
             }
-            ctx.shadowColor = p.second;
-            ctx.shadowBlur = 12;
-            ctx.fillStyle = p.color;
-            ctx.fillRect(p.x,p.y,p.width,p.height);
 
             // Jersey Number
-            ctx.fillStyle = p == teams[0][selectedIdx] ? "#ff1744" : "#111";
+            ctx.fillStyle = (t==0 && i==selectedIdx) ? (p.isSliding ? "#ff9900" : "#ff1744") : "#111";
             ctx.font = "bold 18px 'Press Start 2P',cursive";
             ctx.textAlign="center";
             ctx.fillText(p.number, p.x+p.width/2, p.y+p.height/2+5);
             ctx.restore();
         }
+    }
+}
+
+function drawSlideTackles() {
+    for(let i = 0; i < slideTackles.length; i++) {
+        let tackle = slideTackles[i];
+        ctx.save();
+        ctx.globalAlpha = tackle.frames / SLIDE_TACKLE_DURATION;
+        ctx.fillStyle = SLIDE_TACKLE_COLOR;
+        ctx.beginPath();
+        ctx.arc(tackle.x, tackle.y, tackle.radius, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
     }
 }
 
@@ -759,6 +1006,15 @@ function rectCircleCollision(rect, circle){
     let dist=Math.sqrt(distX*distX+distY*distY);
     return dist<=circle.radius;
 }
+
+// Utility: Rectangle-Rectangle collision (for slide tackles)
+function rectRectCollision(rect1, rect2){
+    return rect1.x < rect2.x + rect2.width &&
+           rect1.x + rect1.width > rect2.x &&
+           rect1.y < rect2.y + rect2.height &&
+           rect1.y + rect1.height > rect2.y;
+}
 </script>
 </body>
 </html>
+
