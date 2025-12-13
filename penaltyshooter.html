@@ -9,24 +9,24 @@
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg: #060014;
-  --panel: rgba(20,8,40,0.6);
-  --accent: #00fff6;
-  --accent-2: #ff2dd4;
-  --muted: #8aa0d9;
-  --good: #7effa1;
-  --bad: #ff6b9a;
+  /* 2014 World Cup inspired palette (Brazil host) */
+  --bg: #041214; /* deep teal/blue */
+  --panel: rgba(6,20,12,0.85);
+  --accent: #FFCC00; /* warm gold */
+  --accent-2: #0033A0; /* deep blue */
+  --muted: #BFD8C8; /* soft mint */
+  --good: #009C3B; /* brazil green */
+  --bad: #C1272D; /* red accent */
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
 body {
   font-family: 'Orbitron', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
-  background: radial-gradient(ellipse at center, rgba(5,2,20,1) 0%, rgba(3,0,12,1) 60%), linear-gradient(180deg, rgba(8,0,30,0.6), rgba(0,0,0,1));
-  color: #e6f7ff;
+  background: linear-gradient(180deg, #012028 0%, #06323a 60%);
+  color: #f6f5ea;
   min-height: 100vh;
-  padding: 26px;
-  background-image: repeating-linear-gradient(0deg, rgba(0,255,246,0.02) 0px, rgba(0,255,246,0.02) 1px, transparent 1px, transparent 40px), radial-gradient(circle at 10% 10%, rgba(255,45,212,0.03), transparent 15%);
+  padding: 24px;
 }
 
 #app {
@@ -38,22 +38,21 @@ body {
 }
 
 .card {
-  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.25));
-  border-radius: 12px;
-  padding: 20px;
-  box-shadow: 0 8px 40px rgba(0,0,0,0.6), 0 0 24px rgba(0,255,246,0.04) inset;
-  border: 1px solid rgba(0,255,246,0.08);
-  backdrop-filter: blur(6px);
+  background: var(--panel);
+  border-radius: 10px;
+  padding: 18px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.45);
+  border: 1px solid rgba(255,204,0,0.06);
 }
 
 #canvasWrapper {
   position: relative;
   aspect-ratio: 16/9;
-  background: linear-gradient(180deg, #03061a, #060014);
+  background: linear-gradient(180deg, rgba(0,32,16,0.6), rgba(0,24,48,0.6));
   border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 12px 40px rgba(0,0,0,0.6);
-  border: 2px solid rgba(0,255,246,0.06);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.55);
+  border: 2px solid rgba(0,0,0,0.12);
 }
 
 #canvas {
@@ -61,6 +60,76 @@ body {
   height: 100%;
   display: block;
 }
+
+/* Startup modal */
+.startup-modal {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,0.6);
+  z-index: 1200;
+}
+.startup-card {
+  background: linear-gradient(180deg, rgba(10,10,20,0.95), rgba(5,5,15,0.95));
+  border-radius: 12px;
+  padding: 20px 24px;
+  width: 420px;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.7);
+  border: 1px solid rgba(0,255,246,0.06);
+  text-align: center;
+}
+.startup-card h2 { color: var(--accent); margin-bottom: 8px; }
+.startup-card p { color: var(--muted); margin-bottom: 16px; }
+.startup-card .btn { min-width: 120px; }
+
+/* Tournament / Shootout overlay styles (WC themed) */
+.shootout-overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(180deg, rgba(0,0,0,0.6), rgba(2,2,6,0.8));
+  z-index: 1300;
+}
+.shootout-card {
+  width: 820px;
+  background: linear-gradient(180deg, rgba(10,12,20,0.98), rgba(4,6,12,0.98));
+  border-radius: 12px;
+  padding: 18px;
+  display: grid;
+  grid-template-columns: 1fr 260px;
+  gap: 12px;
+  border: 1px solid rgba(0,255,246,0.06);
+}
+.shootout-header { font-weight:700; color: var(--accent); font-size:18px; }
+.shootout-teams { display:flex; gap:10px; align-items:center; }
+.team-box { padding:10px 12px; border-radius:8px; color:#021018; font-weight:700; display:flex; gap:8px; align-items:center; }
+.team-flag { font-size:28px; }
+.shootout-controls { display:flex; flex-direction:column; gap:8px; }
+.shootout-score { font-family: 'Share Tech Mono', monospace; color:var(--muted); }
+.shootout-turn { font-weight:700; color: var(--accent-2); }
+.play-btn { padding:8px 10px; border-radius:8px; background: linear-gradient(90deg, #ffd700, #ffcc00); border: none; cursor:pointer; }
+
+/* Penalty tracker styles */
+.penalty-tracker {
+  position: fixed;
+  top: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1400;
+  background: rgba(2,8,6,0.6);
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,204,0,0.08);
+}
+.penalty-slot { font-size:18px; padding:6px 8px; border-radius:6px; background: rgba(255,255,255,0.02); }
+.penalty-slot.scored { background: rgba(0,156,59,0.92); color: #fff; }
+.penalty-slot.missed { background: rgba(193,39,45,0.95); color: #fff; }
+.penalty-slot.pending { background: rgba(255,255,255,0.04); color: var(--muted); }
+.penalty-slot.next { box-shadow: 0 0 10px rgba(255,204,0,0.12); transform: scale(1.06); }
 
 .controls {
   display: flex;
@@ -292,6 +361,107 @@ input[type="range"]::-moz-range-thumb {
         <span style="color: var(--muted); font-size: 13px;">Hard</span>
       </div>
     </div>
+    <div>
+      <div class="stat-label">Shot Type</div>
+      <div id="shotTypes" class="button-group" style="margin-top:8px;">
+        <button class="btn active" data-type="power">Power</button>
+        <button class="btn" data-type="curve">Curve</button>
+        <button class="btn" data-type="chip">Chip</button>
+      </div>
+      <div id="curveControl" style="margin-top:12px;">
+        <div class="stat-label">Curve</div>
+        <div class="slider-group">
+          <input type="range" id="curveSpin" min="-1" max="1" step="0.05" value="0">
+          <span id="curveVal" style="color: var(--muted); width: 48px; display:inline-block; text-align:right;">0%</span>
+        </div>
+      </div>
+      <div style="margin-top:18px;">
+        <div class="section-title">Tournament</div>
+        <div class="subtitle">8-team World Cup — Single Elimination</div>
+        <div style="display:flex; gap:8px; margin-top:8px;">
+          <button class="btn" id="advanceRoundBtn">Advance Round</button>
+          <button class="btn" id="resetTournamentBtn">Reset</button>
+          <button class="btn" id="viewBracketBtn">View Bracket</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Penalty tracker (top center) -->
+<div id="penaltyTracker" class="penalty-tracker" style="display:none;">
+  <div id="penaltyHeader" style="text-align:center; color:var(--muted); font-weight:700; margin-bottom:6px;">Penalty Shootout</div>
+  <div style="display:flex; gap:12px; align-items:center; justify-content:center;">
+    <div style="display:flex; flex-direction:column; gap:6px; align-items:center;">
+      <div id="penaltyTeamALabel" style="font-weight:700; color:var(--accent);">Team A</div>
+      <div id="teamAPenalties" style="display:flex; gap:6px;"></div>
+    </div>
+    <div style="width:18px"></div>
+    <div style="display:flex; flex-direction:column; gap:6px; align-items:center;">
+      <div id="penaltyTeamBLabel" style="font-weight:700; color:var(--accent);">Team B</div>
+      <div id="teamBPenalties" style="display:flex; gap:6px;"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Startup modal -->
+<div id="startupModal" class="startup-modal" style="display:flex;">
+  <div class="startup-card">
+    <h2>Welcome to Neon Strike</h2>
+    <p>Choose how you'd like to play:</p>
+    <div style="display:flex; gap:12px; justify-content:center; margin-bottom:14px;">
+      <button class="btn shoot" id="modalTournamentBtn">Tournament</button>
+      <button class="btn" id="modalPracticeBtn">Practice</button>
+    </div>
+    <div style="font-size:12px; color:var(--muted);">Tournament: 8-team single elimination. Practice: play shots freely.</div>
+  </div>
+</div>
+
+<!-- Bracket modal (large) -->
+<div id="bracketModal" class="startup-modal" style="display:none;">
+  <div class="startup-card" style="width:860px; max-height:80vh; overflow:auto;">
+    <div style="display:flex; justify-content:space-between; align-items:center;">
+      <div style="font-weight:700; color:var(--accent);">Tournament Bracket</div>
+      <div><button class="btn" id="closeBracketBtn">Close</button></div>
+    </div>
+    <div id="bracketModalContent" style="margin-top:12px; display:flex; gap:12px;"></div>
+  </div>
+</div>
+
+<!-- Shootout overlay (hidden until play) -->
+<div id="shootoutOverlay" class="shootout-overlay" style="display:none;">
+  <div class="shootout-card card">
+    <div>
+      <div class="shootout-header">Penalty Shootout</div>
+      <div style="height:12px"></div>
+      <div class="shootout-teams">
+        <div id="teamABox" class="team-box">
+          <div class="team-flag" id="teamAFlag">🇧🇪</div>
+          <div class="team-name" id="teamAName">Team A</div>
+        </div>
+        <div style="font-size:28px; color:var(--muted);">vs</div>
+        <div id="teamBBox" class="team-box">
+          <div class="team-flag" id="teamBFlag">🇩🇰</div>
+          <div class="team-name" id="teamBName">Team B</div>
+        </div>
+      </div>
+      <div style="height:12px"></div>
+      <div class="shootout-score" id="shootoutScore">0 - 0</div>
+      <div style="height:8px"></div>
+      <div class="shootout-turn" id="shootoutStatus">Your turn to shoot</div>
+    </div>
+    <div class="shootout-controls">
+      <div style="display:flex; gap:8px; align-items:center;">
+        <button id="shootoutForfeit" class="btn">Forfeit</button>
+        <button id="shootoutSimulate" class="btn">Auto-Simulate Kick</button>
+      </div>
+      <div style="margin-top:6px; color:var(--muted); font-size:13px;">Kicks taken: <span id="shootoutKicks">0</span></div>
+      <div style="margin-top:6px; color:var(--muted); font-size:13px;">Note: You shoot for your team, then defend when AI shoots.</div>
+      <div style="flex:1"></div>
+      <div style="display:flex; gap:8px; justify-content:flex-end;">
+        <button id="shootoutClose" class="btn">Close</button>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -352,10 +522,15 @@ let keeper = {
   diveTime: 0,
   deflecting: false,
   deflectTime: 0,
-  rotation: 0
+  rotation: 0,
+  primaryColor: 'rgba(255,45,212,0.95)',
+  gloveColor: 'rgba(126,255,161,0.95)'
 };
 
 let targetPoint = { x: CONFIG.width / 2, y: CONFIG.goalY + CONFIG.goalHeight / 2 };
+// Curve/chip controls
+let curveSpin = 0; // -1 .. 1, how much curve to apply (left negative, right positive)
+let maxCurveSpin = 1.0;
 
 // Audio context
 let audioContext;
@@ -382,11 +557,14 @@ function playSound(freq, duration, type = 'sine') {
 
 // UI Elements
 const shotButtons = document.querySelectorAll('#shotTypes .btn');
+const curveControl = document.getElementById('curveControl');
 shotButtons.forEach(btn => {
   btn.addEventListener('click', () => {
     shotButtons.forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     shotType = btn.dataset.type;
+    // show/hide curve control
+    if (curveControl) curveControl.style.display = shotType === 'curve' ? 'block' : 'none';
   });
 });
 
@@ -406,6 +584,731 @@ const soundBtn = document.getElementById('soundBtn');
 const modeBtn = document.getElementById('modeBtn');
 const powerFill = document.getElementById('powerFill');
 const difficultySlider = document.getElementById('difficulty');
+const curveSlider = document.getElementById('curveSpin');
+const curveVal = document.getElementById('curveVal');
+if (curveSlider) {
+  curveSlider.addEventListener('input', (e) => {
+    curveSpin = parseFloat(e.target.value);
+    if (curveVal) curveVal.textContent = (Math.round(curveSpin * 100)) + '%';
+  });
+  // hide until curve selected
+  if (curveControl) curveControl.style.display = 'none';
+}
+
+// Tournament state and UI
+const advanceRoundBtn = document.getElementById('advanceRoundBtn');
+const resetTournamentBtn = document.getElementById('resetTournamentBtn');
+const bracketEl = document.getElementById('bracket');
+const tournamentInfo = document.getElementById('tournamentInfo');
+
+const TEAMS = [
+  { id: 'POR', name: 'Portugal', flag: '🇵🇹', primary: '#006600', secondary: '#FF0000' },
+  { id: 'BRA', name: 'Brazil', flag: '🇧🇷', primary: '#FFDF00', secondary: '#009C3B' },
+  { id: 'ARG', name: 'Argentina', flag: '🇦🇷', primary: '#74ACDF', secondary: '#FFFFFF' },
+  { id: 'FRA', name: 'France', flag: '🇫🇷', primary: '#002395', secondary: '#ED2939' },
+  { id: 'DEU', name: 'Germany', flag: '🇩🇪', primary: '#000000', secondary: '#DD0000' },
+  { id: 'ENG', name: 'England', flag: '🏴', primary: '#FFFFFF', secondary: '#D90012' },
+  { id: 'USA', name: 'USA', flag: '🇺🇸', primary: '#002868', secondary: '#BF0A30' },
+  { id: 'ITA', name: 'Italy', flag: '🇮🇹', primary: '#007A3D', secondary: '#CE2B37' }
+];
+
+let tournament = {
+  rounds: [], // array of rounds; each round is array of match objects {a,b,scoreA,scoreB,winner}
+  currentRound: 0,
+  active: false
+};
+
+function shuffleArray(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function generateBracket(teams) {
+  // For a single-elimination bracket, pair sequentially after shuffling
+  const shuffled = shuffleArray(teams);
+  const matches = [];
+  for (let i = 0; i < shuffled.length; i += 2) {
+    // store team ids (not objects) so rendering is consistent
+    matches.push({ a: shuffled[i].id, b: shuffled[i+1].id, scoreA: null, scoreB: null, winner: null });
+  }
+  tournament.rounds = [matches];
+  // fill empty rounds up to final
+  let matchCount = matches.length;
+  while (matchCount > 1) {
+    matchCount = Math.ceil(matchCount / 2);
+    tournament.rounds.push(new Array(matchCount).fill(null).map(() => ({ a: null, b: null, scoreA: null, scoreB: null, winner: null })));
+  }
+  tournament.currentRound = 0;
+}
+
+function samplePoisson(lambda) {
+  // Knuth algorithm
+  let L = Math.exp(-lambda);
+  let k = 0;
+  let p = 1;
+  do {
+    k++;
+    p *= Math.random();
+  } while (p > L);
+  return k - 1;
+}
+
+function simulateMatch(a, b) {
+  // simple simulation using Poisson goals with small randomness
+  const base = 1.3; // expected goals per team
+  const lambdaA = base + (Math.random() - 0.5) * 0.6;
+  const lambdaB = base + (Math.random() - 0.5) * 0.6;
+  let gA = samplePoisson(lambdaA);
+  let gB = samplePoisson(lambdaB);
+  // extra-time if tie
+  if (gA === gB) {
+    const etA = samplePoisson(0.6);
+    const etB = samplePoisson(0.6);
+    gA += etA; gB += etB;
+  }
+  // penalties if still tied
+  if (gA === gB) {
+    // choose winner randomly but produce penalty score-like result
+    const winnerA = Math.random() > 0.5;
+    if (winnerA) gA += 1; else gB += 1;
+  }
+  return { scoreA: gA, scoreB: gB, winner: gA > gB ? a : b };
+}
+
+function renderBracket() {
+  const sideBracket = document.getElementById('bracket');
+  const bracketModalContent = document.getElementById('bracketModalContent');
+  if (!sideBracket && !bracketModalContent) return;
+  if (sideBracket) sideBracket.innerHTML = '';
+  if (bracketModalContent) bracketModalContent.innerHTML = '';
+  for (let r = 0; r < tournament.rounds.length; r++) {
+    const col = document.createElement('div');
+    col.style.display = 'inline-block';
+    col.style.verticalAlign = 'top';
+    col.style.marginRight = '12px';
+    const title = document.createElement('div');
+    title.style.fontWeight = '700';
+    title.style.color = 'var(--accent)';
+    title.style.marginBottom = '6px';
+    // dynamic round title based on teams remaining
+    const initialTeams = tournament.rounds[0].length * 2;
+    const teamsRemaining = Math.max(1, initialTeams / Math.pow(2, r));
+    function roundName(n) {
+      if (n >= 16) return `Round of ${n}`;
+      if (n === 8) return 'Quarterfinals (8)';
+      if (n === 4) return 'Semifinals (4)';
+      if (n === 2) return 'Final (2)';
+      return 'Result';
+    }
+    title.textContent = roundName(teamsRemaining);
+    col.appendChild(title);
+    tournament.rounds[r].forEach((m, idx) => {
+      const mEl = document.createElement('div');
+      mEl.style.padding = '6px 8px';
+      mEl.style.borderRadius = '8px';
+      mEl.style.marginBottom = '8px';
+      mEl.style.background = 'rgba(255,255,255,0.02)';
+      mEl.style.fontFamily = "'Share Tech Mono', monospace";
+      mEl.style.display = 'flex';
+      mEl.style.justifyContent = 'space-between';
+      mEl.style.alignItems = 'center';
+
+      if (!m || !m.a || !m.b) {
+        const text = document.createElement('div');
+        text.textContent = 'TBD';
+        mEl.appendChild(text);
+      } else {
+        // left: teams with color boxes
+        const teamWrap = document.createElement('div');
+        teamWrap.style.display = 'flex';
+        teamWrap.style.gap = '8px';
+        teamWrap.style.alignItems = 'center';
+
+        const aBox = document.createElement('div');
+        aBox.style.display = 'flex';
+        aBox.style.alignItems = 'center';
+        aBox.style.gap = '8px';
+        aBox.style.padding = '6px 8px';
+        aBox.style.borderRadius = '6px';
+        const teamA = TEAMS.find(t => t.id === m.a) || { flag: '?', name: m.a, primary: '#ffffff' };
+        aBox.style.background = teamA.primary || '#ffffff';
+        aBox.style.color = '#021018';
+        aBox.innerHTML = `<div style="font-size:16px">${teamA.flag}</div><div style="font-size:12px">${teamA.name}</div>`;
+
+        const vsDiv = document.createElement('div');
+        vsDiv.style.color = 'var(--muted)';
+        vsDiv.style.fontSize = '12px';
+        vsDiv.textContent = m.scoreA != null ? `${m.scoreA}` : '';
+
+        const bBox = document.createElement('div');
+        bBox.style.display = 'flex';
+        bBox.style.alignItems = 'center';
+        bBox.style.gap = '8px';
+        bBox.style.padding = '6px 8px';
+        bBox.style.borderRadius = '6px';
+        const teamB = TEAMS.find(t => t.id === m.b) || { flag: '?', name: m.b, primary: '#ffffff' };
+        bBox.style.background = teamB.primary || '#ffffff';
+        bBox.style.color = '#021018';
+        bBox.innerHTML = `<div style="font-size:16px">${teamB.flag}</div><div style="font-size:12px">${teamB.name}</div>`;
+
+        teamWrap.appendChild(aBox);
+        const middle = document.createElement('div');
+        middle.style.display = 'flex';
+        middle.style.flexDirection = 'column';
+        middle.style.alignItems = 'center';
+        middle.innerHTML = `<div style="font-weight:700; color:var(--accent)">${teamA.flag} ${teamA.name} <span style="color:var(--muted);">vs</span> ${teamB.flag} ${teamB.name}</div><div style="font-family:'Share Tech Mono'">${m.scoreA != null ? m.scoreA : '-'} - ${m.scoreB != null ? m.scoreB : '-'}</div>`;
+        teamWrap.appendChild(middle);
+        teamWrap.appendChild(bBox);
+
+        mEl.appendChild(teamWrap);
+
+        // right: action buttons
+        const actions = document.createElement('div');
+        actions.style.display = 'flex';
+        actions.style.gap = '8px';
+
+        // If player's team is involved and match not played, add Play button
+        const involvesPlayer = (playerTeamId && (m.a === playerTeamId || m.b === playerTeamId));
+        if (involvesPlayer && m.scoreA == null) {
+          const playBtn = document.createElement('button');
+          playBtn.className = 'btn play-btn';
+          playBtn.textContent = 'Play';
+          playBtn.addEventListener('click', () => {
+            playMatch(m, r, idx);
+          });
+          actions.appendChild(playBtn);
+        } else {
+          // allow simulate button (existing quick simulate)
+          const simBtn = document.createElement('button');
+          simBtn.className = 'btn';
+          simBtn.textContent = (m.scoreA != null) ? 'Played' : 'Sim';
+          simBtn.addEventListener('click', () => {
+            if (!m || !m.a || !m.b) return;
+            if (m.scoreA != null) return;
+            const res = simulateMatch(m.a, m.b);
+            m.scoreA = res.scoreA; m.scoreB = res.scoreB; m.winner = res.winner;
+            advanceWinnerToNextRound(r, idx, m.winner);
+            renderBracket();
+          });
+          actions.appendChild(simBtn);
+        }
+
+        mEl.appendChild(actions);
+      }
+
+      col.appendChild(mEl);
+    });
+    if (sideBracket) sideBracket.appendChild(col);
+    if (bracketModalContent) bracketModalContent.appendChild(col.cloneNode(true));
+  }
+  if (tournamentInfo) {
+    tournamentInfo.textContent = tournament.active ? `Current Round: ${tournament.currentRound + 1} / ${tournament.rounds.length}` : 'Tournament not started';
+  }
+}
+
+function advanceWinnerToNextRound(roundIdx, matchIdx, winner) {
+  const nextRound = roundIdx + 1;
+  if (nextRound >= tournament.rounds.length) return;
+  const targetIdx = Math.floor(matchIdx / 2);
+  const slot = tournament.rounds[nextRound][targetIdx];
+  if (!slot) tournament.rounds[nextRound][targetIdx] = { a: winner, b: null, scoreA: null, scoreB: null, winner: null };
+  else {
+    if (!slot.a) slot.a = winner; else slot.b = winner;
+  }
+}
+
+function advanceRound() {
+  if (!tournament.active) return;
+  const r = tournament.currentRound;
+  const matches = tournament.rounds[r];
+  matches.forEach((m, idx) => {
+    if (!m || !m.a || !m.b) return;
+    if (m.scoreA == null) {
+      const res = simulateMatch(m.a, m.b);
+      m.scoreA = res.scoreA; m.scoreB = res.scoreB; m.winner = res.winner;
+      advanceWinnerToNextRound(r, idx, m.winner);
+    }
+  });
+  tournament.currentRound++;
+  if (tournament.currentRound >= tournament.rounds.length) {
+    tournament.active = false;
+  }
+  renderBracket();
+}
+
+function startTournament() {
+  generateBracket(TEAMS);
+  tournament.active = true;
+  tournament.currentRound = 0;
+  renderBracket();
+}
+
+function resetTournament() {
+  tournament = { rounds: [], currentRound: 0, active: false };
+  if (bracketEl) bracketEl.innerHTML = '';
+  if (tournamentInfo) tournamentInfo.textContent = 'Tournament reset';
+}
+
+// --- Penalty shootout play integration ---
+let shootoutActive = false;
+let shootoutState = null;
+let lastShotPending = false; // true while a kick is in flight
+let lastShotOwner = null; // 'player' or 'ai'
+
+function playMatch(match, roundIdx, matchIdx) {
+  if (!match || !match.a || !match.b) return;
+  // initialize shootout state
+  shootoutActive = true;
+  shootoutState = {
+    matchRef: match,
+    roundIdx,
+    matchIdx,
+    scoreA: 0,
+    scoreB: 0,
+    kickNum: 0, // total kicks taken so far
+    totalEach: 5,
+    playerIsA: (match.a === playerTeamId),
+    // explicit flag: does the player shoot on the upcoming kick? (true -> player shoots)
+    playerShootsNext: true,
+    history: []
+  };
+
+  // per-team kick histories for UI tracker (true=goal, false=miss)
+  shootoutState.scoreHistoryA = [];
+  shootoutState.scoreHistoryB = [];
+
+  // populate overlay UI
+  const a = TEAMS.find(t => t.id === match.a) || { flag: '?', name: match.a, primary: '#ddd' };
+  const b = TEAMS.find(t => t.id === match.b) || { flag: '?', name: match.b, primary: '#ddd' };
+  document.getElementById('teamAFlag').textContent = a.flag;
+  document.getElementById('teamAName').textContent = a.name;
+  document.getElementById('teamBBox').style.background = b.primary;
+  document.getElementById('teamABox').style.background = a.primary;
+  document.getElementById('teamBFlag').textContent = b.flag;
+  document.getElementById('teamBName').textContent = b.name;
+  document.getElementById('shootoutScore').textContent = '0 - 0';
+  document.getElementById('shootoutKicks').textContent = '0';
+  document.getElementById('shootoutStatus').textContent = 'You shoot first for your team';
+  document.getElementById('shootoutOverlay').style.display = 'flex';
+
+  // show top penalty tracker and initialize labels
+  const aLabel = document.getElementById('teamAName');
+  const bLabel = document.getElementById('teamBName');
+  const track = document.getElementById('penaltyTracker');
+  if (track) { track.style.display = 'flex'; track.style.zIndex = '2200'; track.style.alignItems = 'center'; }
+  const tAL = document.getElementById('penaltyTeamALabel');
+  const tBL = document.getElementById('penaltyTeamBLabel');
+  if (tAL) tAL.textContent = a.name;
+  if (tBL) tBL.textContent = b.name;
+  updatePenaltyTracker();
+
+  // lock tournament UI while playing
+  tournament.active = false;
+
+  // disable manual mode switching while shootout runs
+  if (modeBtn) { modeBtn.disabled = true; modeBtn.textContent = 'Shootout (auto)'; }
+
+  // start first kick (player shoots first)
+  startNextKick();
+}
+
+function closeShootout() {
+  shootoutActive = false;
+  shootoutState = null;
+  lastShotPending = false;
+  lastShotOwner = null;
+  document.getElementById('shootoutOverlay').style.display = 'none';
+  const track = document.getElementById('penaltyTracker'); if (track) track.style.display = 'none';
+  // resume tournament UI
+  tournament.active = true;
+  renderBracket();
+  // re-enable mode toggle if present
+  if (modeBtn) { modeBtn.disabled = false; modeBtn.textContent = 'Mode: Shooter'; }
+}
+
+// AI shoot variant for shootout (doesn't touch global attempts/goals/stats)
+function aiShootForShootout() {
+  if (ball.active) return;
+  const difficulty = parseInt(difficultySlider.value);
+  const base = 0.55 + (difficulty - 1) * 0.12;
+  const powerLevel = Math.min(1, Math.max(0.15, base + (Math.random() - 0.5) * 0.2));
+  const err = 120 - difficulty * 18;
+  const tx = CONFIG.goalX + 40 + Math.random() * (CONFIG.goalWidth - 80) + (Math.random() - 0.5) * err;
+  const ty = CONFIG.goalY + 20 + Math.random() * (CONFIG.goalHeight - 40) + (Math.random() - 0.5) * err * 0.4;
+
+  // place ball at penalty spot
+  ball.x = CONFIG.width / 2;
+  ball.y = CONFIG.height - 100;
+  ball.z = 0;
+  ball.trail = [];
+  ball.missedGoal = false;
+  ball.inGoal = false;
+  ball.scored = false;
+
+  const dx = tx - ball.x;
+  const dy = ty - ball.y;
+  let speed = 600 + powerLevel * 700;
+  const types = ['power','curve','knuckle','finesse'];
+  const chosen = types[Math.floor(Math.random() * types.length)];
+  let localSpin = 0;
+  if (chosen === 'power') speed *= 1.25;
+  if (chosen === 'curve') localSpin = (Math.random() > 0.5 ? 1 : -1) * 450;
+  if (chosen === 'knuckle') { speed *= 1.1; localSpin = 0; }
+  if (chosen === 'finesse') { speed *= 0.9; localSpin = (Math.random() - 0.5) * 180; }
+
+  const distance = Math.sqrt(dx*dx + dy*dy);
+  const timeToGoal = Math.max(0.2, distance / speed);
+  ball.vx = dx / timeToGoal;
+  ball.vy = (dy / timeToGoal) - (0.5 * CONFIG.gravity * timeToGoal);
+  ball.vz = 0;
+  ball.spin = localSpin;
+  ball.active = true;
+
+  // mark pending shot
+  lastShotPending = true;
+  lastShotOwner = 'ai';
+}
+
+function updatePenaltyTracker() {
+  const s = shootoutState;
+  const aEl = document.getElementById('teamAPenalties');
+  const bEl = document.getElementById('teamBPenalties');
+  if (!s || !aEl || !bEl) return;
+  aEl.innerHTML = '';
+  bEl.innerHTML = '';
+  // total slots
+  const total = s.totalEach || 5;
+  const nextShooterIsA = s.playerShootsNext ? s.playerIsA : !s.playerIsA;
+  for (let i = 0; i < total; i++) {
+    const slot = document.createElement('div');
+    slot.className = 'penalty-slot';
+    const valA = s.scoreHistoryA[i];
+    if (valA === true) { slot.classList.add('scored'); slot.textContent = '✅'; }
+    else if (valA === false) { slot.classList.add('missed'); slot.textContent = '❌'; }
+    else { slot.classList.add('pending'); slot.textContent = '▫'; }
+    // highlight next upcoming slot for team A
+    if (nextShooterIsA && i === s.scoreHistoryA.length) slot.classList.add('next');
+    aEl.appendChild(slot);
+  }
+  for (let i = 0; i < total; i++) {
+    const slot = document.createElement('div');
+    slot.className = 'penalty-slot';
+    const valB = s.scoreHistoryB[i];
+    if (valB === true) { slot.classList.add('scored'); slot.textContent = '✅'; }
+    else if (valB === false) { slot.classList.add('missed'); slot.textContent = '❌'; }
+    else { slot.classList.add('pending'); slot.textContent = '▫'; }
+    // highlight next upcoming slot for team B
+    if (!nextShooterIsA && i === s.scoreHistoryB.length) slot.classList.add('next');
+    bEl.appendChild(slot);
+  }
+}
+
+function startNextKick() {
+  if (!shootoutActive || !shootoutState) return;
+  const s = shootoutState;
+  // show kicks count
+  document.getElementById('shootoutKicks').textContent = String(s.kickNum);
+  // determine who shoots next based on explicit flag
+  if (s.playerShootsNext) {
+    // player will shoot now
+    gameMode = 'shooter';
+    document.getElementById('shootoutStatus').textContent = 'Your turn to shoot';
+    lastShotPending = false;
+    lastShotOwner = null; // will be set when player fires
+    // wait for player to click and call shoot(); when shot finishes, resolution will be handled in loop
+  } else {
+    // AI will shoot now while player defends
+    gameMode = 'keeper';
+    document.getElementById('shootoutStatus').textContent = 'Defend! AI is shooting';
+    // schedule a short delay so player can reposition
+    setTimeout(() => {
+      aiShootForShootout();
+    }, 500);
+  }
+}
+
+function resolveShotOutcome() {
+  if (!shootoutActive || !shootoutState) return;
+  const s = shootoutState;
+  // determine if last shot scored
+  const scored = !!ball.scored || (!!ball.inGoal && !ball.missedGoal);
+  // Update state depending on which side took the shot
+  const playerShot = (lastShotOwner === 'player');
+  if (playerShot) {
+    if (s.playerIsA) { if (scored) s.scoreA++; }
+    else { if (scored) s.scoreB++; }
+  } else {
+    if (s.playerIsA) { if (scored) s.scoreB++; }
+    else { if (scored) s.scoreA++; }
+  }
+
+  s.kickNum++;
+  // flip who will shoot next so player alternates between shooter and keeper every kick
+  s.playerShootsNext = !s.playerShootsNext;
+  s.history.push({ owner: lastShotOwner, scored });
+  // push into per-team history for UI
+  if (playerShot) {
+    if (s.playerIsA) s.scoreHistoryA.push(!!scored);
+    else s.scoreHistoryB.push(!!scored);
+  } else {
+    if (s.playerIsA) s.scoreHistoryB.push(!!scored);
+    else s.scoreHistoryA.push(!!scored);
+  }
+  updatePenaltyTracker();
+  document.getElementById('shootoutScore').textContent = `${s.scoreA} - ${s.scoreB}`;
+  document.getElementById('shootoutKicks').textContent = String(s.kickNum);
+
+  // reset ball state for next kick
+  ball.active = false;
+  ball.trail = [];
+  ball.missedGoal = false;
+  ball.inGoal = false;
+  ball.scored = false;
+
+  // check winner: after each pair of kicks once both teams taken equal kicks and at least totalEach each
+  const kicksTakenEach = Math.floor((s.kickNum + 1) / 2);
+  if (kicksTakenEach >= s.totalEach) {
+    if ((s.kickNum % 2) === 0) {
+      // pair completed
+      if (s.scoreA !== s.scoreB) {
+        finalizeShootout(s);
+        return;
+      }
+    }
+  }
+
+  // sudden death: if both have taken >= totalEach and scores tied, continue until a pair produces difference
+  if (s.kickNum >= s.totalEach * 2 && (s.kickNum % 2) === 0 && s.scoreA !== s.scoreB) {
+    finalizeShootout(s);
+    return;
+  }
+
+  // continue next kick
+  lastShotPending = false;
+  lastShotOwner = null;
+  // small delay before next kick
+  setTimeout(() => { startNextKick(); }, 700);
+}
+
+function finalizeShootout(s) {
+  // determine winner id
+  const winnerId = s.scoreA > s.scoreB ? s.matchRef.a : s.matchRef.b;
+  s.matchRef.scoreA = s.scoreA;
+  s.matchRef.scoreB = s.scoreB;
+  s.matchRef.winner = winnerId;
+  advanceWinnerToNextRound(s.roundIdx, s.matchIdx, winnerId);
+  // close overlay and render bracket
+  document.getElementById('shootoutOverlay').style.display = 'none';
+  shootoutActive = false;
+  shootoutState = null;
+  const track = document.getElementById('penaltyTracker'); if (track) track.style.display = 'none';
+  tournament.active = true;
+  renderBracket();
+  // re-enable mode toggle
+  if (modeBtn) { modeBtn.disabled = false; modeBtn.textContent = 'Mode: Shooter'; }
+}
+
+// startTournamentBtn removed from side panel; start tournament is triggered from modal/team selection or via View Bracket flow
+if (advanceRoundBtn) advanceRoundBtn.addEventListener('click', advanceRound);
+if (resetTournamentBtn) resetTournamentBtn.addEventListener('click', resetTournament);
+const viewBracketBtn = document.getElementById('viewBracketBtn');
+const bracketModal = document.getElementById('bracketModal');
+const closeBracketBtn = document.getElementById('closeBracketBtn');
+if (viewBracketBtn) viewBracketBtn.addEventListener('click', () => { renderBracket(); if (bracketModal) bracketModal.style.display = 'flex'; });
+if (closeBracketBtn) closeBracketBtn.addEventListener('click', () => { if (bracketModal) bracketModal.style.display = 'none'; });
+
+// Startup modal handlers: require team selection
+const startupModal = document.getElementById('startupModal');
+const modalTournamentBtn = document.getElementById('modalTournamentBtn');
+const modalPracticeBtn = document.getElementById('modalPracticeBtn');
+
+// build team selector inside modal
+let playerTeamId = null;
+let playerTeamData = null;
+let intendedMode = null; // 'tournament' or 'practice' when showing selector
+
+// Theme helpers
+function applyWCTheme() {
+  const root = document.documentElement.style;
+  root.setProperty('--accent', '#FFD700');
+  root.setProperty('--accent-2', '#D90012');
+  root.setProperty('--good', '#00A859');
+  root.setProperty('--bad', '#E03A3E');
+  root.setProperty('--panel', 'linear-gradient(180deg, rgba(2,6,20,0.96), rgba(8,10,16,0.96))');
+}
+function applyNeonTheme() {
+  const root = document.documentElement.style;
+  // provide a cleaner 'practice' palette that's still warm but not harsh neon
+  root.setProperty('--accent', '#FFD966');
+  root.setProperty('--accent-2', '#0073B6');
+  root.setProperty('--good', '#7BD389');
+  root.setProperty('--bad', '#E65A4C');
+  root.setProperty('--panel', 'linear-gradient(180deg, rgba(4,10,12,0.9), rgba(6,18,30,0.9))');
+}
+
+// load persisted team selection (validate against current TEAMS)
+const persisted = localStorage.getItem('neonstrike_team');
+if (persisted) {
+  const found = TEAMS.find(t => t.id === persisted) || null;
+  if (found) {
+    playerTeamId = persisted;
+    playerTeamData = found;
+    keeper.primaryColor = playerTeamData.primary;
+    keeper.gloveColor = playerTeamData.secondary;
+  } else {
+    // remove stale stored id
+    localStorage.removeItem('neonstrike_team');
+    playerTeamId = null;
+    playerTeamData = null;
+  }
+}
+
+function buildTeamSelector() {
+  const modalCard = document.querySelector('.startup-card');
+  if (!modalCard) return;
+  if (modalCard.querySelector('.team-selector')) return; // already built
+  const selDiv = document.createElement('div');
+  selDiv.className = 'team-selector';
+  selDiv.style.display = 'grid';
+  // compact selector: 4 columns x 2 rows for 8 teams
+  selDiv.style.gridTemplateColumns = 'repeat(4, 1fr)';
+  selDiv.style.gridAutoRows = '96px';
+  selDiv.style.gap = '10px';
+  selDiv.style.margin = '8px 0 12px 0';
+  selDiv.style.padding = '14px';
+  selDiv.style.borderRadius = '8px';
+  selDiv.style.background = 'linear-gradient(180deg, rgba(0,24,12,0.7), rgba(0,48,80,0.6))';
+  TEAMS.forEach(t => {
+    const b = document.createElement('button');
+    b.className = 'btn';
+    b.style.display = 'flex';
+    b.style.flexDirection = 'column';
+    b.style.alignItems = 'center';
+    b.style.justifyContent = 'center';
+    b.style.padding = '8px';
+    b.style.height = '72px';
+    b.innerHTML = `<div style="font-size:22px">${t.flag}</div><div style="font-size:13px;margin-top:6px">${t.name}</div>`;
+    b.addEventListener('click', () => {
+      // delegate selection to tournamentController for consistent handling
+      if (window.tournamentController && typeof window.tournamentController.onTeamPicked === 'function') {
+        window.tournamentController.onTeamPicked(t.id);
+      } else {
+        selectPlayerTeam(t.id);
+        modalCard.querySelectorAll('.team-selector .btn').forEach(x => x.classList.remove('active'));
+        b.classList.add('active');
+      }
+    });
+    selDiv.appendChild(b);
+  });
+  // fill remaining slots to align grid (total 8 slots)
+  const totalSlots = 8;
+  const empties = Math.max(0, totalSlots - TEAMS.length);
+  for (let i = 0; i < empties; i++) {
+    const d = document.createElement('div');
+    d.style.borderRadius = '6px';
+    d.style.background = 'rgba(255,255,255,0.02)';
+    selDiv.appendChild(d);
+  }
+  modalCard.insertBefore(selDiv, modalCard.children[2]);
+}
+
+function selectPlayerTeam(id) {
+  playerTeamId = id;
+  playerTeamData = TEAMS.find(t => t.id === id) || null;
+  // apply keeper skin colors for player's team
+  if (playerTeamData) {
+    keeper.primaryColor = playerTeamData.primary;
+    keeper.gloveColor = playerTeamData.secondary;
+  }
+  localStorage.setItem('neonstrike_team', id);
+}
+
+// TournamentController: centralizes startup flow (mode -> team selection -> start)
+window.tournamentController = (function(){
+  let mode = null; // 'tournament' or 'practice'
+  function open(m) {
+    mode = m;
+    // if already have team, proceed immediately
+    if (playerTeamId && TEAMS.find(t => t.id === playerTeamId)) {
+      if (startupModal) startupModal.style.display = 'none';
+      if (m === 'tournament') { applyWCTheme(); startTournament(); if (tournamentInfo) tournamentInfo.textContent = 'Tournament started'; }
+      else { applyNeonTheme(); tournament.active = false; if (tournamentInfo) tournamentInfo.textContent = 'Practice mode'; }
+      mode = null;
+      return;
+    }
+    // otherwise build selector inside modal (and keep modal visible)
+    buildTeamSelector();
+    if (startupModal) startupModal.style.display = 'flex';
+  }
+  function onTeamPicked(id) {
+    selectPlayerTeam(id);
+    if (startupModal) startupModal.style.display = 'none';
+    if (mode === 'tournament') { applyWCTheme(); startTournament(); if (tournamentInfo) tournamentInfo.textContent = 'Tournament started'; }
+    else { applyNeonTheme(); tournament.active = false; if (tournamentInfo) tournamentInfo.textContent = 'Practice mode'; }
+    mode = null;
+  }
+  return { open, onTeamPicked };
+})();
+
+// do NOT build selector immediately; wait until user picks Tournament/Practice so flow is: choose mode -> select team
+
+if (modalPracticeBtn) {
+  modalPracticeBtn.addEventListener('click', () => {
+    if (window.tournamentController && typeof window.tournamentController.open === 'function') {
+      window.tournamentController.open('practice');
+    } else {
+      // fallback
+      if (!playerTeamId) { intendedMode = 'practice'; buildTeamSelector(); return; }
+      if (startupModal) startupModal.style.display = 'none';
+      tournament.active = false; applyNeonTheme(); if (tournamentInfo) tournamentInfo.textContent = 'Practice mode';
+    }
+  });
+}
+
+if (modalTournamentBtn) {
+  modalTournamentBtn.addEventListener('click', () => {
+    if (window.tournamentController && typeof window.tournamentController.open === 'function') {
+      window.tournamentController.open('tournament');
+    } else {
+      // fallback
+      if (!playerTeamId) { intendedMode = 'tournament'; buildTeamSelector(); return; }
+      if (startupModal) startupModal.style.display = 'none'; applyWCTheme(); startTournament(); if (tournamentInfo) tournamentInfo.textContent = 'Tournament started';
+    }
+  });
+}
+
+// Shootout overlay buttons
+const shootoutForfeit = document.getElementById('shootoutForfeit');
+const shootoutSimulate = document.getElementById('shootoutSimulate');
+const shootoutClose = document.getElementById('shootoutClose');
+if (shootoutForfeit) shootoutForfeit.addEventListener('click', () => {
+  if (!shootoutActive || !shootoutState) return;
+  // award win to opponent
+  const s = shootoutState;
+  const winnerId = s.playerIsA ? s.matchRef.b : s.matchRef.a;
+  s.matchRef.scoreA = s.scoreA; s.matchRef.scoreB = s.scoreB; s.matchRef.winner = winnerId;
+  advanceWinnerToNextRound(s.roundIdx, s.matchIdx, winnerId);
+  document.getElementById('shootoutOverlay').style.display = 'none';
+  shootoutActive = false; shootoutState = null; tournament.active = true; renderBracket();
+});
+if (shootoutSimulate) shootoutSimulate.addEventListener('click', () => {
+  // auto-simulate the current kick (quick random result)
+  if (!shootoutActive || !shootoutState) return;
+  // random chance to score
+  const chance = 0.7;
+  const scored = Math.random() < chance;
+  // emulate immediate resolution
+  lastShotOwner = shootoutState.playerShootsNext ? 'player' : 'ai';
+  lastShotPending = true;
+  // set ball flags to emulate
+  ball.active = false; ball.scored = scored; ball.inGoal = scored; ball.missedGoal = !scored;
+  resolveShotOutcome();
+});
+if (shootoutClose) shootoutClose.addEventListener('click', () => { closeShootout(); });
 
 // Mode: 'shooter' (player shoots) or 'keeper' (player is keeper, AI shoots)
 let gameMode = 'shooter';
@@ -589,6 +1492,19 @@ document.addEventListener('keyup', (e) => {
   if (e.key === 'ArrowRight') { keys.right = false; }
 });
 
+// Shooter controls: switch shot type and tune curve spin with arrow keys
+document.addEventListener('keydown', (e) => {
+  if (gameMode !== 'shooter') return;
+  if (e.key === '1') { shotType = 'power'; }
+  if (e.key === '2') { shotType = 'curve'; }
+  if (e.key === '3') { shotType = 'chip'; }
+  // While preparing a curve, allow left/right to increase spin
+  if (shotType === 'curve') {
+    if (e.key === 'ArrowLeft') { curveSpin = Math.max(-maxCurveSpin, curveSpin - 0.12); }
+    if (e.key === 'ArrowRight') { curveSpin = Math.min(maxCurveSpin, curveSpin + 0.12); }
+  }
+});
+
 // Shoot button - hold to charge (only if element exists)
 if (shootBtn) {
   shootBtn.addEventListener('mousedown', () => {
@@ -621,6 +1537,8 @@ document.addEventListener('touchend', releaseShot);
 resetBtn.addEventListener('click', resetGame);
 
 modeBtn.addEventListener('click', () => {
+  // Prevent manual toggling during shootouts
+  if (shootoutActive) return;
   // toggle modes
   gameMode = gameMode === 'shooter' ? 'keeper' : 'shooter';
   modeBtn.textContent = gameMode === 'shooter' ? 'Mode: Shooter' : 'Mode: Keeper';
@@ -670,9 +1588,15 @@ function shoot(powerLevel) {
   
   playSound(150, 0.2, 'sawtooth');
   
-  // Only increment attempts after shot is taken
-  attempts++;
-  updateStats();
+  // Only increment global attempts outside shootout mode
+  if (!shootoutActive) {
+    attempts++;
+    updateStats();
+  } else {
+    // Mark that a shootout player shot is in flight
+    lastShotPending = true;
+    lastShotOwner = 'player';
+  }
   
   // Keeper AI
   const difficulty = parseInt(difficultySlider.value);
@@ -697,6 +1621,26 @@ function shoot(powerLevel) {
     // Calculate dive rotation
     keeper.rotation = Math.atan2(keeper.targetY - keeper.y, keeper.targetX - keeper.x);
   }, reactionTime * 1000);
+
+  // apply shot-type specific tweaks after initial velocities calculated
+  if (shotType === 'curve') {
+    // use player-controlled curve amount (curveSpin) to bias lateral spin
+    ball.spin = curveSpin * 800 + (Math.random() - 0.5) * 80;
+    // slightly reduce forward speed for more pronounced curve
+    ball.vx *= 0.98;
+  }
+
+  if (shotType === 'chip') {
+    // chip: boost upward component and reduce forward speed for lob
+    const chipBoost = 300 + powerLevel * 450; // higher power -> bigger lob
+    ball.vy -= chipBoost;
+    ball.vx *= 0.9;
+    // small backspin / less Magnus
+    ball.spin = (Math.random() - 0.5) * 80;
+  }
+
+  // reset temporary spin control
+  curveSpin = 0;
 }
 
 // AI shoot function (used when player is keeper)
@@ -1057,8 +2001,8 @@ function draw() {
   // Goal frame with 3D depth
   drawGoal3D();
   
-  // Target crosshair (neon)
-  if (!ball.active) {
+  // Target crosshair (neon) - only show when player is shooter
+  if (!ball.active && gameMode === 'shooter') {
     ctx.strokeStyle = 'rgba(0,255,246,0.95)';
     ctx.lineWidth = 3;
     ctx.beginPath();
@@ -1084,6 +2028,8 @@ function draw() {
   ctx.font = '20px Orbitron, sans-serif';
   ctx.textBaseline = 'top';
   ctx.fillText('Neon Strike', 18, 12);
+  // Shooter HUD: show selected shot type and curve spin when in shooter mode
+  // removed on-canvas control hints for cleaner UI (side controls handle shot settings)
   // Draw AI countdown if pending
   if (aiPending && aiCountdownEnd) {
     const msLeft = Math.max(0, aiCountdownEnd - Date.now());
@@ -1134,55 +2080,66 @@ function drawGoal3D() {
 }
 
 function drawGoalkeeper() {
+  // Detailed goalkeeper drawing with articulated limbs and dive-friendly origin
   ctx.save();
   ctx.translate(keeper.x, keeper.y);
-  
-  if (keeper.diving || keeper.deflecting) {
-    ctx.rotate(keeper.rotation);
-  }
-  
-  // Shadow
-  ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+
+  // rotate during dives/deflects
+  if (keeper.diving || keeper.deflecting) ctx.rotate(keeper.rotation);
+
+  // soft shadow
+  ctx.fillStyle = 'rgba(0,0,0,0.36)'; ctx.beginPath(); ctx.ellipse(0, 64, 56, 16, 0, 0, Math.PI * 2); ctx.fill();
+
+  // Legs (thighs and shins)
+  ctx.fillStyle = 'rgba(30,30,60,0.98)';
+  ctx.fillRect(-14, 32, 12, 36); // left shin
+  ctx.fillRect(4, 32, 12, 36);   // right shin
+  // boots
+  ctx.fillStyle = 'rgba(10,10,20,0.98)'; ctx.fillRect(-18, 66, 18, 8); ctx.fillRect(0, 66, 18, 8);
+
+  // Shorts / hips
+  ctx.fillStyle = 'rgba(18,18,40,0.96)'; ctx.fillRect(-22, 12, 44, 28);
+
+  // Torso (jersey) - tapered with slight collar
+  ctx.fillStyle = keeper.primaryColor || 'rgba(255,45,212,0.98)';
   ctx.beginPath();
-  ctx.ellipse(0, 50, 35, 12, 0, 0, Math.PI * 2);
-  ctx.fill();
-  
-  // Body
-  ctx.fillStyle = 'rgba(255,45,212,0.95)';
+  ctx.moveTo(-34, 6);
+  ctx.quadraticCurveTo(-36, -30, -14, -58);
+  ctx.lineTo(14, -58);
+  ctx.quadraticCurveTo(36, -30, 34, 6);
+  ctx.closePath(); ctx.fill();
+
+  // Shoulders highlights
+  ctx.fillStyle = 'rgba(255,255,255,0.06)'; ctx.beginPath(); ctx.ellipse(-12, -18, 8, 4, -0.3, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(12, -18, 8, 4, 0.3, 0, Math.PI*2); ctx.fill();
+
+  // Arms (upper arm + forearm as one block) and gloves - left
+  ctx.save(); ctx.translate(-28, -14);
+  if (!keeper.deflecting) ctx.rotate(-0.22);
+  ctx.fillStyle = keeper.primaryColor || 'rgba(255,45,212,0.98)'; ctx.fillRect(0, -6, 14, 40);
+  ctx.fillStyle = keeper.gloveColor || 'rgba(126,255,161,0.98)'; ctx.beginPath(); ctx.arc(10, 24, 12, 0, Math.PI*2); ctx.fill();
+  ctx.restore();
+
+  // right arm
+  ctx.save(); ctx.translate(28, -14);
+  if (!keeper.deflecting) ctx.rotate(0.22);
+  ctx.fillStyle = keeper.primaryColor || 'rgba(255,45,212,0.98)'; ctx.fillRect(-14, -6, 14, 40);
+  ctx.fillStyle = keeper.gloveColor || 'rgba(126,255,161,0.98)'; ctx.beginPath(); ctx.arc(-10, 24, 12, 0, Math.PI*2); ctx.fill();
+  ctx.restore();
+
+  // Deflecting override: wide bar with gloves to suggest reach
   if (keeper.deflecting) {
-    // Extended pose when deflecting - wider and slightly taller
-    ctx.fillRect(-50, -40, 100, 60);
-    // Arms extended
-    ctx.fillRect(-70, -30, 22, 18);
-    ctx.fillRect(48, -30, 22, 18);
-    // Gloves
-    ctx.fillStyle = 'rgba(126,255,161,0.95)';
-    ctx.beginPath(); ctx.arc(-80, -12, 14, 0, Math.PI * 2); ctx.fill();
-    ctx.beginPath(); ctx.arc(70, -12, 14, 0, Math.PI * 2); ctx.fill();
-  } else {
-    // Taller body for more human-like proportions
-    ctx.fillRect(-30, -50, 60, 90);
-    // Arms (longer)
-    ctx.fillRect(-50, -35, 18, 36);
-    ctx.fillRect(32, -35, 18, 36);
-    // Legs
-    ctx.fillRect(-18, 50, 14, 30);
-    ctx.fillRect(4, 50, 14, 30);
-
-    // Head
-    ctx.beginPath();
-    ctx.arc(0, -65, 18, 0, Math.PI * 2);
-    ctx.fillStyle = '#ffd8b0';
-    ctx.fill();
-
-    // Gloves
-    ctx.fillStyle = 'rgba(126,255,161,0.95)';
-    ctx.beginPath(); ctx.arc(-60, -15, 14, 0, Math.PI * 2); ctx.fill();
-    ctx.beginPath(); ctx.arc(60, -15, 14, 0, Math.PI * 2); ctx.fill();
-    // restore main fill style
-    ctx.fillStyle = 'rgba(255,45,212,0.95)';
+    ctx.save();
+    ctx.fillStyle = keeper.primaryColor || 'rgba(255,45,212,0.98)'; ctx.fillRect(-56, -26, 112, 36);
+    ctx.fillStyle = keeper.gloveColor || 'rgba(126,255,161,0.98)'; ctx.beginPath(); ctx.arc(-58, -6, 12, 0, Math.PI*2); ctx.fill(); ctx.beginPath(); ctx.arc(58, -6, 12, 0, Math.PI*2); ctx.fill();
+    ctx.restore();
   }
-  
+
+  // Neck and head
+  ctx.beginPath(); ctx.fillStyle = '#ffd8b0'; ctx.arc(0, -78, 16, 0, Math.PI*2); ctx.fill();
+  // subtle visor shadow
+  ctx.fillStyle = 'rgba(0,0,0,0.12)'; ctx.fillRect(-9, -88, 18, 6);
+
   ctx.restore();
 }
 
@@ -1264,21 +2221,32 @@ function drawBall3D() {
   ctx.fillStyle = gradient;
   ctx.fill();
   
-  // Ball pattern
-  ctx.strokeStyle = ball.missedGoal ? 'rgba(100, 0, 0, 0.3)' : 'rgba(0, 0, 0, 0.15)';
-  ctx.lineWidth = 2;
+  // Soccer-style patches overlay (FIFA-like)
   const rotation = Date.now() / 500;
-  for (let i = 0; i < 5; i++) {
+  const patchColor = ball.missedGoal ? '#8b0000' : '#0b0b0b';
+  const patches = 6;
+  ctx.save();
+  ctx.translate(drawX, drawY);
+  ctx.rotate(rotation * 0.12);
+  for (let p = 0; p < patches; p++) {
+    const ang = (p / patches) * Math.PI * 2;
+    // center offset for each patch
+    const cx = Math.cos(ang) * ballSize * 0.18;
+    const cy = Math.sin(ang) * ballSize * 0.18;
     ctx.beginPath();
-    const angle = (i / 5) * Math.PI * 2 + rotation;
-    const x1 = drawX + Math.cos(angle) * ballSize * 0.7;
-    const y1 = drawY + Math.sin(angle) * ballSize * 0.7;
-    const x2 = drawX - Math.cos(angle) * ballSize * 0.7;
-    const y2 = drawY - Math.sin(angle) * ballSize * 0.7;
-    ctx.moveTo(x1, y1);
-    ctx.lineTo(x2, y2);
-    ctx.stroke();
+    const petals = 5;
+    for (let k = 0; k < petals; k++) {
+      const a = ang + k * (Math.PI * 2) / petals;
+      const rr = ballSize * (0.22 + 0.03 * Math.cos(k * 2));
+      const px = cx + Math.cos(a) * rr;
+      const py = cy + Math.sin(a) * rr;
+      if (k === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+    }
+    ctx.closePath();
+    ctx.fillStyle = patchColor;
+    ctx.fill();
   }
+  ctx.restore();
   
   ctx.restore();
 }
@@ -1300,6 +2268,11 @@ function gameLoop() {
     aiCountdownEnd = 0;
     aiShoot();
   }
+  // If in shootout and a shot finished in flight, resolve it
+  if (shootoutActive && lastShotOwner && lastShotPending && !ball.active) {
+    // resolve last shot
+    resolveShotOutcome();
+  }
   
   requestAnimationFrame(gameLoop);
 }
@@ -1307,5 +2280,44 @@ function gameLoop() {
 gameLoop();
 </script>
 
+<!-- Code injected by live-server -->
+<script>
+	// <![CDATA[  <-- For SVG support
+	if ('WebSocket' in window) {
+		(function () {
+			function refreshCSS() {
+				var sheets = [].slice.call(document.getElementsByTagName("link"));
+				var head = document.getElementsByTagName("head")[0];
+				for (var i = 0; i < sheets.length; ++i) {
+					var elem = sheets[i];
+					var parent = elem.parentElement || head;
+					parent.removeChild(elem);
+					var rel = elem.rel;
+					if (elem.href && typeof rel != "string" || rel.length == 0 || rel.toLowerCase() == "stylesheet") {
+						var url = elem.href.replace(/(&|\?)_cacheOverride=\d+/, '');
+						elem.href = url + (url.indexOf('?') >= 0 ? '&' : '?') + '_cacheOverride=' + (new Date().valueOf());
+					}
+					parent.appendChild(elem);
+				}
+			}
+			var protocol = window.location.protocol === 'http:' ? 'ws://' : 'wss://';
+			var address = protocol + window.location.host + window.location.pathname + '/ws';
+			var socket = new WebSocket(address);
+			socket.onmessage = function (msg) {
+				if (msg.data == 'reload') window.location.reload();
+				else if (msg.data == 'refreshcss') refreshCSS();
+			};
+			if (sessionStorage && !sessionStorage.getItem('IsThisFirstTime_Log_From_LiveServer')) {
+				console.log('Live reload enabled.');
+				sessionStorage.setItem('IsThisFirstTime_Log_From_LiveServer', true);
+			}
+		})();
+	}
+	else {
+		console.error('Upgrade your browser. This Browser is NOT supported WebSocket for Live-Reloading.');
+	}
+	// ]]>
+</script>
 </body>
 </html>
+
