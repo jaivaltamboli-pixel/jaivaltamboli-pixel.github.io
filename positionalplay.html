@@ -1,482 +1,542 @@
-
 <!DOCTYPE html>
 <html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-<title>Positional Play (Juego de Posición) | Complete Guide - Football Tactics Base</title>
-<meta name="description" content="Master Positional Play: Guardiola's tactical system explained. Learn structured spacing, superiorities, and ball circulation with interactive diagrams. Complete Juego de Posición guide.">
+    <title>
+      Positional Play (Juego de Posición) | Complete Guide - Football Tactics
+      Base
+    </title>
+    <meta
+      name="description"
+      content="Master Positional Play: Guardiola's tactical system explained. Learn structured spacing, superiorities, and ball circulation with interactive diagrams. Complete Juego de Posición guide."
+    />
 
-<link rel="canonical" href="https://jaivaltamboli-pixel.github.io/positional-play.html">
+    <link
+      rel="canonical"
+      href="https://jaivaltamboli-pixel.github.io/positional-play.html"
+    />
 
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "Article",
-  "headline": "Complete Guide to Positional Play (Juego de Posición)",
-  "description": "Learn the tactical system used by Guardiola, Xavi, and Arteta. Master structured spacing, superiorities, and ball circulation.",
-  "author": {
-    "@type": "Person",
-    "name": "Jaival Tamboli"
-  },
-  "publisher": {
-    "@type": "Organization",
-    "name": "Football Tactics Base"
-  },
-  "datePublished": "2026-01-03",
-  "mainEntityOfPage": {
-    "@type": "WebPage",
-    "@id": "https://jaivaltamboli-pixel.github.io/positional-play.html"
-  }
-}
-</script>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Article",
+        "headline": "Complete Guide to Positional Play (Juego de Posición)",
+        "description": "Learn the tactical system used by Guardiola, Xavi, and Arteta. Master structured spacing, superiorities, and ball circulation.",
+        "author": {
+          "@type": "Person",
+          "name": "Jaival Tamboli"
+        },
+        "publisher": {
+          "@type": "Organization",
+          "name": "Football Tactics Base"
+        },
+        "datePublished": "2026-01-03",
+        "mainEntityOfPage": {
+          "@type": "WebPage",
+          "@id": "https://jaivaltamboli-pixel.github.io/positional-play.html"
+        }
+      }
+    </script>
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Roboto:wght@300;400;700&display=swap"
+      rel="stylesheet"
+    />
 
-<style>
-/* ----- VARIABLES (Matches your site) ----- */
-:root {
-    --navy-blue: #001F5B;
-    --gold-accent: #FFA500;
-    --light-bg: #EAF0F6;
-    --text-color: #1A1A1A;
-    --success-green: #2E7D32;
-    --warning-orange: #F57C00;
-    --info-blue: #1976D2;
-    /* Added for Lab */
-    --field-green: #145a32;
-    --opponent-red: #d32f2f;
-}
+    <style>
+      /* ----- VARIABLES (Matches your site) ----- */
+      :root {
+        --navy-blue: #001f5b;
+        --gold-accent: #ffa500;
+        --light-bg: #eaf0f6;
+        --text-color: #1a1a1a;
+        --success-green: #2e7d32;
+        --warning-orange: #f57c00;
+        --info-blue: #1976d2;
+        /* Added for Lab */
+        --field-green: #145a32;
+        --opponent-red: #d32f2f;
+      }
 
-/* ----- BASE STYLES ----- */
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-}
+      /* ----- BASE STYLES ----- */
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
 
-body {
-    font-family: 'Roboto', sans-serif;
-    line-height: 1.7;
-    color: var(--text-color);
-    background: linear-gradient(135deg, var(--light-bg), #d4e0eb);
-    padding-top: 85px;
-}
+      body {
+        font-family: "Roboto", sans-serif;
+        line-height: 1.7;
+        color: var(--text-color);
+        background: linear-gradient(135deg, var(--light-bg), #d4e0eb);
+        padding-top: 85px;
+      }
 
-/* ----- HEADER (Matches your main site) ----- */
-.header {
-    background-color: var(--navy-blue);
-    padding: 18px 0;
-    position: fixed;
-    top: 0;
-    width: 100%;
-    z-index: 1000;
-    text-align: center;
-    box-shadow: 0 15px 30px rgba(0,0,0,0.2);
-}
+      /* ----- HEADER (Matches your main site) ----- */
+      .header {
+        background-color: var(--navy-blue);
+        padding: 18px 0;
+        position: fixed;
+        top: 0;
+        width: 100%;
+        z-index: 1000;
+        text-align: center;
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+      }
 
-.header h1 {
-    font-family: 'Oswald', sans-serif;
-    font-size: 2.2em;
-    color: var(--gold-accent);
-    font-weight: 700;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    margin: 0 0 10px 0;
-}
+      .header h1 {
+        font-family: "Oswald", sans-serif;
+        font-size: 2.2em;
+        color: var(--gold-accent);
+        font-weight: 700;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        margin: 0 0 10px 0;
+      }
 
-.nav-menu {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    padding: 0 10px;
-    gap: 5px;
-}
+      .nav-menu {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        padding: 0 10px;
+        gap: 5px;
+      }
 
-.nav-menu a {
-    color: white;
-    text-decoration: none;
-    padding: 6px 12px;
-    border-radius: 20px;
-    transition: 0.25s;
-    font-weight: 500;
-    font-size: 0.85em;
-    border: 1px solid rgba(255,255,255,0.3);
-    white-space: nowrap;
-}
+      .nav-menu a {
+        color: white;
+        text-decoration: none;
+        padding: 6px 12px;
+        border-radius: 20px;
+        transition: 0.25s;
+        font-weight: 500;
+        font-size: 0.85em;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        white-space: nowrap;
+      }
 
-.nav-menu a:hover {
-    background: var(--gold-accent);
-    color: var(--navy-blue);
-    transform: scale(1.05);
-}
+      .nav-menu a:hover {
+        background: var(--gold-accent);
+        color: var(--navy-blue);
+        transform: scale(1.05);
+      }
 
-.nav-menu a.active {
-    background: var(--gold-accent);
-    color: var(--navy-blue);
-    font-weight: 700;
-}
+      .nav-menu a.active {
+        background: var(--gold-accent);
+        color: var(--navy-blue);
+        font-weight: 700;
+      }
 
-/* ----- MAIN CONTAINER ----- */
-.container {
-    width: 92%;
-    max-width: 1000px;
-    margin: 30px auto;
-    background: white;
-    border-radius: 20px;
-    padding: 40px;
-    box-shadow: 0 15px 30px rgba(0,0,0,0.12);
-    border-top: 6px solid var(--gold-accent);
-}
+      /* ----- MAIN CONTAINER ----- */
+      .container {
+        width: 92%;
+        max-width: 1000px;
+        margin: 30px auto;
+        background: white;
+        border-radius: 20px;
+        padding: 40px;
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.12);
+        border-top: 6px solid var(--gold-accent);
+      }
 
-/* ----- TACTICAL LAB INTEGRATION STYLES ----- */
-.lab-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 25px; margin: 30px 0;
-}
-.lab-card {
-    background: #f8f9fa; padding: 20px; border-radius: 15px;
-    border: 1px solid #ddd; display: flex; flex-direction: column;
-}
-.lab-card h3 { font-family: 'Oswald'; color: var(--navy-blue); margin-bottom: 8px; }
-.pitch {
-    height: 250px; background: var(--field-green);
-    position: relative; border-radius: 8px; border: 2px solid white;
-    overflow: hidden; margin: 15px 0;
-    background-image: linear-gradient(to right, rgba(255,255,255,0.1) 1px, transparent 1px);
-    background-size: 20% 100%;
-}
-.goal-net {
-    position: absolute; right: 0; top: 35%; height: 30%; width: 12px;
-    border: 2px solid white; border-right: none; background: rgba(255,255,255,0.1);
-}
-.p-unit {
-    width: 24px; height: 24px; border-radius: 50%; position: absolute;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 10px; font-weight: bold; z-index: 5;
-    transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-}
-.p-blue { background: white; border: 2px solid var(--navy-blue); color: var(--navy-blue); }
-.p-red { background: var(--opponent-red); border: 2px solid white; color: white; }
-.p-ball {
-    width: 12px; height: 12px; background: white; border: 2px solid black;
-    border-radius: 50%; position: absolute; z-index: 10;
-    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-}
-.play-btn {
-    background: var(--navy-blue); color: var(--gold-accent); border: none;
-    padding: 12px; font-family: 'Oswald'; cursor: pointer;
-    text-transform: uppercase; border-radius: 5px; margin-top: auto;
-}
-
-/* ----- HERO SECTION ----- */
-.hero-section {
-    text-align: center;
-    margin-bottom: 40px;
-    padding-bottom: 20px;
-    border-bottom: 3px solid #f0f0f0;
-}
-
-.hero-title {
-    font-family: 'Oswald', sans-serif;
-    color: var(--navy-blue);
-    font-size: 2.8em;
-    margin-bottom: 10px;
-    text-transform: uppercase;
-}
-
-.hero-subtitle {
-    color: ##87CEEB;
-    font-size: 1.2em;
-    max-width: 800px;
-    margin: 0 auto 20px;
-}
-
-.hero-badge {
-    display: inline-block;
-    background: var(--gold-accent);
-    color: var(--navy-blue);
-    padding: 5px 15px;
-    border-radius: 20px;
-    font-weight: 700;
-    font-size: 0.9em;
-    margin: 5px;
-}
-
-/* ----- CONTENT SECTIONS ----- */
-.content-section {
-    margin-bottom: 40px;
-}
-
-.section-title {
-    font-family: 'Oswald', sans-serif;
-    color: var(--navy-blue);
-    font-size: 1.8em;
-    margin-bottom: 20px;
-    padding-bottom: 10px;
-    border-bottom: 3px solid var(--gold-accent);
-}
-
-.section-subtitle {
-    font-family: 'Oswald', sans-serif;
-    color: var(--navy-blue);
-    font-size: 1.4em;
-    margin: 25px 0 15px;
-}
-
-/* ----- PRINCIPLES GRID ----- */
-.principles-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 25px;
-    margin: 30px 0;
-}
-
-.principle-card {
-    background: #f8f9fa;
-    padding: 25px;
-    border-radius: 15px;
-    border-left: 4px solid var(--gold-accent);
-    transition: transform 0.3s ease;
-}
-
-.principle-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-}
-
-.principle-icon {
-    font-size: 2.5em;
-    margin-bottom: 15px;
-    display: block;
-}
-
-.principle-title {
-    font-family: 'Oswald', sans-serif;
-    color: var(--navy-blue);
-    font-size: 1.3em;
-    margin-bottom: 10px;
-}
-
-/* ----- DIAGRAM CONTAINER ----- */
-.diagram-container {
-    background: #f5f5f5;
-    padding: 25px;
-    border-radius: 15px;
-    margin: 30px 0;
-    text-align: center;
-    border: 2px dashed #ddd;
-}
-
-.diagram-title {
-    font-family: 'Oswald', sans-serif;
-    color: var(--navy-blue);
-    margin-bottom: 15px;
-}
-
-/* ----- COMPARISON TABLE ----- */
-.comparison-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin: 30px 0;
-    border-radius: 10px;
-    overflow: hidden;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-}
-
-.comparison-table th {
-    background: var(--navy-blue);
-    color: white;
-    padding: 15px;
-    text-align: left;
-    font-family: 'Oswald', sans-serif;
-    font-weight: 500;
-}
-
-.comparison-table td {
-    padding: 12px 15px;
-    border-bottom: 1px solid #eee;
-}
-
-.comparison-table tr:nth-child(even) {
-    background: #f9f9f9;
-}
-
-.comparison-table tr:hover {
-    background: #f0f7ff;
-}
-
-/* ----- FORMATION DIAGRAM ----- */
-.formation-pitch {
-    width: 100%;
-    height: 400px;
-    background: linear-gradient(180deg, #3ea345, #1f7a2f);
-    border-radius: 10px;
-    position: relative;
-    margin: 30px auto;
-    border: 5px solid white;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-}
-
-.positional-player {
-    position: absolute;
-    width: 50px;
-    height: 50px;
-    background: var(--gold-accent);
-    border: 3px solid var(--navy-blue);
-    border-radius: 50%;
-    color: var(--navy-blue);
-    font-weight: 700;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 12px;
-    transform: translate(-50%, -50%);
-    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-    transition: all 0.3s ease;
-}
-
-.positional-player:hover {
-    transform: translate(-50%, -50%) scale(1.1);
-    z-index: 10;
-}
-
-/* ----- KEY COACHES ----- */
-.coaches-grid {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-    justify-content: center;
-    margin: 30px 0;
-}
-
-.coach-card {
-    text-align: center;
-    padding: 15px;
-    min-width: 150px;
-}
-
-.coach-icon {
-    font-size: 3em;
-    margin-bottom: 10px;
-}
-
-.coach-name {
-    font-weight: 700;
-    color: var(--navy-blue);
-    margin-bottom: 5px;
-}
-
-.coach-team {
-    color: ##87CEEB;
-    font-size: 0.9em;
-}
-
-/* ----- INTERACTIVE QUIZ ----- */
-.quiz-container {
-    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
-    padding: 30px;
-    border-radius: 15px;
-    margin: 40px 0;
-    border-left: 5px solid var(--gold-accent);
-}
-
-.quiz-question {
-    font-family: 'Oswald', sans-serif;
-    color: var(--navy-blue);
-    font-size: 1.3em;
-    margin-bottom: 20px;
-}
-
-.quiz-option {
-    background: white;
-    padding: 15px;
-    margin: 10px 0;
-    border-radius: 10px;
-    cursor: pointer;
-    border: 2px solid #e0e0e0;
-    transition: all 0.3s ease;
-}
-
-.quiz-option:hover {
-    border-color: var(--gold-accent);
-    background: #fff8e1;
-}
-
-/* ----- RETURN LINK ----- */
-.return-section {
-    margin-top: 50px;
-    padding-top: 20px;
-    border-top: 2px solid #eee;
-    text-align: center;
-}
-
-.return-link {
-    display: inline-block;
-    padding: 12px 30px;
-    background: var(--navy-blue);
-    color: white;
-    text-decoration: none;
-    border-radius: 25px;
-    font-weight: 700;
-    font-size: 1em;
-    border: 2px solid var(--navy-blue);
-    transition: all 0.3s ease;
-}
-
-.return-link:hover {
-    background: var(--gold-accent);
-    color: var(--navy-blue);
-    transform: translateY(-3px);
-    box-shadow: 0 10px 20px rgba(0,0,0,0.15);
-}
-
-/* ----- RESPONSIVE ----- */
-@media (max-width: 768px) {
-    body {
-        padding-top: 120px;
-    }
-    
-    .container {
+      /* ----- TACTICAL LAB INTEGRATION STYLES ----- */
+      .lab-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 25px;
+        margin: 30px 0;
+      }
+      .lab-card {
+        background: #f8f9fa;
         padding: 20px;
-        width: 95%;
-    }
-    
-    .hero-title {
-        font-size: 2em;
-    }
-    
-    .principles-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    .formation-pitch {
-        height: 300px;
-    }
-}
+        border-radius: 15px;
+        border: 1px solid #ddd;
+        display: flex;
+        flex-direction: column;
+      }
+      .lab-card h3 {
+        font-family: "Oswald";
+        color: var(--navy-blue);
+        margin-bottom: 8px;
+      }
+      .pitch {
+        height: 250px;
+        background: var(--field-green);
+        position: relative;
+        border-radius: 8px;
+        border: 2px solid white;
+        overflow: hidden;
+        margin: 15px 0;
+        background-image: linear-gradient(
+          to right,
+          rgba(255, 255, 255, 0.1) 1px,
+          transparent 1px
+        );
+        background-size: 20% 100%;
+      }
+      .goal-net {
+        position: absolute;
+        right: 0;
+        top: 35%;
+        height: 30%;
+        width: 12px;
+        border: 2px solid white;
+        border-right: none;
+        background: rgba(255, 255, 255, 0.1);
+      }
+      .p-unit {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        position: absolute;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 10px;
+        font-weight: bold;
+        z-index: 5;
+        transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      .p-blue {
+        background: white;
+        border: 2px solid var(--navy-blue);
+        color: var(--navy-blue);
+      }
+      .p-red {
+        background: var(--opponent-red);
+        border: 2px solid white;
+        color: white;
+      }
+      .p-ball {
+        width: 12px;
+        height: 12px;
+        background: white;
+        border: 2px solid black;
+        border-radius: 50%;
+        position: absolute;
+        z-index: 10;
+        transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      .play-btn {
+        background: var(--navy-blue);
+        color: var(--gold-accent);
+        border: none;
+        padding: 12px;
+        font-family: "Oswald";
+        cursor: pointer;
+        text-transform: uppercase;
+        border-radius: 5px;
+        margin-top: auto;
+      }
 
-@media (max-width: 480px) {
-    .header h1 {
+      /* ----- HERO SECTION ----- */
+      .hero-section {
+        text-align: center;
+        margin-bottom: 40px;
+        padding-bottom: 20px;
+        border-bottom: 3px solid #f0f0f0;
+      }
+
+      .hero-title {
+        font-family: "Oswald", sans-serif;
+        color: var(--navy-blue);
+        font-size: 2.8em;
+        margin-bottom: 10px;
+        text-transform: uppercase;
+      }
+
+      .hero-subtitle {
+        color: #87ceeb;
+        font-size: 1.2em;
+        max-width: 800px;
+        margin: 0 auto 20px;
+      }
+
+      .hero-badge {
+        display: inline-block;
+        background: var(--gold-accent);
+        color: var(--navy-blue);
+        padding: 5px 15px;
+        border-radius: 20px;
+        font-weight: 700;
+        font-size: 0.9em;
+        margin: 5px;
+      }
+
+      /* ----- CONTENT SECTIONS ----- */
+      .content-section {
+        margin-bottom: 40px;
+      }
+
+      .section-title {
+        font-family: "Oswald", sans-serif;
+        color: var(--navy-blue);
         font-size: 1.8em;
-    }
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 3px solid var(--gold-accent);
+      }
+
+      .section-subtitle {
+        font-family: "Oswald", sans-serif;
+        color: var(--navy-blue);
+        font-size: 1.4em;
+        margin: 25px 0 15px;
+      }
+
+      /* ----- PRINCIPLES GRID ----- */
+      .principles-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 25px;
+        margin: 30px 0;
+      }
+
+      .principle-card {
+        background: #f8f9fa;
+        padding: 25px;
+        border-radius: 15px;
+        border-left: 4px solid var(--gold-accent);
+        transition: transform 0.3s ease;
+      }
+
+      .principle-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+      }
+
+      .principle-icon {
+        font-size: 2.5em;
+        margin-bottom: 15px;
+        display: block;
+      }
+
+      .principle-title {
+        font-family: "Oswald", sans-serif;
+        color: var(--navy-blue);
+        font-size: 1.3em;
+        margin-bottom: 10px;
+      }
+
+      /* ----- DIAGRAM CONTAINER ----- */
+      .diagram-container {
+        background: #f5f5f5;
+        padding: 25px;
+        border-radius: 15px;
+        margin: 30px 0;
+        text-align: center;
+        border: 2px dashed #ddd;
+      }
+
+      .diagram-title {
+        font-family: "Oswald", sans-serif;
+        color: var(--navy-blue);
+        margin-bottom: 15px;
+      }
+
+      /* ----- COMPARISON TABLE ----- */
+      .comparison-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 30px 0;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+      }
+
+      .comparison-table th {
+        background: var(--navy-blue);
+        color: white;
+        padding: 15px;
+        text-align: left;
+        font-family: "Oswald", sans-serif;
+        font-weight: 500;
+      }
+
+      .comparison-table td {
+        padding: 12px 15px;
+        border-bottom: 1px solid #eee;
+      }
+
+      .comparison-table tr:nth-child(even) {
+        background: #f9f9f9;
+      }
+
+      .comparison-table tr:hover {
+        background: #f0f7ff;
+      }
+
+      /* ----- FORMATION DIAGRAM ----- */
+      .formation-pitch {
+        width: 100%;
+        height: 400px;
+        background: linear-gradient(180deg, #3ea345, #1f7a2f);
+        border-radius: 10px;
+        position: relative;
+        margin: 30px auto;
+        border: 5px solid white;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+      }
+
+      .positional-player {
+        position: absolute;
+        width: 50px;
+        height: 50px;
+        background: var(--gold-accent);
+        border: 3px solid var(--navy-blue);
+        border-radius: 50%;
+        color: var(--navy-blue);
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        transform: translate(-50%, -50%);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        transition: all 0.3s ease;
+      }
+
+      .positional-player:hover {
+        transform: translate(-50%, -50%) scale(1.1);
+        z-index: 10;
+      }
+
+      /* ----- KEY COACHES ----- */
+      .coaches-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        justify-content: center;
+        margin: 30px 0;
+      }
+
+      .coach-card {
+        text-align: center;
+        padding: 15px;
+        min-width: 150px;
+      }
+
+      .coach-icon {
+        font-size: 3em;
+        margin-bottom: 10px;
+      }
+
+      .coach-name {
+        font-weight: 700;
+        color: var(--navy-blue);
+        margin-bottom: 5px;
+      }
+
+      .coach-team {
+        color: #87ceeb;
+        font-size: 0.9em;
+      }
+
+      /* ----- INTERACTIVE QUIZ ----- */
+      .quiz-container {
+        background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+        padding: 30px;
+        border-radius: 15px;
+        margin: 40px 0;
+        border-left: 5px solid var(--gold-accent);
+      }
+
+      .quiz-question {
+        font-family: "Oswald", sans-serif;
+        color: var(--navy-blue);
+        font-size: 1.3em;
+        margin-bottom: 20px;
+      }
+
+      .quiz-option {
+        background: white;
+        padding: 15px;
+        margin: 10px 0;
+        border-radius: 10px;
+        cursor: pointer;
+        border: 2px solid #e0e0e0;
+        transition: all 0.3s ease;
+      }
+
+      .quiz-option:hover {
+        border-color: var(--gold-accent);
+        background: #fff8e1;
+      }
+
+      /* ----- RETURN LINK ----- */
+      .return-section {
+        margin-top: 50px;
+        padding-top: 20px;
+        border-top: 2px solid #eee;
+        text-align: center;
+      }
+
+      .return-link {
+        display: inline-block;
+        padding: 12px 30px;
+        background: var(--navy-blue);
+        color: white;
+        text-decoration: none;
+        border-radius: 25px;
+        font-weight: 700;
+        font-size: 1em;
+        border: 2px solid var(--navy-blue);
+        transition: all 0.3s ease;
+      }
+
+      .return-link:hover {
+        background: var(--gold-accent);
+        color: var(--navy-blue);
+        transform: translateY(-3px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+      }
+
+      /* ----- RESPONSIVE ----- */
+      @media (max-width: 768px) {
+        body {
+          padding-top: 120px;
+        }
+
+        .container {
+          padding: 20px;
+          width: 95%;
+        }
+
+        .hero-title {
+          font-size: 2em;
+        }
+
+        .principles-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .formation-pitch {
+          height: 300px;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .header h1 {
+          font-size: 1.8em;
+        }
+
+        .nav-menu a {
+          padding: 5px 10px;
+          font-size: 0.8em;
+        }
+      }
+    </style>
     
-    .nav-menu a {
-        padding: 5px 10px;
-        font-size: 0.8em;
-    }
-}
-</style>
-</head>
+  </head>
 
-<body>
-
-<header class="header">
-    <h1>POSITIONAL PLAY</h1>
-    <nav class="nav-menu" aria-label="Primary navigation">
+  <body>
+    <header class="header">
+      <h1>POSITIONAL PLAY</h1>
+      <nav class="nav-menu" aria-label="Primary navigation">
         <a href="index.html">HOME</a>
         <a href="possession.html" class="active">POSSESSION</a>
         <a href="#lab">TACTICS LAB</a>
@@ -484,381 +544,463 @@ body {
         <a href="#formation">FORMATION</a>
         <a href="#coaches">COACHES</a>
         <a href="tactics_console.html">CONSOLE</a>
-    </nav>
-</header>
+      </nav>
+    </header>
 
-<main class="container">
-    
-    <section class="hero-section">
-        <h1 class="hero-title">Positional Play<br><span style="font-size: 0.6em; color: ##87CEEB;">Juego de Posición</span></h1>
-        <p1 class="hero-subtitle"><b>Positional</b> play is a football tactical system where players occupy fixed zones to create space, maintain structure, and generate clear passing lanes. For example, Pep Guardiola’s Barcelona kept wingers wide and midfielders between the lines, stretching the defense and enabling quick, short passes to break through organized opponents..</p1>
+    <main class="container">
+      <section class="hero-section">
+        <h1 class="hero-title">
+          Positional Play<br /><span style="font-size: 0.6em; color: #87ceeb"
+            >Juego de Posición</span
+          >
+        </h1>
+        <p1 class="hero-subtitle"
+          ><b>Positional</b> play is a football tactical system where players
+          occupy fixed zones to create space, maintain structure, and generate
+          clear passing lanes. For example, Pep Guardiola’s Barcelona kept
+          wingers wide and midfielders between the lines, stretching the defense
+          and enabling quick, short passes to break through organized
+          opponents..</p1
+        >
+        
+
         <div>
-            <span class="hero-badge">⚽ Barcelona/Man City School</span>
-            <span class="hero-badge">🧠 Guardiola System</span>
-            <span class="hero-badge">📐 Structured Spacing</span>
+          <span class="hero-badge">⚽ Barcelona/Man City School</span>
+          <span class="hero-badge">🧠 Guardiola System</span>
+          <span class="hero-badge">📐 Structured Spacing</span>
         </div>
-    </section>
+      </section>
+      <img src="Positionalplay.png" alt="Description of image">
 
-    <section id="lab" class="content-section">
+      <section id="lab" class="content-section">
         <h2 class="section-title">🧪 Tactical Laboratory</h2>
         <div class="lab-grid">
-            <div class="lab-card" id="card-tm">
-                <h3>The Third Man</h3>
-                <p style="font-size: 0.9em; color: #555;">B draws the defender, releasing C into space.</p>
-                <div class="pitch">
-                    <div id="tm-1" class="p-unit p-blue">A</div>
-                    <div id="tm-2" class="p-unit p-blue">B</div>
-                    <div id="tm-3" class="p-unit p-blue">C</div>
-                    <div id="tm-o1" class="p-unit p-red">!</div>
-                    <div id="tm-ball" class="p-ball"></div>
-                </div>
-                <button class="play-btn" onclick="runTM()">Execute Play</button>
+          <div class="lab-card" id="card-tm">
+            <h3>The Third Man</h3>
+            <p style="font-size: 0.9em; color: #555">
+              B draws the defender, releasing C into space.
+            </p>
+            <div class="pitch">
+              <div id="tm-1" class="p-unit p-blue">A</div>
+              <div id="tm-2" class="p-unit p-blue">B</div>
+              <div id="tm-3" class="p-unit p-blue">C</div>
+              <div id="tm-o1" class="p-unit p-red">!</div>
+              <div id="tm-ball" class="p-ball"></div>
             </div>
+            <button class="play-btn" onclick="runTM()">Execute Play</button>
+          </div>
 
-            <div class="lab-card" id="card-hs">
-                <h3>Half-Space Exploit</h3>
-                <p style="font-size: 0.9em; color: #555;">Breaking the lines through the interior channels.</p>
-                <div class="pitch">
-                    <div id="hs-1" class="p-unit p-blue">8</div>
-                    <div id="hs-2" class="p-unit p-blue">7</div>
-                    <div id="hs-o1" class="p-unit p-red">FB</div>
-                    <div id="hs-o2" class="p-unit p-red">CB</div>
-                    <div id="hs-ball" class="p-ball"></div>
-                </div>
-                <button class="play-btn" onclick="runHS()">Execute Play</button>
+          <div class="lab-card" id="card-hs">
+            <h3>Half-Space Exploit</h3>
+            <p style="font-size: 0.9em; color: #555">
+              Breaking the lines through the interior channels.
+            </p>
+            <div class="pitch">
+              <div id="hs-1" class="p-unit p-blue">8</div>
+              <div id="hs-2" class="p-unit p-blue">7</div>
+              <div id="hs-o1" class="p-unit p-red">FB</div>
+              <div id="hs-o2" class="p-unit p-red">CB</div>
+              <div id="hs-ball" class="p-ball"></div>
             </div>
+            <button class="play-btn" onclick="runHS()">Execute Play</button>
+          </div>
 
-            <div class="lab-card" id="card-gl">
-                <h3>False 9 Overload</h3>
-                <p style="font-size: 0.9em; color: #555;">The 9 pulls the CB away to create a scoring gap.</p>
-                <div class="pitch">
-                    <div class="goal-net"></div>
-                    <div id="gl-1" class="p-unit p-blue">9</div>
-                    <div id="gl-2" class="p-unit p-blue">11</div>
-                    <div id="gl-o1" class="p-unit p-red">CB</div>
-                    <div id="gl-o2" class="p-unit p-red">GK</div>
-                    <div id="gl-ball" class="p-ball"></div>
-                </div>
-                <button class="play-btn" onclick="runGL()">Execute Goal Play</button>
+          <div class="lab-card" id="card-gl">
+            <h3>False 9 Overload</h3>
+            <p style="font-size: 0.9em; color: #555">
+              The 9 pulls the CB away to create a scoring gap.
+            </p>
+            <div class="pitch">
+              <div class="goal-net"></div>
+              <div id="gl-1" class="p-unit p-blue">9</div>
+              <div id="gl-2" class="p-unit p-blue">11</div>
+              <div id="gl-o1" class="p-unit p-red">CB</div>
+              <div id="gl-o2" class="p-unit p-red">GK</div>
+              <div id="gl-ball" class="p-ball"></div>
             </div>
+            <button class="play-btn" onclick="runGL()">
+              Execute Goal Play
+            </button>
+          </div>
         </div>
-    </section>
+      </section>
 
-    <section class="content-section" id="principles">
+      <section class="content-section" id="principles">
         <h2 class="section-title">🎯 Core Principles</h2>
-        
+
         <div class="principles-grid">
-            <div class="principle-card">
-                <span class="principle-icon">📏</span>
-                <h3 class="principle-title">Structured Spacing</h3>
-                <p>Players maintain exact distances (10-15m) to create passing triangles and diamonds. No two players occupy the same vertical or horizontal line.</p>
-            </div>
-            
-            <div class="principle-card">
-                <span class="principle-icon">⚖️</span>
-                <h3 class="principle-title">Superiorities</h3>
-                <p>Creating numerical (more players), positional (better angles), and qualitative (skill advantage) superiorities in key zones.</p>
-            </div>
-            
-            <div class="principle-card">
-                <span class="principle-icon">🔄</span>
-                <h3 class="principle-title">Ball Circulation</h3>
-                <p>Purposeful passing to disorganize opponents. The ball moves faster than defenders can shift.</p>
-            </div>
-        </div>
-    </section>
+          <div class="principle-card">
+            <span class="principle-icon">📏</span>
+            <h3 class="principle-title">Structured Spacing</h3>
+            <p>
+              Players maintain exact distances (10-15m) to create passing
+              triangles and diamonds. No two players occupy the same vertical or
+              horizontal line.
+            </p>
+          </div>
 
-    <section class="content-section" id="formation">
+          <div class="principle-card">
+            <span class="principle-icon">⚖️</span>
+            <h3 class="principle-title">Superiorities</h3>
+            <p>
+              Creating numerical (more players), positional (better angles), and
+              qualitative (skill advantage) superiorities in key zones.
+            </p>
+          </div>
+
+          <div class="principle-card">
+            <span class="principle-icon">🔄</span>
+            <h3 class="principle-title">Ball Circulation</h3>
+            <p>
+              Purposeful passing to disorganize opponents. The ball moves faster
+              than defenders can shift.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="content-section" id="formation">
         <h2 class="section-title">📐 Positional Play Formation (4-3-3)</h2>
-        
+
         <div class="diagram-container">
-            <h3 class="diagram-title">Typical Positioning Structure</h3>
-            <div class="formation-pitch" id="positionalPitch">
-                </div>
-            <p style="margin-top: 15px; color: ##87CEEB; font-size: 0.9em;">Hover over players to see their positional roles</p>
+          <h3 class="diagram-title">Typical Positioning Structure</h3>
+          <div class="formation-pitch" id="positionalPitch"></div>
+          <p style="margin-top: 15px; color: #87ceeb; font-size: 0.9em">
+            Hover over players to see their positional roles
+          </p>
         </div>
-        
+
         <h3 class="section-subtitle">Positional Rules:</h3>
-        <ul style="padding-left: 20px; margin: 15px 0;">
-            <li style="margin: 10px 0;">No two players on same vertical/horizontal line</li>
-            <li style="margin: 10px 0;">Five vertical corridors occupied</li>
-            <li style="margin: 10px 0;">Three horizontal lines maintained</li>
-            <li style="margin: 10px 0;">Half-spaces occupied by creative players</li>
+        <ul style="padding-left: 20px; margin: 15px 0">
+          <li style="margin: 10px 0">
+            No two players on same vertical/horizontal line
+          </li>
+          <li style="margin: 10px 0">Five vertical corridors occupied</li>
+          <li style="margin: 10px 0">Three horizontal lines maintained</li>
+          <li style="margin: 10px 0">
+            Half-spaces occupied by creative players
+          </li>
         </ul>
-    </section>
+      </section>
 
-    <section class="content-section">
+      <section class="content-section">
         <h2 class="section-title">📊 Positional Play vs Other Systems</h2>
-        
+
         <table class="comparison-table">
-            <thead>
-                <tr>
-                    <th>Aspect</th>
-                    <th>Positional Play</th>
-                    <th>Verticality</th>
-                    <th>Compact Block</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td><strong>Primary Control</strong></td>
-                    <td>Ball + Space</td>
-                    <td>Territory</td>
-                    <td>Space</td>
-                </tr>
-                <tr>
-                    <td><strong>Tempo</strong></td>
-                    <td>Slow-Medium</td>
-                    <td>Fast</td>
-                    <td>Variable</td>
-                </tr>
-                <tr>
-                    <td><strong>Ball Possession</strong></td>
-                    <td>High (65%+)</td>
-                    <td>Medium (45-55%)</td>
-                    <td>Low (30-40%)</td>
-                </tr>
-                <tr>
-                    <td><strong>Risk Level</strong></td>
-                    <td>Low</td>
-                    <td>Medium-High</td>
-                    <td>Low</td>
-                </tr>
-                <tr>
-                    <td><strong>Famous Coach</strong></td>
-                    <td>Guardiola</td>
-                    <td>Klopp</td>
-                    <td>Simeone</td>
-                </tr>
-            </tbody>
+          <thead>
+            <tr>
+              <th>Aspect</th>
+              <th>Positional Play</th>
+              <th>Verticality</th>
+              <th>Compact Block</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Primary Control</strong></td>
+              <td>Ball + Space</td>
+              <td>Territory</td>
+              <td>Space</td>
+            </tr>
+            <tr>
+              <td><strong>Tempo</strong></td>
+              <td>Slow-Medium</td>
+              <td>Fast</td>
+              <td>Variable</td>
+            </tr>
+            <tr>
+              <td><strong>Ball Possession</strong></td>
+              <td>High (65%+)</td>
+              <td>Medium (45-55%)</td>
+              <td>Low (30-40%)</td>
+            </tr>
+            <tr>
+              <td><strong>Risk Level</strong></td>
+              <td>Low</td>
+              <td>Medium-High</td>
+              <td>Low</td>
+            </tr>
+            <tr>
+              <td><strong>Famous Coach</strong></td>
+              <td>Guardiola</td>
+              <td>Klopp</td>
+              <td>Simeone</td>
+            </tr>
+          </tbody>
         </table>
-    </section>
+      </section>
 
-    <section class="content-section" id="coaches">
+      <section class="content-section" id="coaches">
         <h2 class="section-title">👔 Masters of Positional Play</h2>
-        
+
         <div class="coaches-grid">
-            <div class="coach-card">
-                <div class="coach-icon">👨‍🏫</div>
-                <div class="coach-name">Pep Guardiola</div>
-                <div class="coach-team">Man City / Barcelona</div>
-            </div>
-            <div class="coach-card">
-                <div class="coach-icon">🎯</div>
-                <div class="coach-name">Xavi Hernández</div>
-                <div class="coach-team">Barcelona</div>
-            </div>
-            <div class="coach-card">
-                <div class="coach-icon">🔧</div>
-                <div class="coach-name">Mikel Arteta</div>
-                <div class="coach-team">Arsenal</div>
-            </div>
-            <div class="coach-card">
-                <div class="coach-icon">🎨</div>
-                <div class="coach-name">Roberto De Zerbi</div>
-                <div class="coach-team">Brighton</div>
-            </div>
+          <div class="coach-card">
+            <div class="coach-icon">👨‍🏫</div>
+            <div class="coach-name">Pep Guardiola</div>
+            <div class="coach-team">Man City / Barcelona</div>
+          </div>
+          <div class="coach-card">
+            <div class="coach-icon">🎯</div>
+            <div class="coach-name">Xavi Hernández</div>
+            <div class="coach-team">Barcelona</div>
+          </div>
+          <div class="coach-card">
+            <div class="coach-icon">🔧</div>
+            <div class="coach-name">Mikel Arteta</div>
+            <div class="coach-team">Arsenal</div>
+          </div>
+          <div class="coach-card">
+            <div class="coach-icon">🎨</div>
+            <div class="coach-name">Roberto De Zerbi</div>
+            <div class="coach-team">Brighton</div>
+          </div>
         </div>
-    </section>
+      </section>
 
-    <section class="content-section">
+      <section class="content-section">
         <h2 class="section-title">🧠 Test Your Knowledge</h2>
-        
+
         <div class="quiz-container">
-            <div class="quiz-question">What is the optimal distance between players in Positional Play?</div>
-            
-            <div class="quiz-option" onclick="checkAnswer(this, 'correct')">
-                A) 10-15 meters
-            </div>
-            <div class="quiz-option" onclick="checkAnswer(this, 'wrong')">
-                B) 5-8 meters
-            </div>
-            <div class="quiz-option" onclick="checkAnswer(this, 'wrong')">
-                C) 20-25 meters
-            </div>
-            <div class="quiz-option" onclick="checkAnswer(this, 'wrong')">
-                D) No fixed distance
-            </div>
-            
-            <div id="quizFeedback" style="margin-top: 20px; font-weight: bold; display: none;"></div>
+          <div class="quiz-question">
+            What is the optimal distance between players in Positional Play?
+          </div>
+
+          <div class="quiz-option" onclick="checkAnswer(this, 'correct')">
+            A) 10-15 meters
+          </div>
+          <div class="quiz-option" onclick="checkAnswer(this, 'wrong')">
+            B) 5-8 meters
+          </div>
+          <div class="quiz-option" onclick="checkAnswer(this, 'wrong')">
+            C) 20-25 meters
+          </div>
+          <div class="quiz-option" onclick="checkAnswer(this, 'wrong')">
+            D) No fixed distance
+          </div>
+
+          <div
+            id="quizFeedback"
+            style="margin-top: 20px; font-weight: bold; display: none"
+          ></div>
         </div>
-    </section>
+      </section>
 
-    <section class="return-section">
-        <a href="possession.html" class="return-link">← Back to Possession Systems</a>
-        <p style="margin-top: 15px; color: ##87CEEB; font-size: 0.9em;">
-            Explore other possession styles: <a href="#" style="color: var(--navy-blue);">Verticality</a> • <a href="#" style="color: var(--navy-blue);">Compact Block</a>
+      <section class="return-section">
+        <a href="possession.html" class="return-link"
+          >← Back to Possession Systems</a
+        >
+        <p style="margin-top: 15px; color: #87ceeb; font-size: 0.9em">
+          Explore other possession styles:
+          <a href="#" style="color: var(--navy-blue)">Verticality</a> •
+          <a href="#" style="color: var(--navy-blue)">Compact Block</a>
         </p>
-    </section>
+      </section>
+    </main>
 
-</main>
+    <script>
+      // TACTICAL LAB ENGINE
+      const labWait = (ms) => new Promise((r) => setTimeout(r, ms));
 
-<script>
-// TACTICAL LAB ENGINE
-const labWait = (ms) => new Promise(r => setTimeout(r, ms));
+      function moveLabUnit(id, top, left) {
+        const el = document.getElementById(id);
+        if (el) {
+          el.style.top = top;
+          el.style.left = left;
+        }
+      }
 
-function moveLabUnit(id, top, left) {
-    const el = document.getElementById(id);
-    if(el) { el.style.top = top; el.style.left = left; }
-}
+      function resetLab(cardId) {
+        document
+          .querySelectorAll(`#${cardId} .p-unit, #${cardId} .p-ball`)
+          .forEach((el) => {
+            el.style.transition = "none";
+            el.style.top = "";
+            el.style.left = "";
+            el.style.opacity = "1";
+            void el.offsetWidth;
+            el.style.transition = "all 0.8s cubic-bezier(0.4, 0, 0.2, 1)";
+          });
+      }
 
-function resetLab(cardId) {
-    document.querySelectorAll(`#${cardId} .p-unit, #${cardId} .p-ball`).forEach(el => {
-        el.style.transition = 'none';
-        el.style.top = ''; el.style.left = ''; el.style.opacity = '1';
-        void el.offsetWidth;
-        el.style.transition = 'all 0.8s cubic-bezier(0.4, 0, 0.2, 1)';
-    });
-}
+      async function runTM() {
+        resetLab("card-tm");
+        moveLabUnit("tm-1", "75%", "10%");
+        moveLabUnit("tm-2", "25%", "45%");
+        moveLabUnit("tm-3", "75%", "35%");
+        moveLabUnit("tm-o1", "50%", "40%");
+        moveLabUnit("tm-ball", "77%", "15%");
+        await labWait(300);
+        moveLabUnit("tm-ball", "28%", "47%");
+        moveLabUnit("tm-o1", "35%", "45%");
+        await labWait(800);
+        moveLabUnit("tm-3", "45%", "70%");
+        await labWait(400);
+        moveLabUnit("tm-ball", "48%", "72%");
+      }
 
-async function runTM() {
-    resetLab('card-tm');
-    moveLabUnit('tm-1', '75%', '10%'); moveLabUnit('tm-2', '25%', '45%'); moveLabUnit('tm-3', '75%', '35%'); 
-    moveLabUnit('tm-o1', '50%', '40%'); moveLabUnit('tm-ball', '77%', '15%');
-    await labWait(300);
-    moveLabUnit('tm-ball', '28%', '47%'); 
-    moveLabUnit('tm-o1', '35%', '45%');
-    await labWait(800);
-    moveLabUnit('tm-3', '45%', '70%');
-    await labWait(400);
-    moveLabUnit('tm-ball', '48%', '72%');
-}
+      async function runHS() {
+        resetLab("card-hs");
+        moveLabUnit("hs-1", "65%", "20%");
+        moveLabUnit("hs-2", "20%", "60%");
+        moveLabUnit("hs-o1", "15%", "75%");
+        moveLabUnit("hs-o2", "45%", "60%");
+        moveLabUnit("hs-ball", "67%", "25%");
+        await labWait(300);
+        moveLabUnit("hs-1", "50%", "50%");
+        moveLabUnit("hs-ball", "52%", "52%");
+        moveLabUnit("hs-o2", "50%", "45%");
+        await labWait(800);
+        moveLabUnit("hs-2", "15%", "85%");
+        await labWait(400);
+        moveLabUnit("hs-ball", "17%", "87%");
+      }
 
-async function runHS() {
-    resetLab('card-hs');
-    moveLabUnit('hs-1', '65%', '20%'); moveLabUnit('hs-2', '20%', '60%'); 
-    moveLabUnit('hs-o1', '15%', '75%'); moveLabUnit('hs-o2', '45%', '60%');
-    moveLabUnit('hs-ball', '67%', '25%');
-    await labWait(300);
-    moveLabUnit('hs-1', '50%', '50%');
-    moveLabUnit('hs-ball', '52%', '52%'); 
-    moveLabUnit('hs-o2', '50%', '45%');
-    await labWait(800);
-    moveLabUnit('hs-2', '15%', '85%');
-    await labWait(400);
-    moveLabUnit('hs-ball', '17%', '87%');
-}
+      async function runGL() {
+        resetLab("card-gl");
+        moveLabUnit("gl-1", "50%", "30%");
+        moveLabUnit("gl-2", "20%", "50%");
+        moveLabUnit("gl-o1", "50%", "45%");
+        moveLabUnit("gl-o2", "50%", "92%");
+        moveLabUnit("gl-ball", "52%", "35%");
+        await labWait(300);
+        moveLabUnit("gl-1", "75%", "15%");
+        moveLabUnit("gl-o1", "70%", "25%");
+        moveLabUnit("gl-ball", "77%", "18%");
+        await labWait(800);
+        moveLabUnit("gl-2", "45%", "80%");
+        await labWait(400);
+        moveLabUnit("gl-ball", "47%", "82%");
+        await labWait(600);
+        moveLabUnit("gl-ball", "50%", "98%");
+      }
 
-async function runGL() {
-    resetLab('card-gl');
-    moveLabUnit('gl-1', '50%', '30%'); moveLabUnit('gl-2', '20%', '50%');
-    moveLabUnit('gl-o1', '50%', '45%'); moveLabUnit('gl-o2', '50%', '92%');
-    moveLabUnit('gl-ball', '52%', '35%');
-    await labWait(300);
-    moveLabUnit('gl-1', '75%', '15%');
-    moveLabUnit('gl-o1', '70%', '25%');
-    moveLabUnit('gl-ball', '77%', '18%');
-    await labWait(800);
-    moveLabUnit('gl-2', '45%', '80%');
-    await labWait(400);
-    moveLabUnit('gl-ball', '47%', '82%');
-    await labWait(600);
-    moveLabUnit('gl-ball', '50%', '98%');
-}
+      // EXISTING LOGIC
+      function setupPositionalPitch() {
+        const pitch = document.getElementById("positionalPitch");
+        const positions = [
+          { role: "GK", x: 50, y: 90, color: "#001F5B" },
+          { role: "LB", x: 15, y: 75, color: "#FFA500" },
+          { role: "LCB", x: 35, y: 70, color: "#001F5B" },
+          { role: "RCB", x: 65, y: 70, color: "#001F5B" },
+          { role: "RB", x: 85, y: 75, color: "#FFA500" },
+          { role: "CDM", x: 50, y: 60, color: "#2E7D32" },
+          { role: "LCM", x: 35, y: 50, color: "#1976D2" },
+          { role: "RCM", x: 65, y: 50, color: "#1976D2" },
+          { role: "LW", x: 25, y: 30, color: "#F57C00" },
+          { role: "CF", x: 50, y: 25, color: "#D32F2F" },
+          { role: "RW", x: 75, y: 30, color: "#F57C00" },
+        ];
 
-// EXISTING LOGIC
-function setupPositionalPitch() {
-    const pitch = document.getElementById('positionalPitch');
-    const positions = [
-        { role: 'GK', x: 50, y: 90, color: '#001F5B' },
-        { role: 'LB', x: 15, y: 75, color: '#FFA500' },
-        { role: 'LCB', x: 35, y: 70, color: '#001F5B' },
-        { role: 'RCB', x: 65, y: 70, color: '#001F5B' },
-        { role: 'RB', x: 85, y: 75, color: '#FFA500' },
-        { role: 'CDM', x: 50, y: 60, color: '#2E7D32' },
-        { role: 'LCM', x: 35, y: 50, color: '#1976D2' },
-        { role: 'RCM', x: 65, y: 50, color: '#1976D2' },
-        { role: 'LW', x: 25, y: 30, color: '#F57C00' },
-        { role: 'CF', x: 50, y: 25, color: '#D32F2F' },
-        { role: 'RW', x: 75, y: 30, color: '#F57C00' }
-    ];
+        positions.forEach((pos) => {
+          const player = document.createElement("div");
+          player.className = "positional-player";
+          player.style.left = `${pos.x}%`;
+          player.style.top = `${pos.y}%`;
+          player.style.background = pos.color;
+          player.textContent = pos.role;
+          player.title = `${pos.role} - Click to learn role`;
 
-    positions.forEach(pos => {
-        const player = document.createElement('div');
-        player.className = 'positional-player';
-        player.style.left = `${pos.x}%`;
-        player.style.top = `${pos.y}%`;
-        player.style.background = pos.color;
-        player.textContent = pos.role;
-        player.title = `${pos.role} - Click to learn role`;
-        
-        player.addEventListener('click', () => {
+          player.addEventListener("click", () => {
             alert(`${pos.role} Role: ${getRoleDescription(pos.role)}`);
+          });
+
+          pitch.appendChild(player);
         });
-        
-        pitch.appendChild(player);
-    });
 
-    const lines = [
-        { type: 'line', x1: 50, y1: 25, x2: 50, y2: 90, color: 'rgba(255,255,255,0.1)' },
-        { type: 'line', x1: 33, y1: 30, x2: 33, y2: 70, color: 'rgba(255,255,255,0.1)' },
-        { type: 'line', x1: 66, y1: 30, x2: 66, y2: 70, color: 'rgba(255,255,255,0.1)' }
-    ];
+        const lines = [
+          {
+            type: "line",
+            x1: 50,
+            y1: 25,
+            x2: 50,
+            y2: 90,
+            color: "rgba(255,255,255,0.1)",
+          },
+          {
+            type: "line",
+            x1: 33,
+            y1: 30,
+            x2: 33,
+            y2: 70,
+            color: "rgba(255,255,255,0.1)",
+          },
+          {
+            type: "line",
+            x1: 66,
+            y1: 30,
+            x2: 66,
+            y2: 70,
+            color: "rgba(255,255,255,0.1)",
+          },
+        ];
 
-    lines.forEach(line => {
-        if (line.type === 'line') {
-            const lineEl = document.createElement('div');
-            lineEl.style.position = 'absolute';
+        lines.forEach((line) => {
+          if (line.type === "line") {
+            const lineEl = document.createElement("div");
+            lineEl.style.position = "absolute";
             lineEl.style.left = `${line.x1}%`;
             lineEl.style.top = `${line.y1}%`;
-            lineEl.style.width = '2px';
+            lineEl.style.width = "2px";
             lineEl.style.height = `${Math.abs(line.y2 - line.y1)}%`;
             lineEl.style.background = line.color;
             lineEl.style.transform = `translate(-50%, 0)`;
             pitch.appendChild(lineEl);
-        }
-    });
-}
+          }
+        });
+      }
 
-function getRoleDescription(role) {
-    const descriptions = {
-        'GK': 'Sweeper-keeper, acts as 11th outfield player',
-        'LB/RB': 'Inverted full-backs, join midfield in possession',
-        'LCB/RCB': 'Wide center-backs, provide width in build-up',
-        'CDM': 'Single pivot, distributes and protects defense',
-        'LCM/RCM': 'Interior midfielders, occupy half-spaces',
-        'LW/RW': 'Wide forwards, stay high and wide',
-        'CF': 'False nine, drops deep to create space'
-    };
-    return descriptions[role] || 'Key positional role in structure';
-}
+      function getRoleDescription(role) {
+        const descriptions = {
+          GK: "Sweeper-keeper, acts as 11th outfield player",
+          "LB/RB": "Inverted full-backs, join midfield in possession",
+          "LCB/RCB": "Wide center-backs, provide width in build-up",
+          CDM: "Single pivot, distributes and protects defense",
+          "LCM/RCM": "Interior midfielders, occupy half-spaces",
+          "LW/RW": "Wide forwards, stay high and wide",
+          CF: "False nine, drops deep to create space",
+        };
+        return descriptions[role] || "Key positional role in structure";
+      }
 
-function checkAnswer(element, result) {
-    const feedback = document.getElementById('quizFeedback');
-    const options = document.querySelectorAll('.quiz-option');
-    
-    options.forEach(opt => {
-        opt.style.pointerEvents = 'none';
-        if (opt === element) {
-            if (result === 'correct') {
-                opt.style.background = '#E8F5E9';
-                opt.style.borderColor = '#2E7D32';
-                opt.style.color = '#2E7D32';
-                feedback.textContent = '✅ Correct! Optimal spacing is 10-15 meters.';
+      function checkAnswer(element, result) {
+        const feedback = document.getElementById("quizFeedback");
+        const options = document.querySelectorAll(".quiz-option");
+
+        options.forEach((opt) => {
+          opt.style.pointerEvents = "none";
+          if (opt === element) {
+            if (result === "correct") {
+              opt.style.background = "#E8F5E9";
+              opt.style.borderColor = "#2E7D32";
+              opt.style.color = "#2E7D32";
+              feedback.textContent =
+                "✅ Correct! Optimal spacing is 10-15 meters.";
             } else {
-                opt.style.background = '#FFEBEE';
-                opt.style.borderColor = '#D32F2F';
-                opt.style.color = '#D32F2F';
-                feedback.textContent = '❌ Incorrect. The correct answer is 10-15 meters for optimal passing angles.';
+              opt.style.background = "#FFEBEE";
+              opt.style.borderColor = "#D32F2F";
+              opt.style.color = "#D32F2F";
+              feedback.textContent =
+                "❌ Incorrect. The correct answer is 10-15 meters for optimal passing angles.";
             }
-        }
-    });
-    
-    feedback.style.display = 'block';
-}
+          }
+        });
 
-document.addEventListener('DOMContentLoaded', () => {
-    setupPositionalPitch();
-    runTM(); runHS(); runGL(); // Init lab animations
-    
-    const currentPage = window.location.pathname.split('/').pop();
-    document.querySelectorAll('.nav-menu a').forEach(link => {
-        if (link.getAttribute('href') === currentPage) {
-            link.classList.add('active');
-        }
-    });
-});
-</script>
+        feedback.style.display = "block";
+      }
 
-</body>
+      document.addEventListener("DOMContentLoaded", () => {
+        setupPositionalPitch();
+        runTM();
+        runHS();
+        runGL(); // Init lab animations
+
+        const currentPage = window.location.pathname.split("/").pop();
+        document.querySelectorAll(".nav-menu a").forEach((link) => {
+          if (link.getAttribute("href") === currentPage) {
+            link.classList.add("active");
+          }
+        });
+      });
+    </script>
+  </body>
 </html>
