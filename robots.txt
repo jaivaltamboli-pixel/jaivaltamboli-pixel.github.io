@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://jaivaltamboli-pixel.github.io/sitemap.xml
