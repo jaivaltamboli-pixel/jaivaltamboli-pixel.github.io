@@ -3,241 +3,309 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Defending & Pressing Tactics</title>
+<title>Football Defending Principles | Tactics Board</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
 
 <style>
-:root {
-    --navy-blue: #001F5B;
-    --gold-accent: #FFD700;
-    --light-bg: #EAF0F6;
-    --tile-bg: #FFFFFF;
-    --text-color: #1A1A1A;
-    --shadow-deep: 0 12px 26px rgba(0,0,0,0.18);
-    --shadow-soft: 0 5px 12px rgba(0,0,0,0.18);
+:root{
+  --navy:#001F5B;
+  --gold:#FFD700;
+  --bg:#EAF0F6;
+  --text:#1A1A1A;
+  --shadow:0 10px 25px rgba(0,0,0,.18);
 }
 
-/* GLOBAL */
-body {
-    margin: 0;
-    font-family: "Roboto", sans-serif;
-    background: var(--light-bg);
-    padding-top: 90px;
+/* Base */
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:'Roboto',sans-serif;
+  background:linear-gradient(135deg,var(--bg),#d4e0eb);
+  color:var(--text);
+  padding-top:86px;
 }
 
-/* HEADER */
-.header {
-    background: var(--navy-blue);
-    padding: 18px 0;
-    position: fixed;
-    top: 0; width: 100%;
-    z-index: 999;
-    box-shadow: var(--shadow-deep);
-    text-align: center;
+/* Header (matches possession) */
+.header{
+  position:fixed;
+  top:0;left:0;right:0;
+  background:var(--navy);
+  padding:16px 0;
+  box-shadow:var(--shadow);
+  z-index:1000;
+}
+.header h1{
+  margin:0;
+  color:var(--gold);
+  text-align:center;
+  font-family:'Oswald',sans-serif;
+  font-size:2rem;
+  letter-spacing:2px;
+}
+.nav-menu{
+  display:flex;
+  justify-content:center;
+  gap:8px;
+  margin-top:8px;
+  flex-wrap:wrap;
+}
+.nav-menu a{
+  color:#fff;
+  text-decoration:none;
+  padding:7px 14px;
+  border-radius:20px;
+  border:1px solid rgba(255,255,255,.25);
+  font-size:.92rem;
+  transition:.2s;
+}
+.nav-menu a:hover,
+.nav-menu a.active{
+  background:var(--gold);
+  color:var(--navy);
+  font-weight:700;
 }
 
-.header h1 {
-    color: var(--gold-accent);
-    font-family: Oswald;
-    margin: 0;
-    font-size: 2.4em;
+/* Container */
+.container{
+  width:92%;
+  max-width:980px;
+  margin:36px auto;
+  background:#fff;
+  padding:36px;
+  border-radius:16px;
+  box-shadow:0 12px 35px rgba(0,0,0,.12);
+  border-top:6px solid var(--gold);
 }
 
-.nav-menu a {
-    text-decoration: none;
-    color: white;
-    padding: 8px 15px;
-    margin: 0 6px;
-    border-radius: 20px;
-    border: 1px solid rgba(255,255,255,0.3);
-    font-weight: 500;
-    transition: .25s;
+/* Text */
+h2{
+  font-family:'Oswald',sans-serif;
+  color:var(--navy);
+  font-size:2rem;
+  border-bottom:4px solid var(--gold);
+  padding-bottom:10px;
 }
-.nav-menu a:hover {
-    background: var(--gold-accent);
-    color: var(--navy-blue);
-    transform: scale(1.07);
+h3{
+  font-family:'Oswald',sans-serif;
+  color:var(--gold);
+  margin-top:28px;
 }
-.nav-menu a[href$="defense.html"] {
-    background: var(--gold-accent);
-    color: var(--navy-blue);
-    font-weight: 700;
+p{
+  line-height:1.7;
+  margin:14px 0;
 }
 
-/* MAIN */
-.container {
-    width: 90%;
-    max-width: 1200px;
-    margin: auto;
+/* Field */
+.field{
+  height:190px;
+  background:#0b8f2c;
+  border-radius:12px;
+  border:2px solid #fff;
+  position:relative;
+  overflow:hidden;
+  margin:22px 0;
 }
-.container h2 {
-    font-family: Oswald;
-    font-size: 2.4em;
-    color: var(--navy-blue);
-    border-bottom: 5px solid var(--gold-accent);
-    padding-bottom: 8px;
+.field::before{
+  content:"";
+  position:absolute;
+  top:50%;
+  width:100%;
+  height:2px;
+  background:#fff;
 }
-
-/* GRID */
-.card-grid {
-    display: grid;
-    gap: 30px;
-    margin-top: 25px;
+.player,.attacker,.ball{
+  position:absolute;
+  border-radius:50%;
 }
-
-/* CARD */
-.card {
-    background: var(--tile-bg);
-    padding: 25px;
-    border-radius: 16px;
-    box-shadow: var(--shadow-soft);
-    border-left: 5px solid var(--gold-accent);
+.player{
+  width:20px;height:20px;
+  background:#fff;
+  border:2px solid var(--navy);
 }
-.card h3 {
-    font-family: Oswald;
-    color: var(--navy-blue);
-    margin: 0 0 10px;
+.attacker{
+  width:20px;height:20px;
+  background:#ff3131;
 }
-
-/* FIELD */
-.field {
-    height: 190px;
-    background: #0b8f2c;
-    position: relative;
-    border-radius: 12px;
-    border: 2px solid white;
-    overflow: hidden;
+.ball{
+  width:12px;height:12px;
+  background:#000;
 }
 
-/* Lines */
-.field::before {
-    content: "";
-    position: absolute;
-    width: 100%;
-    height: 2px;
-    top: 50%; left: 0;
-    background: white;
+/* Animations */
+#d1,#d2,#d3,#d4{
+  bottom:20px;
+  animation:lineStep 2.6s infinite ease-in-out;
+}
+#d1{left:50px}
+#d2{left:100px}
+#d3{left:150px}
+#d4{left:200px}
+
+@keyframes lineStep{
+  0%,30%{bottom:20px}
+  100%{bottom:90px}
 }
 
-/* Players */
-.player, .attacker, .ball {
-    position: absolute;
-    border-radius: 50%;
+#atk{
+  bottom:50px;
+  left:150px;
+  animation:offside 2.6s infinite ease-in-out;
 }
-.player {
-    width: 20px; height: 20px;
-    background: white;
-    border: 2px solid var(--navy-blue);
-    box-shadow: 0 3px 6px rgba(0,0,0,0.4);
-}
-.attacker {
-    width: 20px; height: 20px;
-    background: #ff3131;
-    border: 2px solid #8b0000;
-    box-shadow: 0 3px 6px rgba(0,0,0,0.4);
-}
-.ball {
-    width: 12px; height: 12px;
-    background: black;
+@keyframes offside{
+  0%,30%{bottom:50px}
+  100%{bottom:30px;opacity:.4}
 }
 
-/* OFFSIDE TRAP */
-#def1,#def2,#def3,#def4 {
-    bottom: 20px;
-    animation: stepUp 2.6s infinite ease-in-out;
+/* Defense type menu */
+.defense-menu{
+  margin-top:40px;
+  padding-top:30px;
+  border-top:3px solid var(--gold);
 }
-#def1 { left: 40px;animation-delay:.0s}
-#def2 { left: 90px;animation-delay:.1s}
-#def3 { left:140px;animation-delay:.2s}
-#def4 { left:190px;animation-delay:.3s}
+.defense-menu h3{
+  margin-top:0;
+}
+.defense-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+  gap:14px;
+  margin-top:20px;
+}
+.defense-grid a{
+  text-decoration:none;
+  text-align:center;
+  padding:14px;
+  background:var(--navy);
+  color:#fff;
+  border-radius:14px;
+  font-family:'Oswald',sans-serif;
+  letter-spacing:1px;
+  transition:.25s;
+  box-shadow:0 8px 18px rgba(0,0,0,.18);
+}
+.defense-grid a:hover{
+  background:var(--gold);
+  color:var(--navy);
+  transform:translateY(-4px);
+}
+/* 1v1 Defending & Shadow Pressing (ADDED) */
+#defShadow{
+  bottom:30px;
+  left:80px;
+  animation:shadowTrack 2.4s infinite ease-in-out;
+}
+#attDribble{
+  bottom:100px;
+  left:220px;
+  animation:dribbleMove 2.4s infinite ease-in-out;
+}
+#ballShadow{
+  bottom:96px;
+  left:234px;
+  animation:ballFollow 2.4s infinite ease-in-out;
+}
 
-@keyframes stepUp {
-    0% { bottom: 20px; }
-    30% { bottom: 20px; }
-    100% { bottom: 90px; }
+@keyframes dribbleMove{
+  0%{left:220px; bottom:100px}
+  100%{left:140px; bottom:82px}
 }
-#striker {
-    bottom: 50px; left: 140px;
-    animation: offsideCaught 2.6s infinite ease-in-out;
+@keyframes shadowTrack{
+  0%{left:80px; bottom:30px}
+  100%{left:145px; bottom:55px}
 }
-@keyframes offsideCaught {
-    0%,30% { bottom: 50px; }
-    100% { bottom: 30px; opacity:0.4; }
-}
-
-/* LOW STANCE SHADOWING */
-#defLow {
-    bottom: 30px; left: 80px;
-    animation: shadowTrack 2s infinite ease-in-out;
-}
-#dribble {
-    bottom: 100px; left: 200px;
-    animation: dribbleMove 2s infinite ease-in-out;
-}
-#ball2 {
-    bottom: 96px; left: 214px;
-    animation: ballFollow 2s infinite ease-in-out;
+@keyframes ballFollow{
+  0%{left:234px; bottom:96px}
+  100%{left:152px; bottom:80px}
 }
 
-@keyframes dribbleMove {
-    0% { left:200px; bottom:100px; }
-    100% { left:120px; bottom:80px; }
-}
-@keyframes shadowTrack {
-    0% { left:80px; bottom:30px; }
-    100% { left:135px; bottom:50px; }
-}
-@keyframes ballFollow {
-    0% { left:214px; bottom:96px; }
-    100% { left:138px; bottom:78px; }
-}
 </style>
 </head>
 
 <body>
+
+<!-- Header -->
 <div class="header">
-    <h1>DEFENDING & PRESSING</h1>
-    <div class="nav-menu">
-        <a href="index.html">HOME</a>
-        <a href="possession.html">POSSESSION</a>
-        <a href="finesse.html">FINESSE</a>
-        <a href="power-shot.html">POWER SHOT</a>
-        <a href="whip.html">WHIP CROSS</a>
-        <a href="defense.html">DEFENDING</a>
-    </div>
+  <h1>TACTICS BOARD</h1>
+  <nav class="nav-menu">
+    <a href="index.html">HOME</a>
+    <a href="possession.html">POSSESSION</a>
+    <a href="finesse.html">FINESSE</a>
+    <a href="power-shot.html">POWER SHOT</a>
+    <a href="whip.html">WHIP CROSS</a>
+    <a href="defense.html" class="active">DEFENDING</a>
+  </nav>
 </div>
 
+<!-- Content -->
 <div class="container">
-    <h2>Elite Defensive Principles</h2>
+  <h2>Defensive Principles in Football 🛡️</h2>
 
-    <div class="card-grid">
+  <p>
+    Defending in football is not about constant tackling—it is about positioning,
+    patience, and collective intelligence. The best defensive teams control space,
+    restrict passing lanes, and force opponents into predictable decisions.
+  </p>
 
-        <!-- OFFSIDE -->
-        <div class="card">
-            <h3>Offside Trap</h3>
-            <p>Backline steps in sync — catch attackers early.</p>
-            <div class="field">
-                <div id="def1" class="player"></div>
-                <div id="def2" class="player"></div>
-                <div id="def3" class="player"></div>
-                <div id="def4" class="player"></div>
-                <div id="striker" class="attacker"></div>
-            </div>
-        </div>
+  <p>
+    Modern football defense blends compact team shape with aggressive pressing
+    triggers. Teams must know when to step up, when to delay, and when to win the ball.
+  </p>
 
-        <!-- LOW SHADOW PRESS -->
-        <div class="card">
-            <h3>Shadow Press Stance</h3>
-            <p>Low stance, shuffle, eyes on ball — not feints.</p>
-            <div class="field">
-                <div id="defLow" class="player"></div>
-                <div id="dribble" class="attacker"></div>
-                <div id="ball2" class="ball"></div>
-            </div>
-        </div>
+  <h3>Defensive Line & Offside Trap</h3>
+  <p>
+    A high defensive line compresses the pitch and limits space between midfield
+    and defense. When coordinated correctly, defenders step up together to catch
+    attackers offside.
+  </p>
 
-    </div>
+  <div class="field">
+    <div id="d1" class="player"></div>
+    <div id="d2" class="player"></div>
+    <div id="d3" class="player"></div>
+    <div id="d4" class="player"></div>
+    <div id="atk" class="attacker"></div>
+  </div>
+
+  <h3>Compactness & Pressure</h3>
+  <p>
+    Compact defending reduces gaps between players and units. This forces the ball
+    wide, limits central progression, and allows defenders to apply pressure in
+    controlled moments.
+  </p>
+
+  <p>
+    Elite defensive systems rely on communication, scanning, and anticipation rather
+    than reckless challenges.
+  </p>
+<h3>1v1 Defending & Shadow Pressing</h3>
+<p>
+  In isolated duels, defenders delay instead of diving in. By staying goal-side
+  and mirroring movement, defenders force attackers away from dangerous zones
+  while teammates recover.
+</p>
+
+<div class="field">
+  <div id="defShadow" class="player"></div>
+  <div id="attDribble" class="attacker"></div>
+  <div id="ballShadow" class="ball"></div>
 </div>
+
+  <!-- Defense Type Menu -->
+  <div class="defense-menu">
+    <h3>Explore Defensive Systems</h3>
+
+    <div class="defense-grid">
+      <a href="defense-types/counterpressing.html">COUNTER-PRESSING</a>
+      <a href="defense-types/low-block.html">LOW BLOCK</a>
+      <a href="defense-types/mid-block.html">MID BLOCK</a>
+      <a href="defense-types/high-press.html">HIGH PRESS</a>
+      <a href="defense-types/man-marking.html">MAN MARKING</a>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
+
+
