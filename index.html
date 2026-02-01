@@ -1,283 +1,311 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <link
+      rel="icon"
+      type="image/png"
+      href="https://jaivaltamboli-pixel.github.io/favicon.png?v=1"
+    />
+    <link
+      rel="apple-touch-icon"
+      href="https://jaivaltamboli-pixel.github.io/favicon.png?v=1"
+    />
+    <link
+      rel="shortcut icon"
+      href="https://jaivaltamboli-pixel.github.io/favicon.png?v=1"
+    />
 
-<!DOCTYPE html>
-<html lang="en"><head>
-<link rel="icon" type="image/png" href="https://jaivaltamboli-pixel.github.io/favicon.png?v=1">
-<link rel="apple-touch-icon" href="https://jaivaltamboli-pixel.github.io/favicon.png?v=1">
-<link rel="shortcut icon" href="https://jaivaltamboli-pixel.github.io/favicon.png?v=1">
- 
+    <meta
+      name="description"
+      content="Interactive football tactics hub with a FIFA-style tactics console, possession play, finishing techniques, and modern defensive strategies."
+    />
 
+    <title>
+      Football Tactics Base | Interactive Soccer Strategy – Jaival Tamboli
+    </title>
+    <!-- SCHEMA MARKUP - TELLS GOOGLE YOU'RE A LEARNING RESOURCE -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "Football Tactics Base",
+        "alternateName": "Tactics Board",
+        "url": "https://jaivaltamboli-pixel.github.io/",
+        "publisher": {
+          "@type": "Person",
+          "name": "Jaival Tamboli"
+        }
+      }
+    </script>
 
-<meta name="description" content="Interactive football tactics hub with a FIFA-style tactics console, possession play, finishing techniques, and modern defensive strategies.">
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "What is the Interactive Tactics Console?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "The Interactive Tactics Console is a FIFA-style digital board where you can drag players and simulate modern football tactics like possession play and defensive pressing."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "How can I improve my football finishing skills?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Our training modules cover Finesse Finishing, Power Shots, and Whipped Crossing techniques used by top modern football players."
+            }
+          }
+        ]
+      }
+    </script>
 
-<title>Football Tactics Base | Interactive Soccer Strategy – Jaival Tamboli</title>
-<!-- SCHEMA MARKUP - TELLS GOOGLE YOU'RE A LEARNING RESOURCE -->
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "WebSite",
-  "name": "Football Tactics Base",
-  "alternateName": "Tactics Board",
-  "url": "https://jaivaltamboli-pixel.github.io/",
-  "publisher": {
-    "@type": "Person",
-    "name": "Jaival Tamboli"
-  }
-}
-</script>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "Football Tactics Console",
+        "operatingSystem": "Web Browser",
+        "applicationCategory": "EducationalApplication",
+        "aggregateRating": {
+          "@type": "AggregateRating",
+          "ratingValue": "4.9",
+          "ratingCount": "120"
+        },
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "USD"
+        }
+      }
+    </script>
 
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "FAQPage",
-  "mainEntity": [{
-    "@type": "Question",
-    "name": "What is the Interactive Tactics Console?",
-    "acceptedAnswer": {
-      "@type": "Answer",
-      "text": "The Interactive Tactics Console is a FIFA-style digital board where you can drag players and simulate modern football tactics like possession play and defensive pressing."
-    }
-  }, {
-    "@type": "Question",
-    "name": "How can I improve my football finishing skills?",
-    "acceptedAnswer": {
-      "@type": "Answer",
-      "text": "Our training modules cover Finesse Finishing, Power Shots, and Whipped Crossing techniques used by top modern football players."
-    }
-  }]
-}
-</script>
+    <link rel="canonical" href="https://jaivaltamboli-pixel.github.io/" />
 
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "SoftwareApplication",
-  "name": "Football Tactics Console",
-  "operatingSystem": "Web Browser",
-  "applicationCategory": "EducationalApplication",
-  "aggregateRating": {
-    "@type": "AggregateRating",
-    "ratingValue": "4.9",
-    "ratingCount": "120"
-  },
-  "offers": {
-    "@type": "Offer",
-    "price": "0",
-    "priceCurrency": "USD"
-  }
-}
-</script>
+    <!-- Font preconnect (performance fix, no visual change) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 
-<link rel="canonical" href="https://jaivaltamboli-pixel.github.io/" />
+    <!-- Fonts -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Roboto:wght@300;400;700&display=swap"
+      rel="stylesheet"
+    />
 
-<!-- Font preconnect (performance fix, no visual change) -->
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <style>
+      :root {
+        --navy-blue: #001f5b;
+        --gold-accent: #ffa500;
+        --light-bg: #eaf0f6;
+        --text-color: #1a1a1a;
+      }
 
-<!-- Fonts -->
-<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+      * {
+        box-sizing: border-box;
+      }
 
-<style>
-:root {
-    --navy-blue: #001F5B;
-    --gold-accent: #FFA500;
-    --light-bg: #EAF0F6;
-    --text-color: #1A1A1A;
-}
+      body {
+        font-family: "Roboto", sans-serif;
+        margin: 0;
+        background-color: var(--light-bg);
+        background-image: linear-gradient(135deg, var(--light-bg), #d4e0eb);
+        color: var(--text-color);
+        line-height: 1.7;
+        padding-top: 85px;
+      }
 
-* {
-    box-sizing: border-box;
-}
+      /* Header */
+      .header {
+        background-color: var(--navy-blue);
+        padding: 18px 0;
+        position: fixed;
+        top: 0;
+        width: 100%;
+        z-index: 1000;
+        text-align: center;
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+      }
+      .header h1 {
+        font-family: "Oswald", sans-serif;
+        font-size: 2.5em;
+        color: var(--gold-accent);
+        font-weight: 700;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        margin: 0 0 10px 0;
+      }
 
-body {
-    font-family: 'Roboto', sans-serif;
-    margin: 0;
-    background-color: var(--light-bg);
-    background-image: linear-gradient(135deg, var(--light-bg), #d4e0eb);
-    color: var(--text-color);
-    line-height: 1.7;
-    padding-top: 85px;
-}
+      /* Nav */
+      .nav-menu {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        padding: 0 10px;
+      }
+      .nav-menu a {
+        color: white;
+        text-decoration: none;
+        padding: 8px 15px;
+        margin: 5px 6px;
+        border-radius: 20px;
+        transition: 0.25s;
+        font-weight: 500;
+        font-size: 0.9em;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        white-space: nowrap;
+      }
+      .nav-menu a:hover {
+        background: var(--gold-accent);
+        color: var(--navy-blue);
+        transform: scale(1.07);
+        border-color: var(--gold-accent);
+      }
+      .nav-menu a[href$="index.html"] {
+        background-color: var(--gold-accent);
+        color: var(--navy-blue);
+        font-weight: 700;
+      }
 
-/* Header */
-.header {
-    background-color: var(--navy-blue);
-    padding: 18px 0;
-    position: fixed;
-    top: 0;
-    width: 100%;
-    z-index: 1000;
-    text-align: center;
-    box-shadow: 0 15px 30px rgba(0,0,0,0.2);
-}
-.header h1 {
-    font-family: 'Oswald', sans-serif;
-    font-size: 2.5em;
-    color: var(--gold-accent);
-    font-weight: 700;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    margin: 0 0 10px 0;
-}
+      /* Main container */
+      .container {
+        width: 90%;
+        max-width: 1200px;
+        margin: 40px auto;
+        padding: 40px;
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+      }
+      .container h2 {
+        font-family: "Oswald", sans-serif;
+        color: var(--navy-blue);
+        border-bottom: 5px solid var(--gold-accent);
+        padding-bottom: 15px;
+        margin-bottom: 30px;
+        font-size: 2.4em;
+        text-transform: uppercase;
+      }
 
-/* Nav */
-.nav-menu {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    padding: 0 10px;
-}
-.nav-menu a {
-    color: white;
-    text-decoration: none;
-    padding: 8px 15px;
-    margin: 5px 6px;
-    border-radius: 20px;
-    transition: 0.25s;
-    font-weight: 500;
-    font-size: 0.9em;
-    border: 1px solid rgba(255,255,255,0.3);
-    white-space: nowrap;
-}
-.nav-menu a:hover {
-    background: var(--gold-accent);
-    color: var(--navy-blue);
-    transform: scale(1.07);
-    border-color: var(--gold-accent);
-}
-.nav-menu a[href$="index.html"] {
-    background-color: var(--gold-accent);
-    color: var(--navy-blue);
-    font-weight: 700;
-}
+      /* Featured Section */
+      .featured-section {
+        margin-bottom: 50px;
+      }
 
-/* Main container */
-.container {
-    width: 90%;
-    max-width: 1200px;
-    margin: 40px auto;
-    padding: 40px;
-    background: white;
-    border-radius: 20px;
-    box-shadow: 0 15px 30px rgba(0,0,0,0.2);
-}
-.container h2 {
-    font-family: 'Oswald', sans-serif;
-    color: var(--navy-blue);
-    border-bottom: 5px solid var(--gold-accent);
-    padding-bottom: 15px;
-    margin-bottom: 30px;
-    font-size: 2.4em;
-    text-transform: uppercase;
-}
+      .featured-section h3 {
+        font-family: "Oswald", sans-serif;
+        color: var(--navy-blue);
+        font-size: 1.8em;
+        text-align: center;
+        margin-bottom: 25px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
 
-/* Featured Section */
-.featured-section {
-    margin-bottom: 50px;
-}
+      /* Grid */
+      .cards {
+        display: grid;
+        gap: 1.5rem;
+        grid-template-columns: repeat(2, 1fr);
+      }
 
-.featured-section h3 {
-    font-family: 'Oswald', sans-serif;
-    color: var(--navy-blue);
-    font-size: 1.8em;
-    text-align: center;
-    margin-bottom: 25px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
+      .featured-grid {
+        display: grid;
+        gap: 1.5rem;
+        grid-template-columns: repeat(3, 1fr);
+      }
 
-/* Grid */
-.cards {
-    display: grid;
-    gap: 1.5rem;
-    grid-template-columns: repeat(2, 1fr);
-}
+      .card {
+        padding: 25px;
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        text-decoration: none;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        border: 2px solid transparent;
+        transition: 0.25s;
+        text-align: center;
+      }
+      .card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 10px 18px rgba(0, 31, 91, 0.3);
+        border: 2px solid var(--gold-accent);
+      }
+      .card h2 {
+        font-family: "Oswald", sans-serif;
+        color: var(--navy-blue);
+        margin-bottom: 10px;
+        font-size: 1.8em;
+        border-bottom: 3px solid var(--gold-accent);
+        padding-bottom: 10px;
+        text-transform: uppercase;
+      }
+      .card p {
+        color: #555;
+        margin: 0;
+      }
 
-.featured-grid {
-    display: grid;
-    gap: 1.5rem;
-    grid-template-columns: repeat(3, 1fr);
-}
+      /* Featured Cards */
+      .feature-card {
+        padding: 35px;
+        border: 3px solid var(--gold-accent);
+        background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+      }
 
-.card {
-    padding: 25px;
-    background: white;
-    border-radius: 15px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    text-decoration: none;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    border: 2px solid transparent;
-    transition: 0.25s;
-    text-align: center;
-}
-.card:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 10px 18px rgba(0,31,91,0.3);
-    border: 2px solid var(--gold-accent);
-}
-.card h2 {
-    font-family: 'Oswald', sans-serif;
-    color: var(--navy-blue);
-    margin-bottom: 10px;
-    font-size: 1.8em;
-    border-bottom: 3px solid var(--gold-accent);
-    padding-bottom: 10px;
-    text-transform: uppercase;
-}
-.card p {
-    color: #555;
-    margin: 0;
-}
+      .feature-card h2 {
+        font-size: 2em;
+        margin-bottom: 15px;
+      }
 
-/* Featured Cards */
-.feature-card {
-    padding: 35px;
-    border: 3px solid var(--gold-accent);
-    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
-}
+      .feature-card .icon {
+        font-size: 3em;
+        margin-bottom: 10px;
+      }
 
-.feature-card h2 {
-    font-size: 2em;
-    margin-bottom: 15px;
-}
+      .btn-primary {
+        margin-top: 15px;
+        padding: 12px 25px;
+        border-radius: 10px;
+        font-weight: bold;
+        background: var(--gold-accent);
+        color: var(--navy-blue);
+        font-size: 1em;
+        display: inline-block;
+      }
 
-.feature-card .icon {
-    font-size: 3em;
-    margin-bottom: 10px;
-}
+      /* Section Divider */
+      .section-divider {
+        height: 3px;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          var(--gold-accent),
+          transparent
+        );
+        margin: 40px 0;
+      }
 
-.btn-primary {
-    margin-top: 15px;
-    padding: 12px 25px;
-    border-radius: 10px;
-    font-weight: bold;
-    background: var(--gold-accent);
-    color: var(--navy-blue);
-    font-size: 1em;
-    display: inline-block;
-}
+      /* Mobile */
+      @media (max-width: 768px) {
+        body {
+          padding-top: 140px;
+        }
+        .cards,
+        .featured-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
 
-/* Section Divider */
-.section-divider {
-    height: 3px;
-    background: linear-gradient(90deg, transparent, var(--gold-accent), transparent);
-    margin: 40px 0;
-}
-
-/* Mobile */
-@media (max-width: 768px) {
-    body { padding-top: 140px; }
-    .cards, .featured-grid { grid-template-columns: 1fr; }
-}
-</style>
-</head>
-
-<body>
-
-<header class="header">
-    <h1>TACTICS BOARD</h1>
-    <nav class="nav-menu" aria-label="Primary navigation">
+  <body>
+    <header class="header">
+      <h1>TACTICS BOARD</h1>
+      <nav class="nav-menu" aria-label="Primary navigation">
         <a href="index.html">HOME</a>
         <a href="possession.html">POSSESSION</a>
         <a href="finesse.html">FINESSE</a>
@@ -285,71 +313,249 @@ body {
         <a href="whip.html">WHIP CROSS</a>
         <a href="defense.html">DEFENDING</a>
         <a href="penaltyshooter.html">PENALTY SHOOTER</a>
-    </nav>
-</header>
+      </nav>
+    </header>
 
-<main class="container">
-    <h2>Master Modern Football by Jaival Tamboli</h2>
+    <main class="container">
+      <h2>Master Modern Football by Jaival Tamboli</h2>
 
-    <section class="featured-section">
+      <section class="featured-section">
         <h3>🎮 Featured Interactive Tools</h3>
 
         <div class="featured-grid">
-            <a href="tactics_console.html" class="card feature-card">
-                <div class="icon">🧠</div>
-                <h2>Tactics Console</h2>
-                <p>Explore FIFA / EA Sports FC–style possession football tactics using an interactive tactics board— drag players & simulate plays.</p>
-                <span class="btn-primary">Launch Console</span>
-            </a>
+          <a href="tactics_console.html" class="card feature-card">
+            <div class="icon">🧠</div>
+            <h2>Tactics Console</h2>
+            <p>
+              Explore FIFA / EA Sports FC–style possession football tactics
+              using an interactive tactics board— drag players & simulate plays.
+            </p>
+            <span class="btn-primary">Launch Console</span>
+          </a>
 
-            <a href="penaltyshooter.html" class="card feature-card">
-                <div class="icon">⚽</div>
-                <h2>Penalty Shooter</h2>
-                <p>Test your shooting skills! Aim, power up & score past the keeper.</p>
-                <span class="btn-primary">Play Now</span>
-            </a>
+          <a href="penaltyshooter.html" class="card feature-card">
+            <div class="icon">⚽</div>
+            <h2>Penalty Shooter</h2>
+            <p>
+              Test your shooting skills! Aim, power up & score past the keeper.
+            </p>
+            <span class="btn-primary">Play Now</span>
+          </a>
 
-            <a href="game.html" class="card feature-card">
-                <div class="icon">🎮</div>
-                <h2>2D Soccer Star</h2>
-                <p>Full football game — dribble, pass & score!</p>
-                <span class="btn-primary">Start Game</span>
-            </a>
+          <a href="game.html" class="card feature-card">
+            <div class="icon">🎮</div>
+            <h2>2D Soccer Star</h2>
+            <p>Full football game — dribble, pass & score!</p>
+            <span class="btn-primary">Start Game</span>
+          </a>
         </div>
-    </section>
+      </section>
 
-    <div class="section-divider"></div>
+      <div class="section-divider"></div>
 
-    <section>
-        <h3 style="font-family: 'Oswald', sans-serif; color: var(--navy-blue); font-size: 1.8em; text-align: center; margin-bottom: 25px; text-transform: uppercase;">
-            📚 Training Modules
+      <section>
+        <h3
+          style="
+            font-family: &quot;Oswald&quot;, sans-serif;
+            color: var(--navy-blue);
+            font-size: 1.8em;
+            text-align: center;
+            margin-bottom: 25px;
+            text-transform: uppercase;
+          "
+        >
+          📚 Training Modules
         </h3>
 
         <div class="cards">
-            <a href="possession.html" class="card"><h2>Possession ⚙️</h2><p>Tempo control, spacing & overloads.</p></a>
-            <a href="finesse.html" class="card"><h2>Finesse Finishing 🎯</h2><p>Precision, bend & smart shooting angles.</p></a>
-            <a href="whip.html" class="card"><h2>Whipped Crossing 🌪️</h2><p>Driven, curled & lethal service.</p></a>
-            <a href="power-shot.html" class="card"><h2>Powershot 💥</h2><p>Velocity and striking power.</p></a>
-            <a href="defense.html" class="card"><h2>Defending & Pressing 🛡️</h2><p>Shape, traps & duels.</p></a>
+          <a href="possession.html" class="card"
+            ><h2>Possession ⚙️</h2>
+            <p>Tempo control, spacing & overloads.</p></a
+          >
+          <a href="finesse.html" class="card"
+            ><h2>Finesse Finishing 🎯</h2>
+            <p>Precision, bend & smart shooting angles.</p></a
+          >
+          <a href="whip.html" class="card"
+            ><h2>Whipped Crossing 🌪️</h2>
+            <p>Driven, curled & lethal service.</p></a
+          >
+          <a href="power-shot.html" class="card"
+            ><h2>Powershot 💥</h2>
+            <p>Velocity and striking power.</p></a
+          >
+          <a href="defense.html" class="card"
+            ><h2>Defending & Pressing 🛡️</h2>
+            <p>Shape, traps & duels.</p></a
+          >
+          <a href="PeripheralVision.html" class="card">
+            <h2>Peripheral Vision 👀</h2>
+            <p>Scanning, awareness & decision-making.</p>
+          </a>
         </div>
-    </section>
-    <!-- INTERNAL LINKING BOOST FOR SEO -->
-<div style="margin-top: 60px; padding: 20px; background: #f8f9fa; border-radius: 10px; border-left: 4px solid var(--gold-accent);">
-    <h3 style="color: var(--navy-blue); margin-bottom: 15px; font-family: 'Oswald', sans-serif; font-size: 1.2em;">🔗 All Football Tactics Resources:</h3>
-    <div style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;">
-        <a href="possession.html" style="padding: 8px 15px; background: white; border-radius: 20px; text-decoration: none; color: var(--navy-blue); border: 1px solid #ddd; font-size: 0.9em;">Possession Guide</a>
-        <a href="finesse.html" style="padding: 8px 15px; background: white; border-radius: 20px; text-decoration: none; color: var(--navy-blue); border: 1px solid #ddd; font-size: 0.9em;">Finesse Shooting</a>
-        <a href="defense.html" style="padding: 8px 15px; background: white; border-radius: 20px; text-decoration: none; color: var(--navy-blue); border: 1px solid #ddd; font-size: 0.9em;">Defensive Tactics</a>
-        <a href="power-shot.html" style="padding: 8px 15px; background: white; border-radius: 20px; text-decoration: none; color: var(--navy-blue); border: 1px solid #ddd; font-size: 0.9em;">Power Shots</a>
-        <a href="whip.html" style="padding: 8px 15px; background: white; border-radius: 20px; text-decoration: none; color: var(--navy-blue); border: 1px solid #ddd; font-size: 0.9em;">Whip Crosses</a>
-        <a href="tactics_console.html" style="padding: 8px 15px; background: white; border-radius: 20px; text-decoration: none; color: var(--navy-blue); border: 1px solid #ddd; font-size: 0.9em;">Tactics Console</a>
-        <a href="game.html" style="padding: 8px 15px; background: white; border-radius: 20px; text-decoration: none; color: var(--navy-blue); border: 1px solid #ddd; font-size: 0.9em;">Football Game</a>
-        <a href="penaltyshooter.html" style="padding: 8px 15px; background: white; border-radius: 20px; text-decoration: none; color: var(--navy-blue); border: 1px solid #ddd; font-size: 0.9em;">Penalty Shooter</a>
-        <a href="positionalplay.html" style="padding: 8px 15px; background: white; border-radius: 20px; text-decoration: none; color: var(--navy-blue); border: 1px solid #ddd; font-size: 0.9em;">Positional Play</a>
-    </div>
-</div>
-</main>
+      </section>
+      <!-- INTERNAL LINKING BOOST FOR SEO -->
+      <div
+        style="
+          margin-top: 60px;
+          padding: 20px;
+          background: #f8f9fa;
+          border-radius: 10px;
+          border-left: 4px solid var(--gold-accent);
+        "
+      >
+        <h3
+          style="
+            color: var(--navy-blue);
+            margin-bottom: 15px;
+            font-family: &quot;Oswald&quot;, sans-serif;
+            font-size: 1.2em;
+          "
+        >
+          🔗 All Football Tactics Resources:
+        </h3>
+        <div
+          style="
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+          "
+        >
+          <a
+            href="PeripheralVision.html"
+            style="
+              padding: 8px 15px;
+              background: white;
+              border-radius: 20px;
+              text-decoration: none;
+              color: var(--navy-blue);
+              border: 1px solid #ddd;
+              font-size: 0.9em;
+            "
+          >
+            Peripheral Vision
+          </a>
 
-
-
-</body></html>
+          <a
+            href="possession.html"
+            style="
+              padding: 8px 15px;
+              background: white;
+              border-radius: 20px;
+              text-decoration: none;
+              color: var(--navy-blue);
+              border: 1px solid #ddd;
+              font-size: 0.9em;
+            "
+            >Possession Guide</a
+          >
+          <a
+            href="finesse.html"
+            style="
+              padding: 8px 15px;
+              background: white;
+              border-radius: 20px;
+              text-decoration: none;
+              color: var(--navy-blue);
+              border: 1px solid #ddd;
+              font-size: 0.9em;
+            "
+            >Finesse Shooting</a
+          >
+          <a
+            href="defense.html"
+            style="
+              padding: 8px 15px;
+              background: white;
+              border-radius: 20px;
+              text-decoration: none;
+              color: var(--navy-blue);
+              border: 1px solid #ddd;
+              font-size: 0.9em;
+            "
+            >Defensive Tactics</a
+          >
+          <a
+            href="power-shot.html"
+            style="
+              padding: 8px 15px;
+              background: white;
+              border-radius: 20px;
+              text-decoration: none;
+              color: var(--navy-blue);
+              border: 1px solid #ddd;
+              font-size: 0.9em;
+            "
+            >Power Shots</a
+          >
+          <a
+            href="whip.html"
+            style="
+              padding: 8px 15px;
+              background: white;
+              border-radius: 20px;
+              text-decoration: none;
+              color: var(--navy-blue);
+              border: 1px solid #ddd;
+              font-size: 0.9em;
+            "
+            >Whip Crosses</a
+          >
+          <a
+            href="tactics_console.html"
+            style="
+              padding: 8px 15px;
+              background: white;
+              border-radius: 20px;
+              text-decoration: none;
+              color: var(--navy-blue);
+              border: 1px solid #ddd;
+              font-size: 0.9em;
+            "
+            >Tactics Console</a
+          >
+          <a
+            href="game.html"
+            style="
+              padding: 8px 15px;
+              background: white;
+              border-radius: 20px;
+              text-decoration: none;
+              color: var(--navy-blue);
+              border: 1px solid #ddd;
+              font-size: 0.9em;
+            "
+            >Football Game</a
+          >
+          <a
+            href="penaltyshooter.html"
+            style="
+              padding: 8px 15px;
+              background: white;
+              border-radius: 20px;
+              text-decoration: none;
+              color: var(--navy-blue);
+              border: 1px solid #ddd;
+              font-size: 0.9em;
+            "
+            >Penalty Shooter</a
+          >
+          <a
+            href="positionalplay.html"
+            style="
+              padding: 8px 15px;
+              background: white;
+              border-radius: 20px;
+              text-decoration: none;
+              color: var(--navy-blue);
+              border: 1px solid #ddd;
+              font-size: 0.9em;
+            "
+            >Positional Play</a
+          >
+        </div>
+      </div>
+    </main>
+  </body>
+</html>
