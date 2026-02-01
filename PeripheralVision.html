@@ -1,0 +1,1375 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>
+      Positional Vision in Football | Complete Tactical Guide - Football Tactics Base
+    </title>
+    <meta
+      name="description"
+      content="Master Positional Vision: Learn how elite players scan, anticipate, and exploit space. Comprehensive guide to spatial awareness, scanning techniques, and decision-making in modern football."
+    />
+
+    <link
+      rel="canonical"
+      href="https://jaivaltamboli-pixel.github.io/possession/positionalvision.html"
+    />
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Article",
+        "headline": "Complete Guide to Positional Vision in Football",
+        "description": "Learn the cognitive skills used by elite players. Master scanning techniques, spatial awareness, and decision-making to elevate your tactical understanding.",
+        "author": {
+          "@type": "Person",
+          "name": "Jaival Tamboli"
+        },
+        "publisher": {
+          "@type": "Organization",
+          "name": "Football Tactics Base"
+        },
+        "datePublished": "2026-01-31",
+        "mainEntityOfPage": {
+          "@type": "WebPage",
+          "@id": "https://jaivaltamboli-pixel.github.io/possession/positionalvision.html"
+        }
+      }
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Roboto:wght@300;400;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      /* ----- VARIABLES (Matches your site) ----- */
+      :root {
+        --navy-blue: #001f5b;
+        --gold-accent: #ffa500;
+        --light-bg: #eaf0f6;
+        --text-color: #1a1a1a;
+        --success-green: #2e7d32;
+        --warning-orange: #f57c00;
+        --info-blue: #1976d2;
+        --field-green: #145a32;
+        --opponent-red: #d32f2f;
+      }
+
+      /* ----- BASE STYLES ----- */
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: "Roboto", sans-serif;
+        line-height: 1.7;
+        color: var(--text-color);
+        background: linear-gradient(135deg, var(--light-bg), #d4e0eb);
+        padding-top: 85px;
+      }
+
+      /* ----- HEADER (Matches your main site) ----- */
+      .header {
+        background-color: var(--navy-blue);
+        padding: 18px 0;
+        position: fixed;
+        top: 0;
+        width: 100%;
+        z-index: 1000;
+        text-align: center;
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+      }
+
+      .header h1 {
+        font-family: "Oswald", sans-serif;
+        font-size: 2.2em;
+        color: var(--gold-accent);
+        font-weight: 700;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        margin: 0 0 10px 0;
+      }
+
+      .nav-menu {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        padding: 0 10px;
+        gap: 5px;
+      }
+
+      .nav-menu a {
+        color: white;
+        text-decoration: none;
+        padding: 6px 12px;
+        border-radius: 20px;
+        transition: 0.25s;
+        font-weight: 500;
+        font-size: 0.85em;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        white-space: nowrap;
+      }
+
+      .nav-menu a:hover {
+        background: var(--gold-accent);
+        color: var(--navy-blue);
+        transform: scale(1.05);
+      }
+
+      .nav-menu a.active {
+        background: var(--gold-accent);
+        color: var(--navy-blue);
+        font-weight: 700;
+      }
+
+      /* ----- MAIN CONTAINER ----- */
+      .container {
+        width: 92%;
+        max-width: 1000px;
+        margin: 30px auto;
+        background: white;
+        border-radius: 20px;
+        padding: 40px;
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.12);
+        border-top: 6px solid var(--gold-accent);
+      }
+
+      /* ----- TACTICAL LAB INTEGRATION STYLES ----- */
+      .lab-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 25px;
+        margin: 30px 0;
+      }
+      .lab-card {
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 15px;
+        border: 1px solid #ddd;
+        display: flex;
+        flex-direction: column;
+      }
+      .lab-card h3 {
+        font-family: "Oswald";
+        color: var(--navy-blue);
+        margin-bottom: 8px;
+      }
+      .pitch {
+        height: 250px;
+        background: var(--field-green);
+        position: relative;
+        border-radius: 8px;
+        border: 2px solid white;
+        overflow: hidden;
+        margin: 15px 0;
+        background-image: linear-gradient(
+          to right,
+          rgba(255, 255, 255, 0.1) 1px,
+          transparent 1px
+        );
+        background-size: 20% 100%;
+      }
+      .goal-net {
+        position: absolute;
+        right: 0;
+        top: 35%;
+        height: 30%;
+        width: 12px;
+        border: 2px solid white;
+        border-right: none;
+        background: rgba(255, 255, 255, 0.1);
+      }
+      .p-unit {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        position: absolute;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 10px;
+        font-weight: bold;
+        z-index: 5;
+        transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      .p-blue {
+        background: white;
+        border: 2px solid var(--navy-blue);
+        color: var(--navy-blue);
+      }
+      .p-red {
+        background: var(--opponent-red);
+        border: 2px solid white;
+        color: white;
+      }
+      .p-ball {
+        width: 12px;
+        height: 12px;
+        background: white;
+        border: 2px solid black;
+        border-radius: 50%;
+        position: absolute;
+        z-index: 10;
+        transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      .scan-indicator {
+        position: absolute;
+        width: 60px;
+        height: 60px;
+        border: 3px dashed var(--gold-accent);
+        border-radius: 50%;
+        animation: scanPulse 2s infinite;
+        pointer-events: none;
+      }
+      @keyframes scanPulse {
+        0%, 100% { opacity: 0.3; transform: scale(0.8); }
+        50% { opacity: 0.8; transform: scale(1.2); }
+      }
+      .vision-cone {
+        position: absolute;
+        width: 0;
+        height: 0;
+        border-left: 40px solid transparent;
+        border-right: 40px solid transparent;
+        border-bottom: 80px solid rgba(255, 165, 0, 0.3);
+        transform-origin: 50% 100%;
+        transition: all 0.8s ease;
+      }
+      .play-btn {
+        background: var(--navy-blue);
+        color: var(--gold-accent);
+        border: none;
+        padding: 12px;
+        font-family: "Oswald";
+        cursor: pointer;
+        text-transform: uppercase;
+        border-radius: 5px;
+        margin-top: auto;
+      }
+
+      /* ----- HERO SECTION ----- */
+      .hero-section {
+        text-align: center;
+        margin-bottom: 40px;
+        padding-bottom: 20px;
+        border-bottom: 3px solid #f0f0f0;
+      }
+
+      .hero-title {
+        font-family: "Oswald", sans-serif;
+        color: var(--navy-blue);
+        font-size: 2.8em;
+        margin-bottom: 10px;
+        text-transform: uppercase;
+      }
+
+      .hero-subtitle {
+        color: #555;
+        font-size: 1.2em;
+        max-width: 900px;
+        margin: 0 auto 20px;
+        line-height: 1.6;
+      }
+
+      .hero-badge {
+        display: inline-block;
+        background: var(--gold-accent);
+        color: var(--navy-blue);
+        padding: 5px 15px;
+        border-radius: 20px;
+        font-weight: 700;
+        font-size: 0.9em;
+        margin: 5px;
+      }
+
+      /* ----- CONTENT SECTIONS ----- */
+      .content-section {
+        margin-bottom: 40px;
+      }
+
+      .section-title {
+        font-family: "Oswald", sans-serif;
+        color: var(--navy-blue);
+        font-size: 1.8em;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 3px solid var(--gold-accent);
+      }
+
+      .section-subtitle {
+        font-family: "Oswald", sans-serif;
+        color: var(--navy-blue);
+        font-size: 1.4em;
+        margin: 25px 0 15px;
+      }
+
+      .text-block {
+        margin: 20px 0;
+        line-height: 1.8;
+        color: #333;
+      }
+
+      .text-block p {
+        margin-bottom: 15px;
+      }
+
+      /* ----- PRINCIPLES GRID ----- */
+      .principles-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 25px;
+        margin: 30px 0;
+      }
+
+      .principle-card {
+        background: #f8f9fa;
+        padding: 25px;
+        border-radius: 15px;
+        border-left: 4px solid var(--gold-accent);
+        transition: transform 0.3s ease;
+      }
+
+      .principle-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+      }
+
+      .principle-icon {
+        font-size: 2.5em;
+        margin-bottom: 15px;
+        display: block;
+      }
+
+      .principle-title {
+        font-family: "Oswald", sans-serif;
+        color: var(--navy-blue);
+        font-size: 1.3em;
+        margin-bottom: 10px;
+      }
+
+      /* ----- DIAGRAM CONTAINER ----- */
+      .diagram-container {
+        background: #f5f5f5;
+        padding: 25px;
+        border-radius: 15px;
+        margin: 30px 0;
+        text-align: center;
+        border: 2px dashed #ddd;
+      }
+
+      .diagram-title {
+        font-family: "Oswald", sans-serif;
+        color: var(--navy-blue);
+        margin-bottom: 15px;
+      }
+
+      /* ----- COMPARISON TABLE ----- */
+      .comparison-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 30px 0;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+      }
+
+      .comparison-table th {
+        background: var(--navy-blue);
+        color: white;
+        padding: 15px;
+        text-align: left;
+        font-family: "Oswald", sans-serif;
+        font-weight: 500;
+      }
+
+      .comparison-table td {
+        padding: 12px 15px;
+        border-bottom: 1px solid #eee;
+      }
+
+      .comparison-table tr:nth-child(even) {
+        background: #f9f9f9;
+      }
+
+      .comparison-table tr:hover {
+        background: #f0f7ff;
+      }
+
+      /* ----- STATS GRID ----- */
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+        margin: 30px 0;
+      }
+
+      .stat-card {
+        background: linear-gradient(135deg, var(--navy-blue), #003a8c);
+        color: white;
+        padding: 25px;
+        border-radius: 15px;
+        text-align: center;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+      }
+
+      .stat-number {
+        font-family: "Oswald", sans-serif;
+        font-size: 3em;
+        color: var(--gold-accent);
+        margin-bottom: 10px;
+      }
+
+      .stat-label {
+        font-size: 0.9em;
+        opacity: 0.9;
+      }
+
+      /* ----- KEY PLAYERS ----- */
+      .players-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        justify-content: center;
+        margin: 30px 0;
+      }
+
+      .player-card {
+        text-align: center;
+        padding: 15px;
+        min-width: 150px;
+        background: #f8f9fa;
+        border-radius: 10px;
+        transition: transform 0.3s ease;
+      }
+
+      .player-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+      }
+
+      .player-icon {
+        font-size: 3em;
+        margin-bottom: 10px;
+      }
+
+      .player-name {
+        font-weight: 700;
+        color: var(--navy-blue);
+        margin-bottom: 5px;
+      }
+
+      .player-team {
+        color: #666;
+        font-size: 0.9em;
+      }
+
+      /* ----- INFO BOXES ----- */
+      .info-box {
+        background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+        padding: 20px;
+        border-radius: 10px;
+        border-left: 5px solid var(--info-blue);
+        margin: 25px 0;
+      }
+
+      .info-box-title {
+        font-family: "Oswald", sans-serif;
+        color: var(--navy-blue);
+        margin-bottom: 10px;
+        font-size: 1.2em;
+      }
+
+      .warning-box {
+        background: linear-gradient(135deg, #fff3e0, #ffe0b2);
+        padding: 20px;
+        border-radius: 10px;
+        border-left: 5px solid var(--warning-orange);
+        margin: 25px 0;
+      }
+
+      .success-box {
+        background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+        padding: 20px;
+        border-radius: 10px;
+        border-left: 5px solid var(--success-green);
+        margin: 25px 0;
+      }
+
+      /* ----- INTERACTIVE QUIZ ----- */
+      .quiz-container {
+        background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+        padding: 30px;
+        border-radius: 15px;
+        margin: 40px 0;
+        border-left: 5px solid var(--gold-accent);
+      }
+
+      .quiz-question {
+        font-family: "Oswald", sans-serif;
+        color: var(--navy-blue);
+        font-size: 1.3em;
+        margin-bottom: 20px;
+      }
+
+      .quiz-option {
+        background: white;
+        padding: 15px;
+        margin: 10px 0;
+        border-radius: 10px;
+        cursor: pointer;
+        border: 2px solid #e0e0e0;
+        transition: all 0.3s ease;
+      }
+
+      .quiz-option:hover {
+        border-color: var(--gold-accent);
+        background: #fff8e1;
+      }
+
+      /* ----- RETURN LINK ----- */
+      .return-section {
+        margin-top: 50px;
+        padding-top: 20px;
+        border-top: 2px solid #eee;
+        text-align: center;
+      }
+
+      .return-link {
+        display: inline-block;
+        padding: 12px 30px;
+        background: var(--navy-blue);
+        color: white;
+        text-decoration: none;
+        border-radius: 25px;
+        font-weight: 700;
+        font-size: 1em;
+        border: 2px solid var(--navy-blue);
+        transition: all 0.3s ease;
+      }
+
+      .return-link:hover {
+        background: var(--gold-accent);
+        color: var(--navy-blue);
+        transform: translateY(-3px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+      }
+
+      /* ----- RESPONSIVE ----- */
+      @media (max-width: 768px) {
+        body {
+          padding-top: 120px;
+        }
+
+        .container {
+          padding: 20px;
+          width: 95%;
+        }
+
+        .hero-title {
+          font-size: 2em;
+        }
+
+        .principles-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .stats-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .header h1 {
+          font-size: 1.8em;
+        }
+
+        .nav-menu a {
+          padding: 5px 10px;
+          font-size: 0.8em;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <header class="header">
+      <div class="site-title">POSITIONAL VISION</div>
+      <nav class="nav-menu" aria-label="Primary navigation">
+        <a href="index.html">HOME</a>
+        <a href="possession.html" class="active">POSSESSION</a>
+        <a href="#lab">VISION LAB</a>
+        <a href="#principles">PRINCIPLES</a>
+        <a href="#scanning">SCANNING</a>
+        <a href="#players">MASTERS</a>
+        <a href="tactics_console.html">CONSOLE</a>
+      </nav>
+    </header>
+
+    <main class="container">
+      <section class="hero-section">
+        <h1 class="hero-title">
+          Positional Vision<br /><span style="font-size: 0.6em; color: #87ceeb"
+            >The Cognitive Edge</span
+          >
+        </h1>
+
+        <p class="hero-subtitle">
+          <b>Positional vision</b> is the cognitive ability to perceive, process, and anticipate spatial relationships on the pitch before receiving the ball. Elite players like Xavi, Busquets, and De Bruyne scan their surroundings 4-6 times before ball arrival, creating a mental map that enables instant decision-making. This scanning behavior transforms physical vision into tactical intelligence, allowing players to exploit space, recognize passing lanes, and execute plays under pressure with seemingly supernatural awareness.
+        </p>
+
+        <div>
+          <span class="hero-badge">👁️ Cognitive Skill</span>
+          <span class="hero-badge">🧠 Mental Mapping</span>
+          <span class="hero-badge">⚡ Pre-Decision Making</span>
+        </div>
+      </section>
+
+      <section class="content-section">
+        <h2 class="section-title">🔍 Understanding Positional Vision</h2>
+        
+        <div class="text-block">
+          <p>
+            Positional vision goes far beyond simply looking around the pitch. It represents a sophisticated cognitive process where players continuously gather, update, and process spatial information to make optimal decisions. Research from top-level football academies shows that elite players make between 0.5 and 1.0 scans per second during build-up play, systematically checking shoulder positions to monitor teammates, opponents, and space.
+          </p>
+          <p>
+            This skill separates world-class midfielders from average players more than any physical attribute. A player with exceptional positional vision can receive a pass under pressure, already knowing where every player is positioned, which passing options are available, and which opponent is about to press. This pre-processing of information creates the illusion of having "eyes in the back of your head" that commentators often describe when watching players like Luka Modrić or Toni Kroos.
+          </p>
+          <p>
+            The development of positional vision requires thousands of hours of deliberate practice in reading game situations. Young players in elite academies spend significant training time on scanning drills, where coaches deliberately create scenarios that reward those who check their shoulders and punish those who play "blind." This systematic approach to developing visual awareness has become a cornerstone of modern football education, particularly in possession-based systems that demand constant spatial awareness.
+          </p>
+        </div>
+
+        <div class="info-box">
+          <div class="info-box-title">📊 Research Insight</div>
+          <p>
+            Studies analyzing professional matches found that players in top European leagues perform an average of 5.3 scans per possession in the build-up phase, compared to just 2.1 scans for players in lower divisions. Elite playmakers like Sergio Busquets have been recorded making up to 8 scans before receiving a single pass.
+          </p>
+        </div>
+      </section>
+
+      <section id="lab" class="content-section">
+        <h2 class="section-title">🧪 Vision Laboratory</h2>
+        <p style="margin-bottom: 20px; color: #666;">Interactive demonstrations showing how positional vision creates tactical advantages</p>
+        
+        <div class="lab-grid">
+          <div class="lab-card" id="card-scan">
+            <h3>Pre-Scan Advantage</h3>
+            <p style="font-size: 0.9em; color: #555">
+              Player scans before receiving, identifies open space instantly.
+            </p>
+            <div class="pitch">
+              <div id="scan-1" class="p-unit p-blue">8</div>
+              <div id="scan-2" class="p-unit p-blue">10</div>
+              <div id="scan-3" class="p-unit p-blue">7</div>
+              <div id="scan-o1" class="p-unit p-red">X</div>
+              <div id="scan-o2" class="p-unit p-red">Y</div>
+              <div id="scan-ball" class="p-ball"></div>
+              <div id="scan-indicator" class="scan-indicator"></div>
+            </div>
+            <button class="play-btn" onclick="runScan()">Execute Play</button>
+          </div>
+
+          <div class="lab-card" id="card-blind">
+            <h3>Blind Side Exploitation</h3>
+            <p style="font-size: 0.9em; color: #555">
+              Using peripheral vision to exploit defender's blind spot.
+            </p>
+            <div class="pitch">
+              <div id="blind-1" class="p-unit p-blue">6</div>
+              <div id="blind-2" class="p-unit p-blue">11</div>
+              <div id="blind-o1" class="p-unit p-red">CB</div>
+              <div id="blind-ball" class="p-ball"></div>
+              <div id="blind-cone" class="vision-cone"></div>
+            </div>
+            <button class="play-btn" onclick="runBlind()">Execute Play</button>
+          </div>
+
+          <div class="lab-card" id="card-360">
+            <h3>360° Awareness</h3>
+            <p style="font-size: 0.9em; color: #555">
+              Complete spatial awareness enables quick direction change.
+            </p>
+            <div class="pitch">
+              <div class="goal-net"></div>
+              <div id="aware-1" class="p-unit p-blue">10</div>
+              <div id="aware-2" class="p-unit p-blue">9</div>
+              <div id="aware-3" class="p-unit p-blue">7</div>
+              <div id="aware-o1" class="p-unit p-red">DM</div>
+              <div id="aware-ball" class="p-ball"></div>
+            </div>
+            <button class="play-btn" onclick="runAware()">Execute Play</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="content-section" id="principles">
+        <h2 class="section-title">🎯 Core Components of Vision</h2>
+
+        <div class="principles-grid">
+          <div class="principle-card">
+            <span class="principle-icon">👀</span>
+            <h3 class="principle-title">Active Scanning</h3>
+            <p>
+              Systematic shoulder checks before ball arrival to gather spatial information. Elite players scan 4-6 times in the 3 seconds before receiving possession, creating a complete mental picture of their surroundings.
+            </p>
+          </div>
+
+          <div class="principle-card">
+            <span class="principle-icon">🗺️</span>
+            <h3 class="principle-title">Mental Mapping</h3>
+            <p>
+              Creating and continuously updating an internal representation of player positions, distances, and movement patterns. This cognitive map allows instant decision-making without visual confirmation.
+            </p>
+          </div>
+
+          <div class="principle-card">
+            <span class="principle-icon">🔮</span>
+            <h3 class="principle-title">Anticipation</h3>
+            <p>
+              Using gathered visual information to predict opponent movements and space availability 2-3 seconds into the future. This predictive ability enables pre-planned actions that appear instinctive.
+            </p>
+          </div>
+
+          <div class="principle-card">
+            <span class="principle-icon">⚡</span>
+            <h3 class="principle-title">Peripheral Awareness</h3>
+            <p>
+              Utilizing peripheral vision to monitor multiple players simultaneously while focusing on the ball. This dual-processing creates the "360-degree awareness" that defines elite midfielders.
+            </p>
+          </div>
+
+          <div class="principle-card">
+            <span class="principle-icon">🎭</span>
+            <h3 class="principle-title">Visual Deception</h3>
+            <p>
+              Using body orientation and eye contact to manipulate opponent positioning while maintaining awareness of intended targets. Looking one direction while passing another becomes instinctive.
+            </p>
+          </div>
+
+          <div class="principle-card">
+            <span class="principle-icon">⏱️</span>
+            <h3 class="principle-title">Timing Recognition</h3>
+            <p>
+              Identifying the exact moment when space appears or passing lanes open through continuous monitoring. This temporal awareness separates good passes from perfect ones.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="content-section" id="scanning">
+        <h2 class="section-title">📸 The Science of Scanning</h2>
+
+        <div class="text-block">
+          <p>
+            Scanning is the physical manifestation of positional vision—the deliberate act of turning your head to gather visual information about the game state. Research analyzing eye-tracking data from professional players reveals that the most effective scanners follow specific patterns that maximize information gathering while minimizing time with eyes off the ball.
+          </p>
+          <p>
+            The optimal scanning sequence typically involves three key moments: when the ball is traveling to a teammate, immediately after your team secures possession, and during the split second before you receive the pass. Each scan should be brief (0.2-0.4 seconds) but purposeful, focusing on specific information zones. Elite players develop scanning rhythms that become automatic, allowing them to process vast amounts of spatial data without conscious thought.
+          </p>
+        </div>
+
+        <h3 class="section-subtitle">Scanning Frequency by Position</h3>
+        
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-number">6-8</div>
+            <div class="stat-label">Central Midfielders<br/>scans/possession</div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-number">4-5</div>
+            <div class="stat-label">Full Backs<br/>scans/possession</div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-number">3-4</div>
+            <div class="stat-label">Center Backs<br/>scans/possession</div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-number">5-6</div>
+            <div class="stat-label">Attacking Midfielders<br/>scans/possession</div>
+          </div>
+        </div>
+
+        <h3 class="section-subtitle">The Four Scanning Zones</h3>
+
+        <div class="text-block">
+          <p>
+            <strong>Zone 1 - Immediate Pressure:</strong> The area within 5 meters of your position. This zone requires the most frequent scanning to identify pressing opponents and available body positions for receiving the ball. Players should scan this zone 2-3 times in the seconds before receiving possession.
+          </p>
+          <p>
+            <strong>Zone 2 - Passing Options:</strong> The mid-range area 5-15 meters away containing potential passing targets. Scanning this zone reveals which teammates are in space, their body orientation, and whether they're marked. This determines your first touch direction and passing options.
+          </p>
+          <p>
+            <strong>Zone 3 - Space Recognition:</strong> The area 15-30 meters away where future space will appear. Scanning this zone helps identify where the game will develop and which areas will become available for progressive play. This forward-thinking scan separates great players from good ones.
+          </p>
+          <p>
+            <strong>Zone 4 - Defensive Shape:</strong> The opponent's defensive structure and positioning. Quick glances at this zone reveal pressing triggers, defensive gaps, and numerical situations that can be exploited. Elite playmakers constantly monitor this zone to identify systemic weaknesses.
+          </p>
+        </div>
+
+        <div class="warning-box">
+          <div class="info-box-title">⚠️ Common Scanning Errors</div>
+          <p>
+            <strong>Ball-watching:</strong> Keeping eyes fixed on the ball without scanning surroundings. This creates "tunnel vision" and eliminates awareness of tactical situations developing around you.
+          </p>
+          <p style="margin-top: 10px;">
+            <strong>Single-scan syndrome:</strong> Looking once and assuming the picture remains static. The game state changes every 0.5-1 second, requiring continuous updates to your mental map.
+          </p>
+          <p style="margin-top: 10px;">
+            <strong>Late scanning:</strong> Only checking surroundings after receiving the ball, when pressure has already arrived and options have closed. Effective scanning must occur before ball contact.
+          </p>
+        </div>
+      </section>
+
+      <section class="content-section">
+        <h2 class="section-title">🧠 Cognitive Processing & Decision Making</h2>
+
+        <div class="text-block">
+          <p>
+            The true value of positional vision lies not in gathering information, but in processing it into actionable decisions. Elite players develop cognitive frameworks that allow them to instantly categorize game situations and select optimal responses. This processing happens largely in the subconscious, with years of experience creating pattern recognition that feels instinctive.
+          </p>
+          <p>
+            When a world-class midfielder receives the ball and immediately plays a defense-splitting pass, they're executing a decision made before the ball arrived. Their scanning revealed the opponent's defensive shape, identified the passing lane that would appear with specific movement, and pre-selected the execution. The actual pass is simply the physical manifestation of cognitive work completed seconds earlier.
+          </p>
+        </div>
+
+        <h3 class="section-subtitle">Decision-Making Framework</h3>
+
+        <div class="principles-grid">
+          <div class="principle-card">
+            <span class="principle-icon">1️⃣</span>
+            <h3 class="principle-title">Perception Phase</h3>
+            <p>
+              Gathering visual information through systematic scanning. This phase occurs 2-3 seconds before receiving the ball and involves 4-6 deliberate shoulder checks to build the spatial picture.
+            </p>
+          </div>
+
+          <div class="principle-card">
+            <span class="principle-icon">2️⃣</span>
+            <h3 class="principle-title">Analysis Phase</h3>
+            <p>
+              Processing gathered information to identify options, risks, and opportunities. Pattern recognition from thousands of similar situations accelerates this analysis to milliseconds.
+            </p>
+          </div>
+
+          <div class="principle-card">
+            <span class="principle-icon">3️⃣</span>
+            <h3 class="principle-title">Selection Phase</h3>
+            <p>
+              Choosing the optimal action based on tactical context, team objectives, and personal capabilities. Elite players pre-select 2-3 options before ball arrival.
+            </p>
+          </div>
+
+          <div class="principle-card">
+            <span class="principle-icon">4️⃣</span>
+            <h3 class="principle-title">Execution Phase</h3>
+            <p>
+              Implementing the selected decision with appropriate technique. Because the decision is pre-made, execution can begin immediately upon ball contact, creating time advantage.
+            </p>
+          </div>
+        </div>
+
+        <div class="success-box">
+          <div class="info-box-title">✅ The Pre-Decision Advantage</div>
+          <p>
+            Players who complete their decision-making before receiving the ball gain approximately 0.8-1.2 seconds compared to those who decide after contact. In elite football where pressing happens within 1-2 seconds, this time advantage is often the difference between successful progression and losing possession.
+          </p>
+        </div>
+      </section>
+
+      <section class="content-section">
+        <h2 class="section-title">📊 Vision vs Physical Attributes</h2>
+
+        <table class="comparison-table">
+          <thead>
+            <tr>
+              <th>Attribute</th>
+              <th>High Vision Player</th>
+              <th>Low Vision Player</th>
+              <th>Impact</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Scans per Possession</strong></td>
+              <td>5-8 scans</td>
+              <td>1-2 scans</td>
+              <td>4x information advantage</td>
+            </tr>
+            <tr>
+              <td><strong>Decision Time</strong></td>
+              <td>Pre-decided</td>
+              <td>0.5-1.5s after contact</td>
+              <td>Critical time saved</td>
+            </tr>
+            <tr>
+              <td><strong>Passing Success</strong></td>
+              <td>85-92%</td>
+              <td>72-80%</td>
+              <td>Higher retention</td>
+            </tr>
+            <tr>
+              <td><strong>Progressive Passes</strong></td>
+              <td>8-12 per game</td>
+              <td>3-5 per game</td>
+              <td>Better progression</td>
+            </tr>
+            <tr>
+              <td><strong>Turnovers Under Pressure</strong></td>
+              <td>1-2 per game</td>
+              <td>4-6 per game</td>
+              <td>Ball security</td>
+            </tr>
+            <tr>
+              <td><strong>Assists per Season</strong></td>
+              <td>10-15</td>
+              <td>3-6</td>
+              <td>Creativity unlock</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="info-box">
+          <div class="info-box-title">🎓 Training Insight</div>
+          <p>
+            While physical attributes like speed and strength are largely genetic, positional vision is entirely trainable. Youth players who undergo systematic scanning training for 6-12 months show measurable improvements in decision-making speed, passing accuracy, and game understanding that persist throughout their careers.
+          </p>
+        </div>
+      </section>
+
+      <section class="content-section" id="players">
+        <h2 class="section-title">👤 Masters of Positional Vision</h2>
+
+        <div class="text-block">
+          <p>
+            Certain players have elevated positional vision to an art form, demonstrating scanning behaviors and spatial awareness that redefine what's possible in midfield play. These players serve as models for developing this cognitive skill, each demonstrating unique approaches to gathering and processing spatial information.
+          </p>
+        </div>
+
+        <div class="players-grid">
+          <div class="player-card">
+            <div class="player-icon">🎯</div>
+            <div class="player-name">Sergio Busquets</div>
+            <div class="player-team">Barcelona / Spain</div>
+            <p style="margin-top: 10px; font-size: 0.85em; color: #555;">
+              "The master of seeing everything." Averaged 7.2 scans per possession during Barcelona's peak.
+            </p>
+          </div>
+
+          <div class="player-card">
+            <div class="player-icon">⚡</div>
+            <div class="player-name">Kevin De Bruyne</div>
+            <div class="player-team">Manchester City / Belgium</div>
+            <p style="margin-top: 10px; font-size: 0.85em; color: #555;">
+              Exceptional at identifying passing lanes before they appear through forward scanning.
+            </p>
+          </div>
+
+          <div class="player-card">
+            <div class="player-icon">🧠</div>
+            <div class="player-name">Luka Modrić</div>
+            <div class="player-team">Real Madrid / Croatia</div>
+            <p style="margin-top: 10px; font-size: 0.85em; color: #555;">
+              360° awareness allows receiving in tight spaces and escaping pressure instantly.
+            </p>
+          </div>
+
+          <div class="player-card">
+            <div class="player-icon">🎨</div>
+            <div class="player-name">Xavi Hernández</div>
+            <div class="player-team">Barcelona / Spain (Retired)</div>
+            <p style="margin-top: 10px; font-size: 0.85em; color: #555;">
+              Defined modern positional vision with systematic scanning and perfect spatial awareness.
+            </p>
+          </div>
+
+          <div class="player-card">
+            <div class="player-icon">🔧</div>
+            <div class="player-name">Toni Kroos</div>
+            <div class="player-team">Real Madrid / Germany</div>
+            <p style="margin-top: 10px; font-size: 0.85em; color: #555;">
+              Minimalist scanning approach—few looks but perfectly timed and comprehensive.
+            </p>
+          </div>
+
+          <div class="player-card">
+            <div class="player-icon">💎</div>
+            <div class="player-name">Frenkie de Jong</div>
+            <div class="player-team">Barcelona / Netherlands</div>
+            <p style="margin-top: 10px; font-size: 0.85em; color: #555;">
+              Uses scanning while dribbling to identify space and execute turns under pressure.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="content-section">
+        <h2 class="section-title">🎯 Developing Positional Vision</h2>
+
+        <div class="text-block">
+          <p>
+            Unlike physical attributes, positional vision can be systematically developed through deliberate practice. Modern football academies have integrated specific training methodologies designed to accelerate the development of scanning behaviors and spatial awareness in young players.
+          </p>
+        </div>
+
+        <h3 class="section-subtitle">Training Progression</h3>
+
+        <div class="principles-grid">
+          <div class="principle-card">
+            <span class="principle-icon">📚</span>
+            <h3 class="principle-title">Foundation (U12-U14)</h3>
+            <p>
+              <strong>Scanning Games:</strong> Small-sided games where players must call out numbers on bibs or answer coach questions about positioning to receive the ball. This builds the habit of looking around.
+            </p>
+            <p style="margin-top: 10px;">
+              <strong>Mirror Drills:</strong> Players mirror coach movements while receiving passes, developing ability to gather information while ball-focused.
+            </p>
+          </div>
+
+          <div class="principle-card">
+            <span class="principle-icon">🎓</span>
+            <h3 class="principle-title">Development (U15-U17)</h3>
+            <p>
+              <strong>Constraint Games:</strong> Rondos and possession exercises with time limits forcing quick decisions. Players must pre-scan to succeed.
+            </p>
+            <p style="margin-top: 10px;">
+              <strong>Video Analysis:</strong> Reviewing own games to count scans and identify missed opportunities due to poor awareness.
+            </p>
+          </div>
+
+          <div class="principle-card">
+            <span class="principle-icon">⚡</span>
+            <h3 class="principle-title">Elite (U18+)</h3>
+            <p>
+              <strong>Tactical Scenarios:</strong> Complex game situations requiring multiple scans and advanced decision-making under pressure.
+            </p>
+            <p style="margin-top: 10px;">
+              <strong>Cognitive Load Training:</strong> Combining scanning with secondary tasks to automate the behavior during high-pressure situations.
+            </p>
+          </div>
+        </div>
+
+        <div class="warning-box">
+          <div class="info-box-title">⏰ Development Timeline</div>
+          <p>
+            Meaningful improvements in scanning frequency appear after 3-4 months of consistent training. Full integration of positional vision into automatic behavior typically requires 12-18 months of deliberate practice. Players who begin training this skill before age 14 show significantly faster development than those who start later.
+          </p>
+        </div>
+
+        <h3 class="section-subtitle">Individual Training Exercises</h3>
+
+        <div class="text-block">
+          <p>
+            <strong>The Four-Corner Drill:</strong> Set up four cones in a 10x10m square. Have a partner randomly point to different cones while you control a ball at your feet. You must identify which cone without looking up, forcing peripheral awareness development. Start with 2 cones, progress to 4, then add movement.
+          </p>
+          <p>
+            <strong>Scan-Receive-Turn:</strong> Partner serves balls from various angles while calling out numbers between 1-4. You must scan, identify which number they showed on their fingers, receive the ball, and turn into the space corresponding to that number. This integrates scanning with immediate decision execution.
+          </p>
+          <p>
+            <strong>Blindside Recognition:</strong> Practice receiving balls with a defender at your back. Before each reception, quickly scan to identify the defender's position and body shape, then receive into the space they're not protecting. This develops the habit of checking blind sides before ball arrival.
+          </p>
+        </div>
+      </section>
+
+      <section class="content-section">
+        <h2 class="section-title">🎮 Positional Vision in Different Systems</h2>
+
+        <div class="text-block">
+          <p>
+            The application of positional vision varies significantly based on tactical system and playing style. Understanding how different systems leverage and require spatial awareness helps players adapt their scanning patterns to tactical demands.
+          </p>
+        </div>
+
+        <table class="comparison-table">
+          <thead>
+            <tr>
+              <th>System</th>
+              <th>Vision Requirements</th>
+              <th>Key Focus</th>
+              <th>Example Team</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Positional Play</strong></td>
+              <td>Extreme—constant scanning</td>
+              <td>Teammate positioning, passing lanes, spatial occupation</td>
+              <td>Man City (Guardiola)</td>
+            </tr>
+            <tr>
+              <td><strong>Gegenpressing</strong></td>
+              <td>High—anticipation focus</td>
+              <td>Pressing triggers, counter-pressing opportunities, space behind</td>
+              <td>Liverpool (Klopp)</td>
+            </tr>
+            <tr>
+              <td><strong>Counter-Attack</strong></td>
+              <td>Medium—transition focused</td>
+              <td>Forward options, space to exploit, defensive balance</td>
+              <td>Real Madrid (Ancelotti)</td>
+            </tr>
+            <tr>
+              <td><strong>Low Block</strong></td>
+              <td>Selective—defensive priority</td>
+              <td>Opponent positioning, marking assignments, clearance options</td>
+              <td>Atlético (Simeone)</td>
+            </tr>
+            <tr>
+              <td><strong>Total Football</strong></td>
+              <td>Maximum—all positions</td>
+              <td>Complete field awareness, fluid positioning, space creation</td>
+              <td>Ajax (Ten Hag)</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="content-section">
+        <h2 class="section-title">🧠 Test Your Vision Knowledge</h2>
+
+        <div class="quiz-container">
+          <div class="quiz-question">
+            How many times should elite midfielders scan before receiving the ball?
+          </div>
+
+          <div class="quiz-option" onclick="checkAnswer(this, 'correct')">
+            A) 4-6 scans in 3 seconds before receiving
+          </div>
+          <div class="quiz-option" onclick="checkAnswer(this, 'wrong')">
+            B) 1-2 quick glances
+          </div>
+          <div class="quiz-option" onclick="checkAnswer(this, 'wrong')">
+            C) Constant head movement
+          </div>
+          <div class="quiz-option" onclick="checkAnswer(this, 'wrong')">
+            D) Only after receiving the ball
+          </div>
+
+          <div
+            id="quizFeedback"
+            style="margin-top: 20px; font-weight: bold; display: none"
+          ></div>
+        </div>
+
+        <div class="quiz-container" style="margin-top: 30px;">
+          <div class="quiz-question">
+            What is the primary benefit of pre-scanning before receiving the ball?
+          </div>
+
+          <div class="quiz-option" onclick="checkAnswer2(this, 'correct')">
+            A) Making decisions before ball contact, saving 0.8-1.2 seconds
+          </div>
+          <div class="quiz-option" onclick="checkAnswer2(this, 'wrong')">
+            B) Impressing teammates with head movement
+          </div>
+          <div class="quiz-option" onclick="checkAnswer2(this, 'wrong')">
+            C) Preventing neck injuries
+          </div>
+          <div class="quiz-option" onclick="checkAnswer2(this, 'wrong')">
+            D) Seeing the ball better
+          </div>
+
+          <div
+            id="quizFeedback2"
+            style="margin-top: 20px; font-weight: bold; display: none"
+          ></div>
+        </div>
+      </section>
+
+      <section class="return-section">
+        <a href="possession.html" class="return-link"
+          >← Back to Possession Systems</a
+        >
+        <p style="margin-top: 15px; color: #666; font-size: 0.9em">
+          Explore related concepts:
+          <a href="positionalplay.html" style="color: var(--navy-blue); font-weight: 600;">Positional Play</a> •
+          <a href="#" style="color: var(--navy-blue); font-weight: 600;">Decision Making</a> •
+          <a href="#" style="color: var(--navy-blue); font-weight: 600;">Spatial Awareness</a>
+        </p>
+      </section>
+    </main>
+
+    <script>
+      // TACTICAL LAB ENGINE
+      const labWait = (ms) => new Promise((r) => setTimeout(r, ms));
+
+      function moveLabUnit(id, top, left) {
+        const el = document.getElementById(id);
+        if (el) {
+          el.style.top = top;
+          el.style.left = left;
+        }
+      }
+
+      function resetLab(cardId) {
+        document
+          .querySelectorAll(`#${cardId} .p-unit, #${cardId} .p-ball, #${cardId} .scan-indicator, #${cardId} .vision-cone`)
+          .forEach((el) => {
+            el.style.transition = "none";
+            el.style.top = "";
+            el.style.left = "";
+            el.style.opacity = "1";
+            el.style.transform = "";
+            void el.offsetWidth;
+            el.style.transition = "all 0.8s cubic-bezier(0.4, 0, 0.2, 1)";
+          });
+      }
+
+      async function runScan() {
+        resetLab("card-scan");
+        // Initial positions
+        moveLabUnit("scan-1", "65%", "20%");
+        moveLabUnit("scan-2", "45%", "50%");
+        moveLabUnit("scan-3", "25%", "75%");
+        moveLabUnit("scan-o1", "50%", "35%");
+        moveLabUnit("scan-o2", "40%", "65%");
+        moveLabUnit("scan-ball", "67%", "25%");
+        moveLabUnit("scan-indicator", "43%", "48%");
+        
+        await labWait(500);
+        // Scan animation - player 2 scans
+        document.getElementById("scan-indicator").style.opacity = "0.8";
+        await labWait(800);
+        
+        // Ball moves to scanning player
+        moveLabUnit("scan-ball", "47%", "52%");
+        await labWait(600);
+        
+        // Immediate pass to open player (already identified through scanning)
+        moveLabUnit("scan-3", "20%", "85%");
+        await labWait(400);
+        moveLabUnit("scan-ball", "22%", "87%");
+        document.getElementById("scan-indicator").style.opacity = "0";
+      }
+
+      async function runBlind() {
+        resetLab("card-blind");
+        // Initial positions
+        moveLabUnit("blind-1", "60%", "25%");
+        moveLabUnit("blind-2", "30%", "75%");
+        moveLabUnit("blind-o1", "45%", "50%");
+        moveLabUnit("blind-ball", "62%", "30%");
+        moveLabUnit("blind-cone", "58%", "23%");
+        
+        await labWait(500);
+        // Show vision cone
+        const cone = document.getElementById("blind-cone");
+        if (cone) {
+          cone.style.transform = "rotate(45deg)";
+          cone.style.opacity = "0.6";
+        }
+        
+        await labWait(800);
+        // Pass exploiting blind side
+        moveLabUnit("blind-ball", "32%", "77%");
+        moveLabUnit("blind-2", "25%", "85%");
+        await labWait(600);
+        
+        // Defender realizes too late
+        moveLabUnit("blind-o1", "35%", "70%");
+      }
+
+      async function runAware() {
+        resetLab("card-360");
+        // Initial positions
+        moveLabUnit("aware-1", "50%", "40%");
+        moveLabUnit("aware-2", "30%", "70%");
+        moveLabUnit("aware-3", "20%", "15%");
+        moveLabUnit("aware-o1", "55%", "55%");
+        moveLabUnit("aware-ball", "52%", "45%");
+        
+        await labWait(500);
+        // Player 1 has full awareness, sees both options
+        moveLabUnit("aware-o1", "50%", "50%"); // Opponent presses
+        await labWait(800);
+        
+        // Quick turn away from pressure
+        moveLabUnit("aware-1", "45%", "25%");
+        moveLabUnit("aware-ball", "47%", "27%");
+        await labWait(600);
+        
+        // Through ball to striker
+        moveLabUnit("aware-2", "20%", "85%");
+        await labWait(400);
+        moveLabUnit("aware-ball", "22%", "87%");
+      }
+
+      function checkAnswer(element, result) {
+        const feedback = document.getElementById("quizFeedback");
+        const options = element.parentElement.querySelectorAll(".quiz-option");
+
+        options.forEach((opt) => {
+          opt.style.pointerEvents = "none";
+          if (opt === element) {
+            if (result === "correct") {
+              opt.style.background = "#E8F5E9";
+              opt.style.borderColor = "#2E7D32";
+              opt.style.color = "#2E7D32";
+              feedback.textContent =
+                "✅ Correct! Elite players perform 4-6 scans in the 3 seconds before receiving to build complete spatial awareness.";
+            } else {
+              opt.style.background = "#FFEBEE";
+              opt.style.borderColor = "#D32F2F";
+              opt.style.color = "#D32F2F";
+              feedback.textContent =
+                "❌ Incorrect. The optimal frequency is 4-6 scans in 3 seconds, allowing comprehensive spatial mapping before ball contact.";
+            }
+          }
+        });
+
+        feedback.style.display = "block";
+      }
+
+      function checkAnswer2(element, result) {
+        const feedback = document.getElementById("quizFeedback2");
+        const options = element.parentElement.querySelectorAll(".quiz-option");
+
+        options.forEach((opt) => {
+          opt.style.pointerEvents = "none";
+          if (opt === element) {
+            if (result === "correct") {
+              opt.style.background = "#E8F5E9";
+              opt.style.borderColor = "#2E7D32";
+              opt.style.color = "#2E7D32";
+              feedback.textContent =
+                "✅ Correct! Pre-scanning allows decisions to be made before ball contact, creating crucial time advantage under pressure.";
+            } else {
+              opt.style.background = "#FFEBEE";
+              opt.style.borderColor = "#D32F2F";
+              opt.style.color = "#D32F2F";
+              feedback.textContent =
+                "❌ Incorrect. The primary benefit is pre-decision making, which saves 0.8-1.2 seconds—critical in modern football.";
+            }
+          }
+        });
+
+        feedback.style.display = "block";
+      }
+
+      // Initialize
+      document.addEventListener("DOMContentLoaded", () => {
+        // Run initial lab animations
+        setTimeout(() => runScan(), 500);
+        setTimeout(() => runBlind(), 2000);
+        setTimeout(() => runAware(), 3500);
+
+        // Set active nav
+        const currentPage = window.location.pathname.split("/").pop();
+        document.querySelectorAll(".nav-menu a").forEach((link) => {
+          if (link.getAttribute("href") === currentPage) {
+            link.classList.add("active");
+          }
+        });
+      });
+    </script>
+  </body>
+</html>
