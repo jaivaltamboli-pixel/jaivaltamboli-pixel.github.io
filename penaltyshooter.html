@@ -1,2323 +1,2976 @@
-
 <!doctype html>
 <html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Neon Strike</title>
-<!-- Neon/Cyberpunk font -->
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
-<style>
-:root {
-  /* 2014 World Cup inspired palette (Brazil host) */
-  --bg: #041214; /* deep teal/blue */
-  --panel: rgba(6,20,12,0.85);
-  --accent: #FFCC00; /* warm gold */
-  --accent-2: #0033A0; /* deep blue */
-  --muted: #BFD8C8; /* soft mint */
-  --good: #009C3B; /* brazil green */
-  --bad: #C1272D; /* red accent */
-}
-
-* { margin: 0; padding: 0; box-sizing: border-box; }
-
-body {
-  font-family: 'Orbitron', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
-  background: linear-gradient(180deg, #012028 0%, #06323a 60%);
-  color: #f6f5ea;
-  min-height: 100vh;
-  padding: 24px;
-}
-
-#app {
-  max-width: 1200px;
-  margin: 0 auto;
-  display: grid;
-  grid-template-columns: 1fr 340px;
-  gap: 20px;
-}
-
-.card {
-  background: var(--panel);
-  border-radius: 10px;
-  padding: 18px;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.45);
-  border: 1px solid rgba(255,204,0,0.06);
-}
-
-#canvasWrapper {
-  position: relative;
-  aspect-ratio: 16/9;
-  background: linear-gradient(180deg, rgba(0,32,16,0.6), rgba(0,24,48,0.6));
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.55);
-  border: 2px solid rgba(0,0,0,0.12);
-}
-
-#canvas {
-  width: 100%;
-  height: 100%;
-  display: block;
-}
-
-/* Startup modal */
-.startup-modal {
-  position: fixed;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(0,0,0,0.6);
-  z-index: 1200;
-}
-.startup-card {
-  background: linear-gradient(180deg, rgba(10,10,20,0.95), rgba(5,5,15,0.95));
-  border-radius: 12px;
-  padding: 20px 24px;
-  width: 420px;
-  box-shadow: 0 12px 40px rgba(0,0,0,0.7);
-  border: 1px solid rgba(0,255,246,0.06);
-  text-align: center;
-}
-.startup-card h2 { color: var(--accent); margin-bottom: 8px; }
-.startup-card p { color: var(--muted); margin-bottom: 16px; }
-.startup-card .btn { min-width: 120px; }
-
-/* Tournament / Shootout overlay styles (WC themed) */
-.shootout-overlay {
-  position: fixed;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(180deg, rgba(0,0,0,0.6), rgba(2,2,6,0.8));
-  z-index: 1300;
-}
-.shootout-card {
-  width: 820px;
-  background: linear-gradient(180deg, rgba(10,12,20,0.98), rgba(4,6,12,0.98));
-  border-radius: 12px;
-  padding: 18px;
-  display: grid;
-  grid-template-columns: 1fr 260px;
-  gap: 12px;
-  border: 1px solid rgba(0,255,246,0.06);
-}
-.shootout-header { font-weight:700; color: var(--accent); font-size:18px; }
-.shootout-teams { display:flex; gap:10px; align-items:center; }
-.team-box { padding:10px 12px; border-radius:8px; color:#021018; font-weight:700; display:flex; gap:8px; align-items:center; }
-.team-flag { font-size:28px; }
-.shootout-controls { display:flex; flex-direction:column; gap:8px; }
-.shootout-score { font-family: 'Share Tech Mono', monospace; color:var(--muted); }
-.shootout-turn { font-weight:700; color: var(--accent-2); }
-.play-btn { padding:8px 10px; border-radius:8px; background: linear-gradient(90deg, #ffd700, #ffcc00); border: none; cursor:pointer; }
-
-/* Penalty tracker styles */
-.penalty-tracker {
-  position: fixed;
-  top: 14px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 1400;
-  background: rgba(2,8,6,0.6);
-  padding: 10px 14px;
-  border-radius: 10px;
-  border: 1px solid rgba(255,204,0,0.08);
-}
-.penalty-slot { font-size:18px; padding:6px 8px; border-radius:6px; background: rgba(255,255,255,0.02); }
-.penalty-slot.scored { background: rgba(0,156,59,0.92); color: #fff; }
-.penalty-slot.missed { background: rgba(193,39,45,0.95); color: #fff; }
-.penalty-slot.pending { background: rgba(255,255,255,0.04); color: var(--muted); }
-.penalty-slot.next { box-shadow: 0 0 10px rgba(255,204,0,0.12); transform: scale(1.06); }
-
-.controls {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.section-title {
-  font-size: 18px;
-  font-weight: 700;
-  margin-bottom: 6px;
-  color: var(--accent);
-  letter-spacing: 0.6px;
-  text-shadow: 0 0 8px rgba(0,255,246,0.12);
-}
-
-.subtitle {
-  font-size: 12px;
-  color: var(--muted);
-  margin-bottom: 12px;
-  font-family: 'Share Tech Mono', monospace;
-}
-
-.button-group {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-
-.btn {
-  padding: 10px 16px;
-  border-radius: 10px;
-  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.25));
-  border: 1px solid rgba(0,255,246,0.08);
-  color: #dffcff;
-  cursor: pointer;
-  font-size: 13px;
-  transition: all 0.15s ease-in-out;
-  user-select: none;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.6);
-}
-
-.btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 30px rgba(0,0,0,0.6), 0 0 18px rgba(0,255,246,0.06);
-  border-color: rgba(0,255,246,0.18);
-}
-
-.btn.active {
-  background: linear-gradient(90deg, rgba(0,255,246,0.06), rgba(255,45,212,0.04));
-  border-color: var(--accent);
-  box-shadow: 0 6px 28px rgba(0,255,246,0.08), 0 0 24px rgba(255,45,212,0.04);
-  color: var(--accent-2);
-}
-
-.btn.shoot {
-  background: linear-gradient(90deg, var(--accent-2), var(--accent));
-  color: #041018;
-  font-weight: 700;
-  flex: 1;
-  border-color: rgba(0,255,246,0.2);
-  box-shadow: 0 8px 30px rgba(255,45,212,0.08), 0 0 28px rgba(0,255,246,0.06);
-}
-
-.btn.shoot:hover {
-  background: linear-gradient(180deg, #ffd633, #ffcc00);
-}
-
-.btn.shoot:active {
-  transform: scale(0.98);
-}
-
-.zone-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
-  margin-top: 12px;
-}
-
-.zone {
-  padding: 14px;
-  border-radius: 8px;
-  background: rgba(255,255,255,0.02);
-  border: 1px dashed rgba(255,255,255,0.08);
-  text-align: center;
-  font-size: 12px;
-  color: var(--muted);
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.zone:hover {
-  background: rgba(255,255,255,0.04);
-}
-
-.zone.selected {
-  background: linear-gradient(180deg, rgba(255,204,0,0.08), rgba(255,204,0,0.02));
-  border-color: var(--accent);
-  color: var(--accent);
-  border-style: solid;
-}
-
-.power-bar {
-  height: 14px;
-  background: linear-gradient(90deg, rgba(255,45,212,0.12), rgba(0,255,246,0.12));
-  border-radius: 10px;
-  overflow: visible;
-  margin-top: 8px;
-  position: relative;
-  border: 1px solid rgba(0,255,246,0.12);
-}
-
-.power-fill {
-  position: absolute;
-  left: 0;
-  top: -6px;
-  height: calc(100% + 12px);
-  width: 3%;
-  background: linear-gradient(90deg, var(--accent-2), var(--accent));
-  border-radius: 6px;
-  box-shadow: 0 0 18px rgba(255,45,212,0.12), 0 0 14px rgba(0,255,246,0.08);
-  transition: width 0.06s linear;
-}
-
-.stat-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.stat-label {
-  font-size: 12px;
-  color: var(--muted);
-  margin-bottom: 4px;
-}
-
-.stat-value {
-  font-size: 22px;
-  font-weight: 700;
-  color: var(--accent);
-  text-shadow: 0 0 8px rgba(0,255,246,0.08);
-}
-
-.slider-group {
-  display: flex;
-  gap: 12px;
-  align-items: center;
-  margin-top: 8px;
-}
-
-input[type="range"] {
-  flex: 1;
-  height: 6px;
-  border-radius: 3px;
-  background: rgba(255,255,255,0.1);
-  outline: none;
-  -webkit-appearance: none;
-}
-
-input[type="range"]::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  background: var(--accent);
-  cursor: pointer;
-}
-
-input[type="range"]::-moz-range-thumb {
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  background: var(--accent);
-  border: none;
-  cursor: pointer;
-}
-
-.button-row {
-  display: flex;
-  gap: 8px;
-}
-
-@media (max-width: 1024px) {
-  #app {
-    grid-template-columns: 1fr;
-  }
-}
-</style>
-</head>
-<body>
-
-<div id="app">
-  <div class="card">
-    <div id="canvasWrapper">
-      <canvas id="canvas"></canvas>
-    </div>
-  </div>
-
-  <div class="card controls">
-    <div>
-      <div class="section-title">Neon Strike</div>
-      <div class="subtitle">Click inside the goal to aim and instantly shoot.</div>
-    </div>
-
-    <div>
-      <div class="stat-row">
-        <div>
-          <div class="stat-label">Goals</div>
-          <div class="stat-value" id="goals">0 / 0</div>
-        </div>
-        <div>
-          <div class="stat-label">Streak</div>
-          <div class="stat-value" id="streak">0</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="button-row">
-      <button class="btn" id="resetBtn">Reset</button>
-      <button class="btn" id="modeBtn">Mode: Shooter</button>
-      <button class="btn" id="soundBtn">Sound: ON</button>
-    </div>
-
-    <div>
-      <div class="stat-label">Difficulty</div>
-      <div class="slider-group">
-        <span style="color: var(--muted); font-size: 13px;">Easy</span>
-        <input type="range" id="difficulty" min="1" max="5" value="3">
-        <span style="color: var(--muted); font-size: 13px;">Hard</span>
-      </div>
-    </div>
-    <div>
-      <div class="stat-label">Shot Type</div>
-      <div id="shotTypes" class="button-group" style="margin-top:8px;">
-        <button class="btn active" data-type="power">Power</button>
-        <button class="btn" data-type="curve">Curve</button>
-        <button class="btn" data-type="chip">Chip</button>
-      </div>
-      <div id="curveControl" style="margin-top:12px;">
-        <div class="stat-label">Curve</div>
-        <div class="slider-group">
-          <input type="range" id="curveSpin" min="-1" max="1" step="0.05" value="0">
-          <span id="curveVal" style="color: var(--muted); width: 48px; display:inline-block; text-align:right;">0%</span>
-        </div>
-      </div>
-      <div style="margin-top:18px;">
-        <div class="section-title">Tournament</div>
-        <div class="subtitle">8-team World Cup — Single Elimination</div>
-        <div style="display:flex; gap:8px; margin-top:8px;">
-          <button class="btn" id="advanceRoundBtn">Advance Round</button>
-          <button class="btn" id="resetTournamentBtn">Reset</button>
-          <button class="btn" id="viewBracketBtn">View Bracket</button>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- Penalty tracker (top center) -->
-<div id="penaltyTracker" class="penalty-tracker" style="display:none;">
-  <div id="penaltyHeader" style="text-align:center; color:var(--muted); font-weight:700; margin-bottom:6px;">Penalty Shootout</div>
-  <div style="display:flex; gap:12px; align-items:center; justify-content:center;">
-    <div style="display:flex; flex-direction:column; gap:6px; align-items:center;">
-      <div id="penaltyTeamALabel" style="font-weight:700; color:var(--accent);">Team A</div>
-      <div id="teamAPenalties" style="display:flex; gap:6px;"></div>
-    </div>
-    <div style="width:18px"></div>
-    <div style="display:flex; flex-direction:column; gap:6px; align-items:center;">
-      <div id="penaltyTeamBLabel" style="font-weight:700; color:var(--accent);">Team B</div>
-      <div id="teamBPenalties" style="display:flex; gap:6px;"></div>
-    </div>
-  </div>
-</div>
-
-<!-- Startup modal -->
-<div id="startupModal" class="startup-modal" style="display:flex;">
-  <div class="startup-card">
-    <h2>Welcome to Neon Strike</h2>
-    <p>Choose how you'd like to play:</p>
-    <div style="display:flex; gap:12px; justify-content:center; margin-bottom:14px;">
-      <button class="btn shoot" id="modalTournamentBtn">Tournament</button>
-      <button class="btn" id="modalPracticeBtn">Practice</button>
-    </div>
-    <div style="font-size:12px; color:var(--muted);">Tournament: 8-team single elimination. Practice: play shots freely.</div>
-  </div>
-</div>
-
-<!-- Bracket modal (large) -->
-<div id="bracketModal" class="startup-modal" style="display:none;">
-  <div class="startup-card" style="width:860px; max-height:80vh; overflow:auto;">
-    <div style="display:flex; justify-content:space-between; align-items:center;">
-      <div style="font-weight:700; color:var(--accent);">Tournament Bracket</div>
-      <div><button class="btn" id="closeBracketBtn">Close</button></div>
-    </div>
-    <div id="bracketModalContent" style="margin-top:12px; display:flex; gap:12px;"></div>
-  </div>
-</div>
-
-<!-- Shootout overlay (hidden until play) -->
-<div id="shootoutOverlay" class="shootout-overlay" style="display:none;">
-  <div class="shootout-card card">
-    <div>
-      <div class="shootout-header">Penalty Shootout</div>
-      <div style="height:12px"></div>
-      <div class="shootout-teams">
-        <div id="teamABox" class="team-box">
-          <div class="team-flag" id="teamAFlag">🇧🇪</div>
-          <div class="team-name" id="teamAName">Team A</div>
-        </div>
-        <div style="font-size:28px; color:var(--muted);">vs</div>
-        <div id="teamBBox" class="team-box">
-          <div class="team-flag" id="teamBFlag">🇩🇰</div>
-          <div class="team-name" id="teamBName">Team B</div>
-        </div>
-      </div>
-      <div style="height:12px"></div>
-      <div class="shootout-score" id="shootoutScore">0 - 0</div>
-      <div style="height:8px"></div>
-      <div class="shootout-turn" id="shootoutStatus">Your turn to shoot</div>
-    </div>
-    <div class="shootout-controls">
-      <div style="display:flex; gap:8px; align-items:center;">
-        <button id="shootoutForfeit" class="btn">Forfeit</button>
-        <button id="shootoutSimulate" class="btn">Auto-Simulate Kick</button>
-      </div>
-      <div style="margin-top:6px; color:var(--muted); font-size:13px;">Kicks taken: <span id="shootoutKicks">0</span></div>
-      <div style="margin-top:6px; color:var(--muted); font-size:13px;">Note: You shoot for your team, then defend when AI shoots.</div>
-      <div style="flex:1"></div>
-      <div style="display:flex; gap:8px; justify-content:flex-end;">
-        <button id="shootoutClose" class="btn">Close</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<script>
-// Configuration
-const CONFIG = {
-  width: 1200,
-  height: 675,
-  gravity: 1400,
-  ballRadius: 16,
-  goalX: 250,
-  goalY: 80,
-  goalWidth: 700,
-  goalHeight: 320,
-  penaltyDistance: 500 // realistic penalty distance
-};
-
-// Canvas setup
-const canvas = document.getElementById('canvas');
-const ctx = canvas.getContext('2d');
-canvas.width = CONFIG.width;
-canvas.height = CONFIG.height;
-
-// Game state
-let shotType = 'power';
-let selectedZone = 'mm';
-let power = 0;
-let isCharging = false;
-let chargeStartTime = 0;
-let soundEnabled = true;
-
-let goals = 0;
-let attempts = 0;
-let streak = 0;
-
-let ball = {
-  x: CONFIG.width / 2,
-  y: CONFIG.height - 100,
-  z: 0,
-  vx: 0,
-  vy: 0,
-  vz: 0,
-  spin: 0,
-  active: false,
-  missedGoal: false,
-  inGoal: false,
-  scored: false,
-  trail: []
-};
-
-let keeper = {
-  x: CONFIG.goalX + CONFIG.goalWidth / 2,
-  // place keeper close to net floor (slightly above ground)
-  y: CONFIG.goalY + CONFIG.goalHeight - 30,
-  targetX: CONFIG.goalX + CONFIG.goalWidth / 2,
-  targetY: CONFIG.goalY + CONFIG.goalHeight - 30,
-  diving: false,
-  diveTime: 0,
-  deflecting: false,
-  deflectTime: 0,
-  rotation: 0,
-  primaryColor: 'rgba(255,45,212,0.95)',
-  gloveColor: 'rgba(126,255,161,0.95)'
-};
-
-let targetPoint = { x: CONFIG.width / 2, y: CONFIG.goalY + CONFIG.goalHeight / 2 };
-// Curve/chip controls
-let curveSpin = 0; // -1 .. 1, how much curve to apply (left negative, right positive)
-let maxCurveSpin = 1.0;
-
-// Audio context
-let audioContext;
-function initAudio() {
-  if (!audioContext) {
-    audioContext = new (window.AudioContext || window.webkitAudioContext)();
-  }
-}
-
-function playSound(freq, duration, type = 'sine') {
-  if (!soundEnabled) return;
-  initAudio();
-  const osc = audioContext.createOscillator();
-  const gain = audioContext.createGain();
-  osc.frequency.value = freq;
-  osc.type = type;
-  gain.gain.setValueAtTime(0.3, audioContext.currentTime);
-  gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
-  osc.connect(gain);
-  gain.connect(audioContext.destination);
-  osc.start();
-  osc.stop(audioContext.currentTime + duration);
-}
-
-// UI Elements
-const shotButtons = document.querySelectorAll('#shotTypes .btn');
-const curveControl = document.getElementById('curveControl');
-shotButtons.forEach(btn => {
-  btn.addEventListener('click', () => {
-    shotButtons.forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    shotType = btn.dataset.type;
-    // show/hide curve control
-    if (curveControl) curveControl.style.display = shotType === 'curve' ? 'block' : 'none';
-  });
-});
-
-const zoneButtons = document.querySelectorAll('#zones .zone');
-zoneButtons.forEach(zone => {
-  zone.addEventListener('click', () => {
-    zoneButtons.forEach(z => z.classList.remove('selected'));
-    zone.classList.add('selected');
-    selectedZone = zone.dataset.zone;
-    updateTargetPoint();
-  });
-});
-
-const shootBtn = document.getElementById('shootBtn');
-const resetBtn = document.getElementById('resetBtn');
-const soundBtn = document.getElementById('soundBtn');
-const modeBtn = document.getElementById('modeBtn');
-const powerFill = document.getElementById('powerFill');
-const difficultySlider = document.getElementById('difficulty');
-const curveSlider = document.getElementById('curveSpin');
-const curveVal = document.getElementById('curveVal');
-if (curveSlider) {
-  curveSlider.addEventListener('input', (e) => {
-    curveSpin = parseFloat(e.target.value);
-    if (curveVal) curveVal.textContent = (Math.round(curveSpin * 100)) + '%';
-  });
-  // hide until curve selected
-  if (curveControl) curveControl.style.display = 'none';
-}
-
-// Tournament state and UI
-const advanceRoundBtn = document.getElementById('advanceRoundBtn');
-const resetTournamentBtn = document.getElementById('resetTournamentBtn');
-const bracketEl = document.getElementById('bracket');
-const tournamentInfo = document.getElementById('tournamentInfo');
-
-const TEAMS = [
-  { id: 'POR', name: 'Portugal', flag: '🇵🇹', primary: '#006600', secondary: '#FF0000' },
-  { id: 'BRA', name: 'Brazil', flag: '🇧🇷', primary: '#FFDF00', secondary: '#009C3B' },
-  { id: 'ARG', name: 'Argentina', flag: '🇦🇷', primary: '#74ACDF', secondary: '#FFFFFF' },
-  { id: 'FRA', name: 'France', flag: '🇫🇷', primary: '#002395', secondary: '#ED2939' },
-  { id: 'DEU', name: 'Germany', flag: '🇩🇪', primary: '#000000', secondary: '#DD0000' },
-  { id: 'ENG', name: 'England', flag: '🏴', primary: '#FFFFFF', secondary: '#D90012' },
-  { id: 'USA', name: 'USA', flag: '🇺🇸', primary: '#002868', secondary: '#BF0A30' },
-  { id: 'ITA', name: 'Italy', flag: '🇮🇹', primary: '#007A3D', secondary: '#CE2B37' }
-];
-
-let tournament = {
-  rounds: [], // array of rounds; each round is array of match objects {a,b,scoreA,scoreB,winner}
-  currentRound: 0,
-  active: false
-};
-
-function shuffleArray(arr) {
-  const a = arr.slice();
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
-  }
-  return a;
-}
-
-function generateBracket(teams) {
-  // For a single-elimination bracket, pair sequentially after shuffling
-  const shuffled = shuffleArray(teams);
-  const matches = [];
-  for (let i = 0; i < shuffled.length; i += 2) {
-    // store team ids (not objects) so rendering is consistent
-    matches.push({ a: shuffled[i].id, b: shuffled[i+1].id, scoreA: null, scoreB: null, winner: null });
-  }
-  tournament.rounds = [matches];
-  // fill empty rounds up to final
-  let matchCount = matches.length;
-  while (matchCount > 1) {
-    matchCount = Math.ceil(matchCount / 2);
-    tournament.rounds.push(new Array(matchCount).fill(null).map(() => ({ a: null, b: null, scoreA: null, scoreB: null, winner: null })));
-  }
-  tournament.currentRound = 0;
-}
-
-function samplePoisson(lambda) {
-  // Knuth algorithm
-  let L = Math.exp(-lambda);
-  let k = 0;
-  let p = 1;
-  do {
-    k++;
-    p *= Math.random();
-  } while (p > L);
-  return k - 1;
-}
-
-function simulateMatch(a, b) {
-  // simple simulation using Poisson goals with small randomness
-  const base = 1.3; // expected goals per team
-  const lambdaA = base + (Math.random() - 0.5) * 0.6;
-  const lambdaB = base + (Math.random() - 0.5) * 0.6;
-  let gA = samplePoisson(lambdaA);
-  let gB = samplePoisson(lambdaB);
-  // extra-time if tie
-  if (gA === gB) {
-    const etA = samplePoisson(0.6);
-    const etB = samplePoisson(0.6);
-    gA += etA; gB += etB;
-  }
-  // penalties if still tied
-  if (gA === gB) {
-    // choose winner randomly but produce penalty score-like result
-    const winnerA = Math.random() > 0.5;
-    if (winnerA) gA += 1; else gB += 1;
-  }
-  return { scoreA: gA, scoreB: gB, winner: gA > gB ? a : b };
-}
-
-function renderBracket() {
-  const sideBracket = document.getElementById('bracket');
-  const bracketModalContent = document.getElementById('bracketModalContent');
-  if (!sideBracket && !bracketModalContent) return;
-  if (sideBracket) sideBracket.innerHTML = '';
-  if (bracketModalContent) bracketModalContent.innerHTML = '';
-  for (let r = 0; r < tournament.rounds.length; r++) {
-    const col = document.createElement('div');
-    col.style.display = 'inline-block';
-    col.style.verticalAlign = 'top';
-    col.style.marginRight = '12px';
-    const title = document.createElement('div');
-    title.style.fontWeight = '700';
-    title.style.color = 'var(--accent)';
-    title.style.marginBottom = '6px';
-    // dynamic round title based on teams remaining
-    const initialTeams = tournament.rounds[0].length * 2;
-    const teamsRemaining = Math.max(1, initialTeams / Math.pow(2, r));
-    function roundName(n) {
-      if (n >= 16) return `Round of ${n}`;
-      if (n === 8) return 'Quarterfinals (8)';
-      if (n === 4) return 'Semifinals (4)';
-      if (n === 2) return 'Final (2)';
-      return 'Result';
-    }
-    title.textContent = roundName(teamsRemaining);
-    col.appendChild(title);
-    tournament.rounds[r].forEach((m, idx) => {
-      const mEl = document.createElement('div');
-      mEl.style.padding = '6px 8px';
-      mEl.style.borderRadius = '8px';
-      mEl.style.marginBottom = '8px';
-      mEl.style.background = 'rgba(255,255,255,0.02)';
-      mEl.style.fontFamily = "'Share Tech Mono', monospace";
-      mEl.style.display = 'flex';
-      mEl.style.justifyContent = 'space-between';
-      mEl.style.alignItems = 'center';
-
-      if (!m || !m.a || !m.b) {
-        const text = document.createElement('div');
-        text.textContent = 'TBD';
-        mEl.appendChild(text);
-      } else {
-        // left: teams with color boxes
-        const teamWrap = document.createElement('div');
-        teamWrap.style.display = 'flex';
-        teamWrap.style.gap = '8px';
-        teamWrap.style.alignItems = 'center';
-
-        const aBox = document.createElement('div');
-        aBox.style.display = 'flex';
-        aBox.style.alignItems = 'center';
-        aBox.style.gap = '8px';
-        aBox.style.padding = '6px 8px';
-        aBox.style.borderRadius = '6px';
-        const teamA = TEAMS.find(t => t.id === m.a) || { flag: '?', name: m.a, primary: '#ffffff' };
-        aBox.style.background = teamA.primary || '#ffffff';
-        aBox.style.color = '#021018';
-        aBox.innerHTML = `<div style="font-size:16px">${teamA.flag}</div><div style="font-size:12px">${teamA.name}</div>`;
-
-        const vsDiv = document.createElement('div');
-        vsDiv.style.color = 'var(--muted)';
-        vsDiv.style.fontSize = '12px';
-        vsDiv.textContent = m.scoreA != null ? `${m.scoreA}` : '';
-
-        const bBox = document.createElement('div');
-        bBox.style.display = 'flex';
-        bBox.style.alignItems = 'center';
-        bBox.style.gap = '8px';
-        bBox.style.padding = '6px 8px';
-        bBox.style.borderRadius = '6px';
-        const teamB = TEAMS.find(t => t.id === m.b) || { flag: '?', name: m.b, primary: '#ffffff' };
-        bBox.style.background = teamB.primary || '#ffffff';
-        bBox.style.color = '#021018';
-        bBox.innerHTML = `<div style="font-size:16px">${teamB.flag}</div><div style="font-size:12px">${teamB.name}</div>`;
-
-        teamWrap.appendChild(aBox);
-        const middle = document.createElement('div');
-        middle.style.display = 'flex';
-        middle.style.flexDirection = 'column';
-        middle.style.alignItems = 'center';
-        middle.innerHTML = `<div style="font-weight:700; color:var(--accent)">${teamA.flag} ${teamA.name} <span style="color:var(--muted);">vs</span> ${teamB.flag} ${teamB.name}</div><div style="font-family:'Share Tech Mono'">${m.scoreA != null ? m.scoreA : '-'} - ${m.scoreB != null ? m.scoreB : '-'}</div>`;
-        teamWrap.appendChild(middle);
-        teamWrap.appendChild(bBox);
-
-        mEl.appendChild(teamWrap);
-
-        // right: action buttons
-        const actions = document.createElement('div');
-        actions.style.display = 'flex';
-        actions.style.gap = '8px';
-
-        // If player's team is involved and match not played, add Play button
-        const involvesPlayer = (playerTeamId && (m.a === playerTeamId || m.b === playerTeamId));
-        if (involvesPlayer && m.scoreA == null) {
-          const playBtn = document.createElement('button');
-          playBtn.className = 'btn play-btn';
-          playBtn.textContent = 'Play';
-          playBtn.addEventListener('click', () => {
-            playMatch(m, r, idx);
-          });
-          actions.appendChild(playBtn);
-        } else {
-          // allow simulate button (existing quick simulate)
-          const simBtn = document.createElement('button');
-          simBtn.className = 'btn';
-          simBtn.textContent = (m.scoreA != null) ? 'Played' : 'Sim';
-          simBtn.addEventListener('click', () => {
-            if (!m || !m.a || !m.b) return;
-            if (m.scoreA != null) return;
-            const res = simulateMatch(m.a, m.b);
-            m.scoreA = res.scoreA; m.scoreB = res.scoreB; m.winner = res.winner;
-            advanceWinnerToNextRound(r, idx, m.winner);
-            renderBracket();
-          });
-          actions.appendChild(simBtn);
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Neon Strike</title>
+    <!-- Neon/Cyberpunk font -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Share+Tech+Mono&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #0b5f2a;
+        --panel: rgba(8, 30, 12, 0.88);
+        --accent: #ffffff;
+        --accent-2: #d6f5d6;
+        --muted: #cfe7d1;
+        --good: #22c55e;
+        --bad: #ef4444;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family:
+          "Orbitron",
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          Arial,
+          sans-serif;
+        background: linear-gradient(180deg, #0b1220 0%, #141b2a 60%);
+        color: #f8fff8;
+        min-height: 100vh;
+        padding: 24px;
+      }
+
+      #app {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: 340px 1fr;
+        gap: 20px;
+      }
+      .right-column {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+      .field-card {
+        padding: 10px;
+      }
+      .field-card #canvasWrapper {
+        aspect-ratio: 16/9;
+      }
+
+      .card {
+        background: var(--panel);
+        border-radius: 10px;
+        padding: 18px;
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+      }
+
+      #canvasWrapper {
+        position: relative;
+        aspect-ratio: 16/9;
+        background: linear-gradient(180deg, #14873e, #0b5f2a);
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.55);
+        border: 2px solid rgba(0, 0, 0, 0.12);
+      }
+
+      #canvas {
+        width: 100%;
+        height: 100%;
+        display: block;
+      }
+      .hud {
+        position: absolute;
+        top: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        gap: 16px;
+        align-items: center;
+        justify-content: center;
+        padding: 8px 14px;
+        background: rgba(0, 0, 0, 0.35);
+        border: 1px solid rgba(255, 255, 255, 0.35);
+        border-radius: 999px;
+        backdrop-filter: blur(4px);
+        color: #ffffff;
+        font-weight: 700;
+        z-index: 10;
+      }
+      .shootout-strip {
+        position: absolute;
+        top: 52px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 8px 14px;
+        background: rgba(0, 0, 0, 0.45);
+        border: 1px solid rgba(255, 255, 255, 0.35);
+        border-radius: 10px;
+        color: #ffffff;
+        font-size: 12px;
+        z-index: 10;
+      }
+      .shootout-strip .label {
+        opacity: 0.85;
+        letter-spacing: 0.5px;
+      }
+      .kick-row {
+        display: flex;
+        gap: 6px;
+        align-items: center;
+      }
+      .kick-slot {
+        width: 14px;
+        height: 14px;
+        border-radius: 3px;
+        background: rgba(255, 255, 255, 0.18);
+        border: 1px solid rgba(255, 255, 255, 0.35);
+      }
+      .kick-slot.scored {
+        background: #22c55e;
+        border-color: #16a34a;
+      }
+      .kick-slot.missed {
+        background: #ef4444;
+        border-color: #dc2626;
+      }
+      .hud .pill {
+        min-width: 80px;
+        text-align: center;
+        padding: 4px 10px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.12);
+        font-size: 13px;
+        letter-spacing: 0.5px;
+      }
+
+      /* Startup modal */
+      .startup-modal {
+        position: fixed;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(0, 0, 0, 0.6);
+        z-index: 1200;
+      }
+      .startup-card {
+        background: linear-gradient(
+          180deg,
+          rgba(10, 10, 20, 0.95),
+          rgba(5, 5, 15, 0.95)
+        );
+        border-radius: 12px;
+        padding: 20px 24px;
+        width: 420px;
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.7);
+        border: 1px solid rgba(0, 255, 246, 0.06);
+        text-align: center;
+      }
+      .start-screen {
+        background: radial-gradient(
+          circle at top,
+          rgba(25, 60, 120, 0.95),
+          rgba(5, 12, 24, 0.98)
+        );
+        border: 2px solid rgba(255, 255, 255, 0.2);
+        width: min(900px, 92vw);
+        text-align: left;
+        padding: 28px;
+      }
+      .start-screen h2 {
+        font-size: 28px;
+        margin-bottom: 6px;
+        letter-spacing: 1px;
+      }
+      .start-screen .tagline {
+        color: var(--muted);
+        margin-bottom: 14px;
+      }
+      .start-screen .team-selector {
+        background: rgba(0, 0, 0, 0.25);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+      }
+      .fade-out {
+        animation: fadeOut 0.6s ease forwards;
+      }
+      @keyframes fadeOut {
+        to {
+          opacity: 0;
+          transform: scale(0.98);
         }
-
-        mEl.appendChild(actions);
+      }
+      .startup-card h2 {
+        color: var(--accent);
+        margin-bottom: 8px;
+      }
+      .startup-card p {
+        color: var(--muted);
+        margin-bottom: 16px;
+      }
+      .startup-card .btn {
+        min-width: 120px;
       }
 
-      col.appendChild(mEl);
-    });
-    if (sideBracket) sideBracket.appendChild(col);
-    if (bracketModalContent) bracketModalContent.appendChild(col.cloneNode(true));
-  }
-  if (tournamentInfo) {
-    tournamentInfo.textContent = tournament.active ? `Current Round: ${tournament.currentRound + 1} / ${tournament.rounds.length}` : 'Tournament not started';
-  }
-}
-
-function advanceWinnerToNextRound(roundIdx, matchIdx, winner) {
-  const nextRound = roundIdx + 1;
-  if (nextRound >= tournament.rounds.length) return;
-  const targetIdx = Math.floor(matchIdx / 2);
-  const slot = tournament.rounds[nextRound][targetIdx];
-  if (!slot) tournament.rounds[nextRound][targetIdx] = { a: winner, b: null, scoreA: null, scoreB: null, winner: null };
-  else {
-    if (!slot.a) slot.a = winner; else slot.b = winner;
-  }
-}
-
-function advanceRound() {
-  if (!tournament.active) return;
-  const r = tournament.currentRound;
-  const matches = tournament.rounds[r];
-  matches.forEach((m, idx) => {
-    if (!m || !m.a || !m.b) return;
-    if (m.scoreA == null) {
-      const res = simulateMatch(m.a, m.b);
-      m.scoreA = res.scoreA; m.scoreB = res.scoreB; m.winner = res.winner;
-      advanceWinnerToNextRound(r, idx, m.winner);
-    }
-  });
-  tournament.currentRound++;
-  if (tournament.currentRound >= tournament.rounds.length) {
-    tournament.active = false;
-  }
-  renderBracket();
-}
-
-function startTournament() {
-  generateBracket(TEAMS);
-  tournament.active = true;
-  tournament.currentRound = 0;
-  renderBracket();
-}
-
-function resetTournament() {
-  tournament = { rounds: [], currentRound: 0, active: false };
-  if (bracketEl) bracketEl.innerHTML = '';
-  if (tournamentInfo) tournamentInfo.textContent = 'Tournament reset';
-}
-
-// --- Penalty shootout play integration ---
-let shootoutActive = false;
-let shootoutState = null;
-let lastShotPending = false; // true while a kick is in flight
-let lastShotOwner = null; // 'player' or 'ai'
-
-function playMatch(match, roundIdx, matchIdx) {
-  if (!match || !match.a || !match.b) return;
-  // initialize shootout state
-  shootoutActive = true;
-  shootoutState = {
-    matchRef: match,
-    roundIdx,
-    matchIdx,
-    scoreA: 0,
-    scoreB: 0,
-    kickNum: 0, // total kicks taken so far
-    totalEach: 5,
-    playerIsA: (match.a === playerTeamId),
-    // explicit flag: does the player shoot on the upcoming kick? (true -> player shoots)
-    playerShootsNext: true,
-    history: []
-  };
-
-  // per-team kick histories for UI tracker (true=goal, false=miss)
-  shootoutState.scoreHistoryA = [];
-  shootoutState.scoreHistoryB = [];
-
-  // populate overlay UI
-  const a = TEAMS.find(t => t.id === match.a) || { flag: '?', name: match.a, primary: '#ddd' };
-  const b = TEAMS.find(t => t.id === match.b) || { flag: '?', name: match.b, primary: '#ddd' };
-  document.getElementById('teamAFlag').textContent = a.flag;
-  document.getElementById('teamAName').textContent = a.name;
-  document.getElementById('teamBBox').style.background = b.primary;
-  document.getElementById('teamABox').style.background = a.primary;
-  document.getElementById('teamBFlag').textContent = b.flag;
-  document.getElementById('teamBName').textContent = b.name;
-  document.getElementById('shootoutScore').textContent = '0 - 0';
-  document.getElementById('shootoutKicks').textContent = '0';
-  document.getElementById('shootoutStatus').textContent = 'You shoot first for your team';
-  document.getElementById('shootoutOverlay').style.display = 'flex';
-
-  // show top penalty tracker and initialize labels
-  const aLabel = document.getElementById('teamAName');
-  const bLabel = document.getElementById('teamBName');
-  const track = document.getElementById('penaltyTracker');
-  if (track) { track.style.display = 'flex'; track.style.zIndex = '2200'; track.style.alignItems = 'center'; }
-  const tAL = document.getElementById('penaltyTeamALabel');
-  const tBL = document.getElementById('penaltyTeamBLabel');
-  if (tAL) tAL.textContent = a.name;
-  if (tBL) tBL.textContent = b.name;
-  updatePenaltyTracker();
-
-  // lock tournament UI while playing
-  tournament.active = false;
-
-  // disable manual mode switching while shootout runs
-  if (modeBtn) { modeBtn.disabled = true; modeBtn.textContent = 'Shootout (auto)'; }
-
-  // start first kick (player shoots first)
-  startNextKick();
-}
-
-function closeShootout() {
-  shootoutActive = false;
-  shootoutState = null;
-  lastShotPending = false;
-  lastShotOwner = null;
-  document.getElementById('shootoutOverlay').style.display = 'none';
-  const track = document.getElementById('penaltyTracker'); if (track) track.style.display = 'none';
-  // resume tournament UI
-  tournament.active = true;
-  renderBracket();
-  // re-enable mode toggle if present
-  if (modeBtn) { modeBtn.disabled = false; modeBtn.textContent = 'Mode: Shooter'; }
-}
-
-// AI shoot variant for shootout (doesn't touch global attempts/goals/stats)
-function aiShootForShootout() {
-  if (ball.active) return;
-  const difficulty = parseInt(difficultySlider.value);
-  const base = 0.55 + (difficulty - 1) * 0.12;
-  const powerLevel = Math.min(1, Math.max(0.15, base + (Math.random() - 0.5) * 0.2));
-  const err = 120 - difficulty * 18;
-  const tx = CONFIG.goalX + 40 + Math.random() * (CONFIG.goalWidth - 80) + (Math.random() - 0.5) * err;
-  const ty = CONFIG.goalY + 20 + Math.random() * (CONFIG.goalHeight - 40) + (Math.random() - 0.5) * err * 0.4;
-
-  // place ball at penalty spot
-  ball.x = CONFIG.width / 2;
-  ball.y = CONFIG.height - 100;
-  ball.z = 0;
-  ball.trail = [];
-  ball.missedGoal = false;
-  ball.inGoal = false;
-  ball.scored = false;
-
-  const dx = tx - ball.x;
-  const dy = ty - ball.y;
-  let speed = 600 + powerLevel * 700;
-  const types = ['power','curve','knuckle','finesse'];
-  const chosen = types[Math.floor(Math.random() * types.length)];
-  let localSpin = 0;
-  if (chosen === 'power') speed *= 1.25;
-  if (chosen === 'curve') localSpin = (Math.random() > 0.5 ? 1 : -1) * 450;
-  if (chosen === 'knuckle') { speed *= 1.1; localSpin = 0; }
-  if (chosen === 'finesse') { speed *= 0.9; localSpin = (Math.random() - 0.5) * 180; }
-
-  const distance = Math.sqrt(dx*dx + dy*dy);
-  const timeToGoal = Math.max(0.2, distance / speed);
-  ball.vx = dx / timeToGoal;
-  ball.vy = (dy / timeToGoal) - (0.5 * CONFIG.gravity * timeToGoal);
-  ball.vz = 0;
-  ball.spin = localSpin;
-  ball.active = true;
-
-  // mark pending shot
-  lastShotPending = true;
-  lastShotOwner = 'ai';
-}
-
-function updatePenaltyTracker() {
-  const s = shootoutState;
-  const aEl = document.getElementById('teamAPenalties');
-  const bEl = document.getElementById('teamBPenalties');
-  if (!s || !aEl || !bEl) return;
-  aEl.innerHTML = '';
-  bEl.innerHTML = '';
-  // total slots
-  const total = s.totalEach || 5;
-  const nextShooterIsA = s.playerShootsNext ? s.playerIsA : !s.playerIsA;
-  for (let i = 0; i < total; i++) {
-    const slot = document.createElement('div');
-    slot.className = 'penalty-slot';
-    const valA = s.scoreHistoryA[i];
-    if (valA === true) { slot.classList.add('scored'); slot.textContent = '✅'; }
-    else if (valA === false) { slot.classList.add('missed'); slot.textContent = '❌'; }
-    else { slot.classList.add('pending'); slot.textContent = '▫'; }
-    // highlight next upcoming slot for team A
-    if (nextShooterIsA && i === s.scoreHistoryA.length) slot.classList.add('next');
-    aEl.appendChild(slot);
-  }
-  for (let i = 0; i < total; i++) {
-    const slot = document.createElement('div');
-    slot.className = 'penalty-slot';
-    const valB = s.scoreHistoryB[i];
-    if (valB === true) { slot.classList.add('scored'); slot.textContent = '✅'; }
-    else if (valB === false) { slot.classList.add('missed'); slot.textContent = '❌'; }
-    else { slot.classList.add('pending'); slot.textContent = '▫'; }
-    // highlight next upcoming slot for team B
-    if (!nextShooterIsA && i === s.scoreHistoryB.length) slot.classList.add('next');
-    bEl.appendChild(slot);
-  }
-}
-
-function startNextKick() {
-  if (!shootoutActive || !shootoutState) return;
-  const s = shootoutState;
-  // show kicks count
-  document.getElementById('shootoutKicks').textContent = String(s.kickNum);
-  // determine who shoots next based on explicit flag
-  if (s.playerShootsNext) {
-    // player will shoot now
-    gameMode = 'shooter';
-    document.getElementById('shootoutStatus').textContent = 'Your turn to shoot';
-    lastShotPending = false;
-    lastShotOwner = null; // will be set when player fires
-    // wait for player to click and call shoot(); when shot finishes, resolution will be handled in loop
-  } else {
-    // AI will shoot now while player defends
-    gameMode = 'keeper';
-    document.getElementById('shootoutStatus').textContent = 'Defend! AI is shooting';
-    // schedule a short delay so player can reposition
-    setTimeout(() => {
-      aiShootForShootout();
-    }, 500);
-  }
-}
-
-function resolveShotOutcome() {
-  if (!shootoutActive || !shootoutState) return;
-  const s = shootoutState;
-  // determine if last shot scored
-  const scored = !!ball.scored || (!!ball.inGoal && !ball.missedGoal);
-  // Update state depending on which side took the shot
-  const playerShot = (lastShotOwner === 'player');
-  if (playerShot) {
-    if (s.playerIsA) { if (scored) s.scoreA++; }
-    else { if (scored) s.scoreB++; }
-  } else {
-    if (s.playerIsA) { if (scored) s.scoreB++; }
-    else { if (scored) s.scoreA++; }
-  }
-
-  s.kickNum++;
-  // flip who will shoot next so player alternates between shooter and keeper every kick
-  s.playerShootsNext = !s.playerShootsNext;
-  s.history.push({ owner: lastShotOwner, scored });
-  // push into per-team history for UI
-  if (playerShot) {
-    if (s.playerIsA) s.scoreHistoryA.push(!!scored);
-    else s.scoreHistoryB.push(!!scored);
-  } else {
-    if (s.playerIsA) s.scoreHistoryB.push(!!scored);
-    else s.scoreHistoryA.push(!!scored);
-  }
-  updatePenaltyTracker();
-  document.getElementById('shootoutScore').textContent = `${s.scoreA} - ${s.scoreB}`;
-  document.getElementById('shootoutKicks').textContent = String(s.kickNum);
-
-  // reset ball state for next kick
-  ball.active = false;
-  ball.trail = [];
-  ball.missedGoal = false;
-  ball.inGoal = false;
-  ball.scored = false;
-
-  // check winner: after each pair of kicks once both teams taken equal kicks and at least totalEach each
-  const kicksTakenEach = Math.floor((s.kickNum + 1) / 2);
-  if (kicksTakenEach >= s.totalEach) {
-    if ((s.kickNum % 2) === 0) {
-      // pair completed
-      if (s.scoreA !== s.scoreB) {
-        finalizeShootout(s);
-        return;
+      /* Tournament / Shootout overlay styles (WC themed) */
+      .shootout-overlay {
+        position: fixed;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(
+          180deg,
+          rgba(0, 0, 0, 0.6),
+          rgba(2, 2, 6, 0.8)
+        );
+        z-index: 1300;
       }
-    }
-  }
-
-  // sudden death: if both have taken >= totalEach and scores tied, continue until a pair produces difference
-  if (s.kickNum >= s.totalEach * 2 && (s.kickNum % 2) === 0 && s.scoreA !== s.scoreB) {
-    finalizeShootout(s);
-    return;
-  }
-
-  // continue next kick
-  lastShotPending = false;
-  lastShotOwner = null;
-  // small delay before next kick
-  setTimeout(() => { startNextKick(); }, 700);
-}
-
-function finalizeShootout(s) {
-  // determine winner id
-  const winnerId = s.scoreA > s.scoreB ? s.matchRef.a : s.matchRef.b;
-  s.matchRef.scoreA = s.scoreA;
-  s.matchRef.scoreB = s.scoreB;
-  s.matchRef.winner = winnerId;
-  advanceWinnerToNextRound(s.roundIdx, s.matchIdx, winnerId);
-  // close overlay and render bracket
-  document.getElementById('shootoutOverlay').style.display = 'none';
-  shootoutActive = false;
-  shootoutState = null;
-  const track = document.getElementById('penaltyTracker'); if (track) track.style.display = 'none';
-  tournament.active = true;
-  renderBracket();
-  // re-enable mode toggle
-  if (modeBtn) { modeBtn.disabled = false; modeBtn.textContent = 'Mode: Shooter'; }
-}
-
-// startTournamentBtn removed from side panel; start tournament is triggered from modal/team selection or via View Bracket flow
-if (advanceRoundBtn) advanceRoundBtn.addEventListener('click', advanceRound);
-if (resetTournamentBtn) resetTournamentBtn.addEventListener('click', resetTournament);
-const viewBracketBtn = document.getElementById('viewBracketBtn');
-const bracketModal = document.getElementById('bracketModal');
-const closeBracketBtn = document.getElementById('closeBracketBtn');
-if (viewBracketBtn) viewBracketBtn.addEventListener('click', () => { renderBracket(); if (bracketModal) bracketModal.style.display = 'flex'; });
-if (closeBracketBtn) closeBracketBtn.addEventListener('click', () => { if (bracketModal) bracketModal.style.display = 'none'; });
-
-// Startup modal handlers: require team selection
-const startupModal = document.getElementById('startupModal');
-const modalTournamentBtn = document.getElementById('modalTournamentBtn');
-const modalPracticeBtn = document.getElementById('modalPracticeBtn');
-
-// build team selector inside modal
-let playerTeamId = null;
-let playerTeamData = null;
-let intendedMode = null; // 'tournament' or 'practice' when showing selector
-
-// Theme helpers
-function applyWCTheme() {
-  const root = document.documentElement.style;
-  root.setProperty('--accent', '#FFD700');
-  root.setProperty('--accent-2', '#D90012');
-  root.setProperty('--good', '#00A859');
-  root.setProperty('--bad', '#E03A3E');
-  root.setProperty('--panel', 'linear-gradient(180deg, rgba(2,6,20,0.96), rgba(8,10,16,0.96))');
-}
-function applyNeonTheme() {
-  const root = document.documentElement.style;
-  // provide a cleaner 'practice' palette that's still warm but not harsh neon
-  root.setProperty('--accent', '#FFD966');
-  root.setProperty('--accent-2', '#0073B6');
-  root.setProperty('--good', '#7BD389');
-  root.setProperty('--bad', '#E65A4C');
-  root.setProperty('--panel', 'linear-gradient(180deg, rgba(4,10,12,0.9), rgba(6,18,30,0.9))');
-}
-
-// load persisted team selection (validate against current TEAMS)
-const persisted = localStorage.getItem('neonstrike_team');
-if (persisted) {
-  const found = TEAMS.find(t => t.id === persisted) || null;
-  if (found) {
-    playerTeamId = persisted;
-    playerTeamData = found;
-    keeper.primaryColor = playerTeamData.primary;
-    keeper.gloveColor = playerTeamData.secondary;
-  } else {
-    // remove stale stored id
-    localStorage.removeItem('neonstrike_team');
-    playerTeamId = null;
-    playerTeamData = null;
-  }
-}
-
-function buildTeamSelector() {
-  const modalCard = document.querySelector('.startup-card');
-  if (!modalCard) return;
-  if (modalCard.querySelector('.team-selector')) return; // already built
-  const selDiv = document.createElement('div');
-  selDiv.className = 'team-selector';
-  selDiv.style.display = 'grid';
-  // compact selector: 4 columns x 2 rows for 8 teams
-  selDiv.style.gridTemplateColumns = 'repeat(4, 1fr)';
-  selDiv.style.gridAutoRows = '96px';
-  selDiv.style.gap = '10px';
-  selDiv.style.margin = '8px 0 12px 0';
-  selDiv.style.padding = '14px';
-  selDiv.style.borderRadius = '8px';
-  selDiv.style.background = 'linear-gradient(180deg, rgba(0,24,12,0.7), rgba(0,48,80,0.6))';
-  TEAMS.forEach(t => {
-    const b = document.createElement('button');
-    b.className = 'btn';
-    b.style.display = 'flex';
-    b.style.flexDirection = 'column';
-    b.style.alignItems = 'center';
-    b.style.justifyContent = 'center';
-    b.style.padding = '8px';
-    b.style.height = '72px';
-    b.innerHTML = `<div style="font-size:22px">${t.flag}</div><div style="font-size:13px;margin-top:6px">${t.name}</div>`;
-    b.addEventListener('click', () => {
-      // delegate selection to tournamentController for consistent handling
-      if (window.tournamentController && typeof window.tournamentController.onTeamPicked === 'function') {
-        window.tournamentController.onTeamPicked(t.id);
-      } else {
-        selectPlayerTeam(t.id);
-        modalCard.querySelectorAll('.team-selector .btn').forEach(x => x.classList.remove('active'));
-        b.classList.add('active');
+      .shootout-card {
+        width: 820px;
+        background: linear-gradient(
+          180deg,
+          rgba(10, 12, 20, 0.98),
+          rgba(4, 6, 12, 0.98)
+        );
+        border-radius: 12px;
+        padding: 18px;
+        display: grid;
+        grid-template-columns: 1fr 260px;
+        gap: 12px;
+        border: 1px solid rgba(0, 255, 246, 0.06);
       }
-    });
-    selDiv.appendChild(b);
-  });
-  // fill remaining slots to align grid (total 8 slots)
-  const totalSlots = 8;
-  const empties = Math.max(0, totalSlots - TEAMS.length);
-  for (let i = 0; i < empties; i++) {
-    const d = document.createElement('div');
-    d.style.borderRadius = '6px';
-    d.style.background = 'rgba(255,255,255,0.02)';
-    selDiv.appendChild(d);
-  }
-  modalCard.insertBefore(selDiv, modalCard.children[2]);
-}
-
-function selectPlayerTeam(id) {
-  playerTeamId = id;
-  playerTeamData = TEAMS.find(t => t.id === id) || null;
-  // apply keeper skin colors for player's team
-  if (playerTeamData) {
-    keeper.primaryColor = playerTeamData.primary;
-    keeper.gloveColor = playerTeamData.secondary;
-  }
-  localStorage.setItem('neonstrike_team', id);
-}
-
-// TournamentController: centralizes startup flow (mode -> team selection -> start)
-window.tournamentController = (function(){
-  let mode = null; // 'tournament' or 'practice'
-  function open(m) {
-    mode = m;
-    // if already have team, proceed immediately
-    if (playerTeamId && TEAMS.find(t => t.id === playerTeamId)) {
-      if (startupModal) startupModal.style.display = 'none';
-      if (m === 'tournament') { applyWCTheme(); startTournament(); if (tournamentInfo) tournamentInfo.textContent = 'Tournament started'; }
-      else { applyNeonTheme(); tournament.active = false; if (tournamentInfo) tournamentInfo.textContent = 'Practice mode'; }
-      mode = null;
-      return;
-    }
-    // otherwise build selector inside modal (and keep modal visible)
-    buildTeamSelector();
-    if (startupModal) startupModal.style.display = 'flex';
-  }
-  function onTeamPicked(id) {
-    selectPlayerTeam(id);
-    if (startupModal) startupModal.style.display = 'none';
-    if (mode === 'tournament') { applyWCTheme(); startTournament(); if (tournamentInfo) tournamentInfo.textContent = 'Tournament started'; }
-    else { applyNeonTheme(); tournament.active = false; if (tournamentInfo) tournamentInfo.textContent = 'Practice mode'; }
-    mode = null;
-  }
-  return { open, onTeamPicked };
-})();
-
-// do NOT build selector immediately; wait until user picks Tournament/Practice so flow is: choose mode -> select team
-
-if (modalPracticeBtn) {
-  modalPracticeBtn.addEventListener('click', () => {
-    if (window.tournamentController && typeof window.tournamentController.open === 'function') {
-      window.tournamentController.open('practice');
-    } else {
-      // fallback
-      if (!playerTeamId) { intendedMode = 'practice'; buildTeamSelector(); return; }
-      if (startupModal) startupModal.style.display = 'none';
-      tournament.active = false; applyNeonTheme(); if (tournamentInfo) tournamentInfo.textContent = 'Practice mode';
-    }
-  });
-}
-
-if (modalTournamentBtn) {
-  modalTournamentBtn.addEventListener('click', () => {
-    if (window.tournamentController && typeof window.tournamentController.open === 'function') {
-      window.tournamentController.open('tournament');
-    } else {
-      // fallback
-      if (!playerTeamId) { intendedMode = 'tournament'; buildTeamSelector(); return; }
-      if (startupModal) startupModal.style.display = 'none'; applyWCTheme(); startTournament(); if (tournamentInfo) tournamentInfo.textContent = 'Tournament started';
-    }
-  });
-}
-
-// Shootout overlay buttons
-const shootoutForfeit = document.getElementById('shootoutForfeit');
-const shootoutSimulate = document.getElementById('shootoutSimulate');
-const shootoutClose = document.getElementById('shootoutClose');
-if (shootoutForfeit) shootoutForfeit.addEventListener('click', () => {
-  if (!shootoutActive || !shootoutState) return;
-  // award win to opponent
-  const s = shootoutState;
-  const winnerId = s.playerIsA ? s.matchRef.b : s.matchRef.a;
-  s.matchRef.scoreA = s.scoreA; s.matchRef.scoreB = s.scoreB; s.matchRef.winner = winnerId;
-  advanceWinnerToNextRound(s.roundIdx, s.matchIdx, winnerId);
-  document.getElementById('shootoutOverlay').style.display = 'none';
-  shootoutActive = false; shootoutState = null; tournament.active = true; renderBracket();
-});
-if (shootoutSimulate) shootoutSimulate.addEventListener('click', () => {
-  // auto-simulate the current kick (quick random result)
-  if (!shootoutActive || !shootoutState) return;
-  // random chance to score
-  const chance = 0.7;
-  const scored = Math.random() < chance;
-  // emulate immediate resolution
-  lastShotOwner = shootoutState.playerShootsNext ? 'player' : 'ai';
-  lastShotPending = true;
-  // set ball flags to emulate
-  ball.active = false; ball.scored = scored; ball.inGoal = scored; ball.missedGoal = !scored;
-  resolveShotOutcome();
-});
-if (shootoutClose) shootoutClose.addEventListener('click', () => { closeShootout(); });
-
-// Mode: 'shooter' (player shoots) or 'keeper' (player is keeper, AI shoots)
-let gameMode = 'shooter';
-let aiPending = false;
-let aiScheduled = false;
-let aiCountdownEnd = 0; // timestamp when AI will fire (ms)
-
-// Update target point based on zone
-function updateTargetPoint() {
-  const zones = {
-    tl: { x: 0.2, y: 0.25 },
-    tm: { x: 0.5, y: 0.25 },
-    tr: { x: 0.8, y: 0.25 },
-    ml: { x: 0.2, y: 0.5 },
-    mm: { x: 0.5, y: 0.5 },
-    mr: { x: 0.8, y: 0.5 },
-    bl: { x: 0.2, y: 0.75 },
-    bm: { x: 0.5, y: 0.75 },
-    br: { x: 0.8, y: 0.75 }
-  };
-  
-  const zone = zones[selectedZone] || zones.mm;
-  targetPoint.x = CONFIG.goalX + CONFIG.goalWidth * zone.x;
-  targetPoint.y = CONFIG.goalY + CONFIG.goalHeight * zone.y;
-}
-
-updateTargetPoint();
-
-// Canvas click to set target
-canvas.addEventListener('click', (e) => {
-  const rect = canvas.getBoundingClientRect();
-  const scaleX = CONFIG.width / rect.width;
-  const scaleY = CONFIG.height / rect.height;
-  const x = (e.clientX - rect.left) * scaleX;
-  const y = (e.clientY - rect.top) * scaleY;
-
-  if (gameMode === 'shooter') {
-    // If click is inside goal -> aim there and immediately shoot.
-    if (x >= CONFIG.goalX && x <= CONFIG.goalX + CONFIG.goalWidth &&
-        y >= CONFIG.goalY && y <= CONFIG.goalY + CONFIG.goalHeight) {
-      targetPoint.x = x;
-      targetPoint.y = y;
-      zoneButtons.forEach(z => z.classList.remove('selected'));
-      selectedZone = null;
-
-      // Power determined by vertical click position inside goal (higher -> stronger)
-      const relY = (CONFIG.goalY + CONFIG.goalHeight - y) / CONFIG.goalHeight;
-      const powerLevel = Math.min(1, Math.max(0.15, relY));
-      shoot(powerLevel);
-    } else {
-      // Click outside goal just moves target crosshair
-      targetPoint.x = x;
-      targetPoint.y = y;
-    }
-  } else {
-    // Keeper mode: clicking inside goal repositions keeper horizontally (no auto-dive)
-    if (x >= CONFIG.goalX && x <= CONFIG.goalX + CONFIG.goalWidth &&
-        y >= CONFIG.goalY && y <= CONFIG.goalY + CONFIG.goalHeight) {
-      keeper.x = Math.max(CONFIG.goalX + 40, Math.min(CONFIG.goalX + CONFIG.goalWidth - 40, x));
-    } else {
-      // clicking outside recenters keeper horizontally
-      keeper.x = Math.max(CONFIG.goalX + 40, Math.min(CONFIG.goalX + CONFIG.goalWidth - 40, x));
-    }
-  }
-});
-
-// Keyboard controls for keeper mode: ArrowLeft/ArrowRight to move, Space to dive
-const keys = { left: false, right: false };
-
-// helper to trigger a player dive
-function triggerPlayerDive() {
-  if (keeper.diving) return;
-  // determine a sensible targetX: prefer ball position if active
-  const baseY = CONFIG.goalY + CONFIG.goalHeight - 30;
-  let targetX = keeper.x;
-  if (ball && ball.active) {
-    // aim toward the ball but add lateral bias so the dive looks diagonal
-    const lateralBias = (ball.x - keeper.x) * 0.5 + (ball.x < keeper.x ? -40 : 40);
-    targetX = keeper.x + lateralBias;
-  } else if (keys.left) targetX = keeper.x - 140;
-  else if (keys.right) targetX = keeper.x + 140;
-  targetX = Math.max(CONFIG.goalX + 30, Math.min(CONFIG.goalX + CONFIG.goalWidth - 30, targetX));
-
-  // targetY: dive toward a point above the ground to create a pronounced diagonal
-  let targetY = baseY - 110;
-  if (ball && ball.active) targetY = Math.max(CONFIG.goalY + 30, Math.min(CONFIG.goalY + CONFIG.goalHeight - 20, ball.y - 20));
-
-  keeper.playerDive = true;
-  keeper.diving = true;
-  keeper.diveTime = Date.now();
-  keeper.startX = keeper.x;
-  keeper.startY = keeper.y;
-  keeper.targetX = targetX;
-  keeper.targetY = targetY;
-  keeper.diveDuration = 0.22;
-  // set rotation to 45deg toward the dive direction for a pronounced diagonal pose
-  const sign = Math.sign(keeper.targetX - keeper.startX) || 1;
-  keeper.rotation = sign * (Math.PI / 4);
-}
-
-// Long dive (Space), Low dive (ArrowDown), Jump (ArrowUp) + optional diagonal with left/right
-function triggerLongDive() {
-  if (keeper.diving) return;
-  const baseY = CONFIG.goalY + CONFIG.goalHeight - 30;
-  let targetX = keeper.x;
-  if (ball && ball.active) targetX = keeper.x + (ball.x - keeper.x) * 0.6 + (ball.x < keeper.x ? -80 : 80);
-  else if (keys.left) targetX = keeper.x - 220;
-  else if (keys.right) targetX = keeper.x + 220;
-  targetX = Math.max(CONFIG.goalX + 30, Math.min(CONFIG.goalX + CONFIG.goalWidth - 30, targetX));
-  const targetY = baseY - 140;
-
-  keeper.playerDive = true;
-  keeper.diving = true;
-  keeper.diveTime = Date.now();
-  keeper.startX = keeper.x;
-  keeper.startY = keeper.y;
-  keeper.targetX = targetX;
-  keeper.targetY = targetY;
-  keeper.diveDuration = 0.32; // longer, more committed dive
-  const sign = Math.sign(keeper.targetX - keeper.startX) || 1;
-  keeper.rotation = sign * (Math.PI / 4);
-}
-
-function triggerLowDive() {
-  if (keeper.diving) return;
-  const baseY = CONFIG.goalY + CONFIG.goalHeight - 30;
-  let targetX = keeper.x;
-  if (ball && ball.active) targetX = ball.x;
-  else if (keys.left) targetX = keeper.x - 90;
-  else if (keys.right) targetX = keeper.x + 90;
-  targetX = Math.max(CONFIG.goalX + 30, Math.min(CONFIG.goalX + CONFIG.goalWidth - 30, targetX));
-  const targetY = baseY - 40; // low reach toward post
-
-  keeper.playerDive = true;
-  keeper.diving = true;
-  keeper.diveTime = Date.now();
-  keeper.startX = keeper.x;
-  keeper.startY = keeper.y;
-  keeper.targetX = targetX;
-  keeper.targetY = targetY;
-  keeper.diveDuration = 0.18;
-  const sign = Math.sign(keeper.targetX - keeper.startX) || 1;
-  keeper.rotation = sign * (Math.PI / 4);
-}
-
-function triggerJump() {
-  if (keeper.diving) return;
-  const baseY = CONFIG.goalY + CONFIG.goalHeight - 30;
-  let targetX = keeper.x;
-  if (keys.left) targetX = keeper.x - 100;
-  else if (keys.right) targetX = keeper.x + 100;
-  targetX = Math.max(CONFIG.goalX + 30, Math.min(CONFIG.goalX + CONFIG.goalWidth - 30, targetX));
-  const targetY = baseY - 160; // higher but shorter duration
-
-  keeper.playerDive = true;
-  keeper.diving = true;
-  keeper.diveTime = Date.now();
-  keeper.startX = keeper.x;
-  keeper.startY = keeper.y;
-  keeper.targetX = targetX;
-  keeper.targetY = targetY;
-  keeper.diveDuration = 0.20;
-  const sign = Math.sign(keeper.targetX - keeper.startX) || 1;
-  keeper.rotation = sign * (Math.PI / 4);
-}
-
-document.addEventListener('keydown', (e) => {
-  if (gameMode !== 'keeper') return;
-  // Arrow keys for horizontal movement (flags only)
-  if (e.key === 'ArrowLeft') { keys.left = true; e.preventDefault(); }
-  if (e.key === 'ArrowRight') { keys.right = true; e.preventDefault(); }
-
-  if (e.key === 'ArrowUp') { triggerJump(); e.preventDefault(); }
-  if (e.code === 'Space') { triggerLongDive(); e.preventDefault(); }
-  if (e.key === 'ArrowDown') { triggerLowDive(); e.preventDefault(); }
-});
-
-document.addEventListener('keyup', (e) => {
-  if (gameMode !== 'keeper') return;
-  if (e.key === 'ArrowLeft') { keys.left = false; }
-  if (e.key === 'ArrowRight') { keys.right = false; }
-});
-
-// Shooter controls: switch shot type and tune curve spin with arrow keys
-document.addEventListener('keydown', (e) => {
-  if (gameMode !== 'shooter') return;
-  if (e.key === '1') { shotType = 'power'; }
-  if (e.key === '2') { shotType = 'curve'; }
-  if (e.key === '3') { shotType = 'chip'; }
-  // While preparing a curve, allow left/right to increase spin
-  if (shotType === 'curve') {
-    if (e.key === 'ArrowLeft') { curveSpin = Math.max(-maxCurveSpin, curveSpin - 0.12); }
-    if (e.key === 'ArrowRight') { curveSpin = Math.min(maxCurveSpin, curveSpin + 0.12); }
-  }
-});
-
-// Shoot button - hold to charge (only if element exists)
-if (shootBtn) {
-  shootBtn.addEventListener('mousedown', () => {
-    if (ball.active) return;
-    isCharging = true;
-    chargeStartTime = Date.now();
-    initAudio();
-  });
-
-  shootBtn.addEventListener('touchstart', (e) => {
-    e.preventDefault();
-    if (ball.active) return;
-    isCharging = true;
-    chargeStartTime = Date.now();
-    initAudio();
-  });
-}
-
-function releaseShot() {
-  if (!isCharging) return;
-  isCharging = false;
-  shoot(power);
-  power = 0;
-  if (powerFill) powerFill.style.width = '0%';
-}
-
-document.addEventListener('mouseup', releaseShot);
-document.addEventListener('touchend', releaseShot);
-
-resetBtn.addEventListener('click', resetGame);
-
-modeBtn.addEventListener('click', () => {
-  // Prevent manual toggling during shootouts
-  if (shootoutActive) return;
-  // toggle modes
-  gameMode = gameMode === 'shooter' ? 'keeper' : 'shooter';
-  modeBtn.textContent = gameMode === 'shooter' ? 'Mode: Shooter' : 'Mode: Keeper';
-  // reset some state
-  aiPending = false;
-});
-
-soundBtn.addEventListener('click', () => {
-  soundEnabled = !soundEnabled;
-  soundBtn.textContent = soundEnabled ? 'Sound: ON' : 'Sound: OFF';
-});
-
-// Shoot function with 3D physics
-function shoot(powerLevel) {
-  if (ball.active) return;
-  ball.active = true;
-  ball.missedGoal = false;
-  ball.trail = [];
-  
-  const dx = targetPoint.x - ball.x;
-  const dy = targetPoint.y - ball.y;
-  
-  let speed = 600 + powerLevel * 700;
-  
-  // Shot type modifiers
-  if (shotType === 'power') {
-    speed *= 1.25;
-    ball.spin = (Math.random() - 0.5) * 200;
-  } else if (shotType === 'curve') {
-    speed *= 1.0;
-    ball.spin = (Math.random() > 0.5 ? 1 : -1) * 450;
-  } else if (shotType === 'knuckle') {
-    speed *= 1.1;
-    ball.spin = 0;
-  } else if (shotType === 'finesse') {
-    speed *= 0.9;
-    ball.spin = (Math.random() - 0.5) * 180;
-  }
-  
-  // Calculate velocities - shoot upward toward goal
-  const distance = Math.sqrt(dx * dx + dy * dy);
-  const timeToGoal = distance / speed;
-  
-  ball.vx = dx / timeToGoal;
-  ball.vy = (dy / timeToGoal) - (0.5 * CONFIG.gravity * timeToGoal); // arc upward
-  ball.vz = 0; // will be set when entering goal
-  
-  playSound(150, 0.2, 'sawtooth');
-  
-  // Only increment global attempts outside shootout mode
-  if (!shootoutActive) {
-    attempts++;
-    updateStats();
-  } else {
-    // Mark that a shootout player shot is in flight
-    lastShotPending = true;
-    lastShotOwner = 'player';
-  }
-  
-  // Keeper AI
-  const difficulty = parseInt(difficultySlider.value);
-  const reactionTime = 0.35 - difficulty * 0.04;
-  
-  setTimeout(() => {
-    keeper.diving = true;
-    keeper.diveTime = Date.now();
-    keeper.startX = keeper.x;
-    keeper.startY = keeper.y;
-    // Dive duration scales with difficulty (higher difficulty -> faster dive)
-    keeper.diveDuration = Math.max(0.25, 0.7 - difficulty * 0.08);
-    
-    // Predict where ball will be
-    const errorMargin = 80 * (6 - difficulty);
-    keeper.targetX = targetPoint.x + (Math.random() - 0.5) * errorMargin;
-    keeper.targetY = targetPoint.y + (Math.random() - 0.5) * errorMargin * 0.6;
-    
-    keeper.targetX = Math.max(CONFIG.goalX + 40, Math.min(CONFIG.goalX + CONFIG.goalWidth - 40, keeper.targetX));
-    keeper.targetY = Math.max(CONFIG.goalY + 40, Math.min(CONFIG.goalY + CONFIG.goalHeight - 40, keeper.targetY));
-    
-    // Calculate dive rotation
-    keeper.rotation = Math.atan2(keeper.targetY - keeper.y, keeper.targetX - keeper.x);
-  }, reactionTime * 1000);
-
-  // apply shot-type specific tweaks after initial velocities calculated
-  if (shotType === 'curve') {
-    // use player-controlled curve amount (curveSpin) to bias lateral spin
-    ball.spin = curveSpin * 800 + (Math.random() - 0.5) * 80;
-    // slightly reduce forward speed for more pronounced curve
-    ball.vx *= 0.98;
-  }
-
-  if (shotType === 'chip') {
-    // chip: boost upward component and reduce forward speed for lob
-    const chipBoost = 300 + powerLevel * 450; // higher power -> bigger lob
-    ball.vy -= chipBoost;
-    ball.vx *= 0.9;
-    // small backspin / less Magnus
-    ball.spin = (Math.random() - 0.5) * 80;
-  }
-
-  // reset temporary spin control
-  curveSpin = 0;
-}
-
-// AI shoot function (used when player is keeper)
-function aiShoot() {
-  if (ball.active || gameMode !== 'keeper') return;
-
-  const difficulty = parseInt(difficultySlider.value);
-  // AI decides power: easier -> lower power with variance; harder -> stronger
-  const base = 0.45 + (difficulty - 1) * 0.14; // maps 1..5 -> ~0.45..1.01
-  const powerLevel = Math.min(1, Math.max(0.15, base + (Math.random() - 0.5) * 0.18));
-
-  // AI chooses target inside goal; harder difficulty -> smaller error
-  const err = 120 - difficulty * 18; // difficulty high -> err small
-  const tx = CONFIG.goalX + 40 + Math.random() * (CONFIG.goalWidth - 80) + (Math.random() - 0.5) * err;
-  const ty = CONFIG.goalY + 20 + Math.random() * (CONFIG.goalHeight - 40) + (Math.random() - 0.5) * err * 0.4;
-
-  // Visual: charge indicator for AI (animate powerFill if present)
-  if (powerFill) {
-    let start = Date.now();
-    const chargeDur = 700 + (1 - powerLevel) * 600;
-    const aiChargeInterval = setInterval(() => {
-      const t = Math.min(1, (Date.now() - start) / chargeDur);
-      powerFill.style.width = (t * powerLevel * 100) + '%';
-      if (t >= 1) {
-        clearInterval(aiChargeInterval);
+      .bracket-modal-card {
+        width: 90vw;
+        max-width: 1100px;
+        height: 90vh;
+        max-height: 90vh;
+        overflow: auto;
+        background: linear-gradient(180deg, #0b3bd9 0%, #0a2fa8 70%);
+        border: 2px solid rgba(255, 255, 255, 0.25);
       }
-    }, 30);
-  }
+      .bracket-hero {
+        position: relative;
+        padding: 16px 18px 8px 18px;
+        color: #ffffff;
+        text-align: center;
+      }
+      .bracket-hero h2 {
+        font-size: 28px;
+        letter-spacing: 1px;
+        margin-bottom: 4px;
+      }
+      .bracket-hero .sub {
+        font-size: 12px;
+        opacity: 0.9;
+        letter-spacing: 1.2px;
+      }
+      .bracket-hero .flags {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+        margin: 10px 0 8px 0;
+      }
+      .flag-dot {
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        border: 2px solid rgba(255, 255, 255, 0.85);
+        background: #ffffff;
+      }
+      .bracket-body {
+        display: grid;
+        grid-template-columns: 1fr 220px 1fr;
+        gap: 10px;
+        padding: 0 14px 16px 14px;
+        color: #ffffff;
+      }
+      .bracket-col {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+      .bracket-match {
+        border: 2px solid rgba(255, 255, 255, 0.55);
+        border-left: none;
+        border-radius: 0 10px 10px 0;
+        padding: 8px 10px;
+        background: rgba(0, 0, 0, 0.15);
+      }
+      .bracket-col.right .bracket-match {
+        border-left: 2px solid rgba(255, 255, 255, 0.55);
+        border-right: none;
+        border-radius: 10px 0 0 10px;
+      }
+      .bracket-team {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 12px;
+        padding: 4px 0;
+      }
+      .bracket-team .flag {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.9);
+        color: #0b3bd9;
+        display: grid;
+        place-items: center;
+        font-size: 16px;
+        border: 2px solid rgba(255, 255, 255, 0.7);
+      }
+      .bracket-center {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+      }
+      .trophy {
+        width: 150px;
+        height: 220px;
+        border-radius: 10px 10px 14px 14px;
+        background: linear-gradient(180deg, #f5f7ff, #cbd5ff);
+        border: 3px solid rgba(255, 255, 255, 0.85);
+        color: #102a8a;
+        font-weight: 700;
+        display: grid;
+        place-items: center;
+        box-shadow: 0 18px 30px rgba(0, 0, 0, 0.25);
+      }
+      .bracket-progress {
+        background: rgba(0, 0, 0, 0.2);
+        border: 1px solid rgba(255, 255, 255, 0.35);
+        border-radius: 10px;
+        padding: 8px 10px;
+        font-size: 12px;
+        text-align: center;
+      }
+      .shootout-header {
+        font-weight: 700;
+        color: var(--accent);
+        font-size: 18px;
+      }
+      .shootout-teams {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+      }
+      .team-box {
+        padding: 10px 12px;
+        border-radius: 8px;
+        color: #021018;
+        font-weight: 700;
+        display: flex;
+        gap: 8px;
+        align-items: center;
+      }
+      .team-flag {
+        font-size: 28px;
+      }
+      .shootout-controls {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .shootout-score {
+        font-family: "Share Tech Mono", monospace;
+        color: var(--muted);
+      }
+      .shootout-turn {
+        font-weight: 700;
+        color: var(--accent-2);
+      }
+      .play-btn {
+        padding: 8px 10px;
+        border-radius: 8px;
+        background: linear-gradient(90deg, #ffd700, #ffcc00);
+        border: none;
+        cursor: pointer;
+      }
 
-  // Slight delay before shooting to simulate AI reaction
-  setTimeout(() => {
-    // place ball at penalty spot
-    ball.x = CONFIG.width / 2;
-    ball.y = CONFIG.height - 100;
-    ball.z = 0;
-    ball.trail = [];
-    ball.missedGoal = false;
-    ball.inGoal = false;
-    ball.scored = false;
+      /* Penalty tracker styles */
+      .penalty-tracker {
+        position: fixed;
+        top: 14px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 1400;
+        background: rgba(2, 8, 6, 0.6);
+        padding: 10px 14px;
+        border-radius: 10px;
+        border: 1px solid rgba(255, 204, 0, 0.08);
+      }
+      .penalty-slot {
+        font-size: 18px;
+        padding: 6px 8px;
+        border-radius: 6px;
+        background: rgba(255, 255, 255, 0.02);
+      }
+      .penalty-slot.scored {
+        background: rgba(0, 156, 59, 0.92);
+        color: #fff;
+      }
+      .penalty-slot.missed {
+        background: rgba(193, 39, 45, 0.95);
+        color: #fff;
+      }
+      .penalty-slot.pending {
+        background: rgba(255, 255, 255, 0.04);
+        color: var(--muted);
+      }
+      .penalty-slot.next {
+        box-shadow: 0 0 10px rgba(255, 204, 0, 0.12);
+        transform: scale(1.06);
+      }
 
-    const dx = tx - ball.x;
-    const dy = ty - ball.y;
-    let speed = 600 + powerLevel * 700;
-    // choose shot type randomly
-    const types = ['power','curve','knuckle','finesse'];
-    shotType = types[Math.floor(Math.random() * types.length)];
-    if (shotType === 'power') speed *= 1.25;
-    if (shotType === 'curve') ball.spin = (Math.random() > 0.5 ? 1 : -1) * 450;
-    if (shotType === 'knuckle') { speed *= 1.1; ball.spin = 0; }
-    if (shotType === 'finesse') { speed *= 0.9; ball.spin = (Math.random() - 0.5) * 180; }
+      .controls {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
 
-    const distance = Math.sqrt(dx*dx + dy*dy);
-    const timeToGoal = Math.max(0.2, distance / speed);
-    ball.vx = dx / timeToGoal;
-    ball.vy = (dy / timeToGoal) - (0.5 * CONFIG.gravity * timeToGoal);
-    ball.vz = 0;
-    ball.active = true;
+      .section-title {
+        font-size: 18px;
+        font-weight: 700;
+        margin-bottom: 6px;
+        color: var(--accent);
+        letter-spacing: 0.6px;
+        text-shadow: 0 0 8px rgba(0, 255, 246, 0.12);
+      }
 
-    attempts++;
-    updateStats();
+      .subtitle {
+        font-size: 12px;
+        color: var(--muted);
+        margin-bottom: 12px;
+        font-family: "Share Tech Mono", monospace;
+      }
 
-    playSound(200, 0.2, 'sine');
-    // clear AI charge UI and release pending after a small buffer
-    if (powerFill) setTimeout(() => { powerFill.style.width = '0%'; }, 400);
-    // after shot scheduled, clear pending after a small buffer so aiLoop can schedule next
-    setTimeout(() => { aiPending = false; }, 1200);
-  }, 600 + Math.random() * 800);
-}
+      .button-group {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
 
-// If in keeper mode, schedule AI shoots when idle
-function aiLoop() {
-  if (gameMode === 'keeper' && !ball.active && !aiPending && !aiScheduled) {
-    aiScheduled = true;
-    // schedule AI shot after short randomized wait, then start a visible countdown
-    const wait = 500 + Math.random() * 1200;
-    setTimeout(() => {
-      aiScheduled = false;
-      // start countdown (2-3s) so player has time to position
-      const countdownMs = 2000 + Math.random() * 1000;
-      aiCountdownEnd = Date.now() + countdownMs;
-      aiPending = true; // indicates a shot is pending (countdown running)
-    }, wait);
-  }
-}
+      .btn {
+        padding: 10px 16px;
+        border-radius: 10px;
+        background: linear-gradient(180deg, #2c9a49, #1f7f3a);
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        color: #f7fff7;
+        cursor: pointer;
+        font-size: 13px;
+        transition: all 0.15s ease-in-out;
+        user-select: none;
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35);
+      }
 
-function resetGame() {
-  ball.x = CONFIG.width / 2;
-  ball.y = CONFIG.height - 100;
-  ball.z = 0;
-  ball.vx = 0;
-  ball.vy = 0;
-  ball.vz = 0;
-  ball.spin = 0;
-  ball.active = false;
-  ball.missedGoal = false;
-  ball.inGoal = false;
-  ball.scored = false;
-  ball.trail = [];
-  
-  keeper.x = CONFIG.goalX + CONFIG.goalWidth / 2;
-  keeper.y = CONFIG.goalY + CONFIG.goalHeight - 30;
-  keeper.diving = false;
-  keeper.deflecting = false;
-  keeper.rotation = 0;
-}
+      .btn:hover {
+        transform: translateY(-2px);
+        box-shadow:
+          0 10px 22px rgba(0, 0, 0, 0.35),
+          0 0 10px rgba(255, 255, 255, 0.08);
+        border-color: rgba(255, 255, 255, 0.45);
+      }
 
-function updateStats() {
-  document.getElementById('goals').textContent = `${goals} / ${attempts}`;
-  document.getElementById('streak').textContent = streak;
-}
+      .btn.active {
+        background: linear-gradient(180deg, #ffffff, #d8f2dd);
+        border-color: #ffffff;
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+        color: #0b4d22;
+      }
 
-// Physics update with 3D depth
-function update(dt) {
-  if (isCharging) {
-    const chargeTime = (Date.now() - chargeStartTime) / 1000;
-    power = Math.min(1, chargeTime / 1.2);
-    if (powerFill) powerFill.style.width = (power * 100) + '%';
-  }
-  
-  if (ball.active) {
-    // Gravity
-    ball.vy += CONFIG.gravity * dt;
-    
-    // Spin effect
-    if (shotType === 'curve') {
-      ball.vx += ball.spin * dt * 1.2;
-    } else if (shotType === 'knuckle') {
-      ball.vx += (Math.random() - 0.5) * 800 * dt;
-      ball.vy += (Math.random() - 0.5) * 400 * dt;
-    }
-    
-    // Update position
-    ball.x += ball.vx * dt;
-    ball.y += ball.vy * dt;
-    
-    // If ball entered goal, move into net (z-depth)
-    if (ball.inGoal) {
-      // advance into net
-      ball.z += ball.vz * dt;
-      // Slight dampening but keep motion so ball sinks into net smoothly
-      const friction = 0.95;
-      ball.vx *= friction;
-      ball.vy *= friction;
-      ball.vz *= friction;
-      // slow sideways movement when entering net
-      ball.vx *= 0.98;
+      .btn.shoot {
+        background: linear-gradient(90deg, #ffffff, #d8f2dd);
+        color: #0b4d22;
+        font-weight: 700;
+        flex: 1;
+        border-color: rgba(255, 255, 255, 0.7);
+        box-shadow: 0 8px 22px rgba(0, 0, 0, 0.35);
+      }
 
-      // Stop when deep enough or very slow
-      if (Math.abs(ball.z) > 180 || Math.abs(ball.vz) < 8) {
-        ball.vx = 0;
-        ball.vy = 0;
-        ball.vz = 0;
-        ball.active = false;
+      .btn.shoot:hover {
+        background: linear-gradient(180deg, #ffffff, #bde8c5);
+      }
 
-        if (!ball.scored) {
-          ball.scored = true;
-          // Goal celebration
-          setTimeout(() => {
-            goals++;
-            updateStats();
+      .btn.shoot:active {
+        transform: scale(0.98);
+      }
 
-            // Check if game is over (5 attempts)
-            if (attempts >= 5) {
-              setTimeout(() => {
-                alert(`Game Over! Final Score: ${goals} / ${attempts}\nStreak: ${streak}`);
-                // Reset everything
-                goals = 0;
-                attempts = 0;
-                streak = 0;
-                updateStats();
-                resetGame();
-              }, 500);
+      .zone-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+        margin-top: 12px;
+      }
+
+      .zone {
+        padding: 14px;
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px dashed rgba(255, 255, 255, 0.08);
+        text-align: center;
+        font-size: 12px;
+        color: var(--muted);
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+
+      .zone:hover {
+        background: rgba(255, 255, 255, 0.04);
+      }
+
+      .zone.selected {
+        background: linear-gradient(
+          180deg,
+          rgba(255, 204, 0, 0.08),
+          rgba(255, 204, 0, 0.02)
+        );
+        border-color: var(--accent);
+        color: var(--accent);
+        border-style: solid;
+      }
+
+      .power-bar {
+        height: 14px;
+        background: linear-gradient(
+          90deg,
+          rgba(255, 45, 212, 0.12),
+          rgba(0, 255, 246, 0.12)
+        );
+        border-radius: 10px;
+        overflow: visible;
+        margin-top: 8px;
+        position: relative;
+        border: 1px solid rgba(0, 255, 246, 0.12);
+      }
+
+      .power-fill {
+        position: absolute;
+        left: 0;
+        top: -6px;
+        height: calc(100% + 12px);
+        width: 3%;
+        background: linear-gradient(90deg, var(--accent-2), var(--accent));
+        border-radius: 6px;
+        box-shadow:
+          0 0 18px rgba(255, 45, 212, 0.12),
+          0 0 14px rgba(0, 255, 246, 0.08);
+        transition: width 0.06s linear;
+      }
+
+      .stat-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .stat-label {
+        font-size: 12px;
+        color: var(--muted);
+        margin-bottom: 4px;
+      }
+
+      .stat-value {
+        font-size: 22px;
+        font-weight: 700;
+        color: var(--accent);
+        text-shadow: 0 0 8px rgba(0, 255, 246, 0.08);
+      }
+
+      .slider-group {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        margin-top: 8px;
+      }
+
+      input[type="range"] {
+        flex: 1;
+        height: 6px;
+        border-radius: 3px;
+        background: rgba(255, 255, 255, 0.1);
+        outline: none;
+        -webkit-appearance: none;
+      }
+
+      input[type="range"]::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background: var(--accent);
+        cursor: pointer;
+      }
+
+      input[type="range"]::-moz-range-thumb {
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background: var(--accent);
+        border: none;
+        cursor: pointer;
+      }
+
+      .button-row {
+        display: flex;
+        gap: 8px;
+      }
+
+      .team-selector .btn {
+        border-color: rgba(255, 204, 0, 0.2);
+      }
+
+      @media (max-width: 1024px) {
+        #app {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <div class="card">
+        <div class="section-title">Tournament</div>
+        <div class="subtitle">16-team single elimination</div>
+        <div style="display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap">
+          <button class="btn" id="resetTournamentBtn">Reset</button>
+          <button class="btn" id="viewBracketBtn">View Progress</button>
+        </div>
+        <div id="tournamentInfo" class="subtitle" style="margin-top: 10px">
+          Tournament ready
+        </div>
+      </div>
+
+      <div class="right-column">
+        <div class="card field-card">
+          <div id="canvasWrapper">
+            <div class="hud">
+              <div class="pill" id="hudScore">0 - 0</div>
+              <div class="pill" id="hudTurn">Player</div>
+            </div>
+            <div class="shootout-strip">
+              <div class="label">Penalty Shootout</div>
+              <div class="kick-row" id="kickRowPlayer"></div>
+              <div class="label">Player</div>
+              <div style="width: 8px"></div>
+              <div class="kick-row" id="kickRowAI"></div>
+              <div class="label">AI</div>
+            </div>
+            <canvas id="canvas"></canvas>
+          </div>
+        </div>
+
+        <div class="card controls">
+          <div>
+            <div class="section-title">Neon Strike</div>
+            <div class="subtitle">
+              Click inside the goal to aim and instantly shoot.
+            </div>
+          </div>
+
+          <div>
+            <div class="stat-row">
+              <div>
+                <div class="stat-label">Score</div>
+                <div class="stat-value" id="goals">0 - 0</div>
+              </div>
+              <div>
+                <div class="stat-label">Turn</div>
+                <div class="stat-value" id="streak">Player</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="button-row">
+            <button class="btn" id="resetBtn">Reset</button>
+            <button class="btn" id="soundBtn">Sound: ON</button>
+          </div>
+
+          <div>
+            <div class="stat-label">Difficulty</div>
+            <div class="slider-group">
+              <span style="color: var(--muted); font-size: 13px">Easy</span>
+              <input type="range" id="difficulty" min="1" max="5" value="3" />
+              <span style="color: var(--muted); font-size: 13px">Hard</span>
+            </div>
+          </div>
+          <div>
+            <div style="margin-top: 14px">
+              <div class="stat-label">Power (hold Shoot)</div>
+              <div class="power-bar">
+                <div id="powerFill" class="power-fill"></div>
+              </div>
+              <div style="margin-top: 10px; display: flex; gap: 8px">
+                <button class="btn shoot" id="shootBtn">Shoot</button>
+              </div>
+              <div class="subtitle" style="margin-top: 8px">
+                Tip: Click inside the goal to aim and fire instantly.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Penalty tracker (top center) -->
+    <div id="penaltyTracker" class="penalty-tracker" style="display: none">
+      <div
+        id="penaltyHeader"
+        style="
+          text-align: center;
+          color: var(--muted);
+          font-weight: 700;
+          margin-bottom: 6px;
+        "
+      >
+        Penalty Shootout
+      </div>
+      <div
+        style="
+          display: flex;
+          gap: 12px;
+          align-items: center;
+          justify-content: center;
+        "
+      >
+        <div
+          style="
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            align-items: center;
+          "
+        >
+          <div
+            id="penaltyTeamALabel"
+            style="font-weight: 700; color: var(--accent)"
+          >
+            Team A
+          </div>
+          <div id="teamAPenalties" style="display: flex; gap: 6px"></div>
+        </div>
+        <div style="width: 18px"></div>
+        <div
+          style="
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            align-items: center;
+          "
+        >
+          <div
+            id="penaltyTeamBLabel"
+            style="font-weight: 700; color: var(--accent)"
+          >
+            Team B
+          </div>
+          <div id="teamBPenalties" style="display: flex; gap: 6px"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Start screen -->
+    <div id="startupModal" class="startup-modal" style="display: flex">
+      <div class="startup-card start-screen">
+        <h2>Choose Your Team</h2>
+        <div class="tagline">Single elimination. Win to advance.</div>
+      </div>
+    </div>
+
+    <!-- Bracket modal (large) -->
+    <div id="bracketModal" class="startup-modal" style="display: none">
+      <div class="startup-card bracket-modal-card">
+        <div
+          style="
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+          "
+        >
+          <div style="font-weight: 700; color: var(--accent)">
+            Round of 16 & Progression
+          </div>
+          <div><button class="btn" id="closeBracketBtn">Close</button></div>
+        </div>
+        <div
+          id="bracketModalContent"
+          style="margin-top: 12px; display: flex; gap: 12px"
+        ></div>
+      </div>
+    </div>
+
+    <!-- Shootout overlay (hidden until play) -->
+    <div id="shootoutOverlay" class="shootout-overlay" style="display: none">
+      <div class="shootout-card card">
+        <div>
+          <div class="shootout-header">Penalty Shootout</div>
+          <div style="height: 12px"></div>
+          <div class="shootout-teams">
+            <div id="teamABox" class="team-box">
+              <div class="team-flag" id="teamAFlag">🇧🇪</div>
+              <div class="team-name" id="teamAName">Team A</div>
+            </div>
+            <div style="font-size: 28px; color: var(--muted)">vs</div>
+            <div id="teamBBox" class="team-box">
+              <div class="team-flag" id="teamBFlag">🇩🇰</div>
+              <div class="team-name" id="teamBName">Team B</div>
+            </div>
+          </div>
+          <div style="height: 12px"></div>
+          <div class="shootout-score" id="shootoutScore">0 - 0</div>
+          <div style="height: 8px"></div>
+          <div class="shootout-turn" id="shootoutStatus">
+            Your turn to shoot
+          </div>
+        </div>
+        <div class="shootout-controls">
+          <div style="display: flex; gap: 8px; align-items: center">
+            <button id="shootoutForfeit" class="btn">Forfeit</button>
+            <button id="shootoutSimulate" class="btn">
+              Auto-Simulate Kick
+            </button>
+          </div>
+          <div style="margin-top: 6px; color: var(--muted); font-size: 13px">
+            Kicks taken: <span id="shootoutKicks">0</span>
+          </div>
+          <div style="margin-top: 6px; color: var(--muted); font-size: 13px">
+            Note: You shoot first, then the AI shoots.
+          </div>
+          <div style="flex: 1"></div>
+          <div style="display: flex; gap: 8px; justify-content: flex-end">
+            <button id="shootoutClose" class="btn">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Game Over modal -->
+    <div id="gameOverModal" class="startup-modal" style="display: none">
+      <div class="startup-card">
+        <h2>Game Over</h2>
+        <p id="gameOverText">You lost this match.</p>
+        <div style="display: flex; gap: 12px; justify-content: center">
+          <button class="btn shoot" id="playAgainBtn">Play Again</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Configuration
+      const CONFIG = {
+        width: 1200,
+        height: 675,
+        gravity: 1000,
+        ballRadius: 16,
+        goalX: 250,
+        goalY: 80,
+        goalWidth: 700,
+        goalHeight: 320,
+        penaltyDistance: 500, // realistic penalty distance
+      };
+
+      // Canvas setup
+      const canvas = document.getElementById("canvas");
+      const ctx = canvas.getContext("2d");
+      canvas.width = CONFIG.width;
+      canvas.height = CONFIG.height;
+
+      // Game state
+      let selectedZone = "mm";
+      let power = 0;
+      let isCharging = false;
+      let chargeStartTime = 0;
+      let soundEnabled = true;
+
+      let playerScore = 0;
+      let aiScore = 0;
+      let currentTurn = "player";
+      let aiTurnScheduled = false;
+      let nextShootAllowedAt = 0;
+      let crowdDots = [];
+      let crowdMood = { cheer: 0, boo: 0 };
+      let opponentTeamData = null;
+      let kickHistoryPlayer = [];
+      let kickHistoryAI = [];
+      let netRipple = { active: false, x: 0, y: 0, t: 0 };
+      const keys = { left: false, right: false, up: false, down: false };
+
+      let ball = {
+        x: CONFIG.width / 2,
+        y: CONFIG.height - 100,
+        z: 0,
+        vx: 0,
+        vy: 0,
+        vz: 0,
+        spin: 0,
+        active: false,
+        missedGoal: false,
+        inGoal: false,
+        scored: false,
+        trail: [],
+      };
+
+      let keeper = {
+        x: CONFIG.goalX + CONFIG.goalWidth / 2,
+        // place keeper close to net floor (slightly above ground)
+        y: CONFIG.goalY + CONFIG.goalHeight - 30,
+        targetX: CONFIG.goalX + CONFIG.goalWidth / 2,
+        targetY: CONFIG.goalY + CONFIG.goalHeight - 30,
+        diving: false,
+        diveTime: 0,
+        deflecting: false,
+        deflectTime: 0,
+        rotation: 0,
+        primaryColor: "rgba(255,45,212,0.95)",
+        gloveColor: "rgba(126,255,161,0.95)",
+      };
+
+      let targetPoint = {
+        x: CONFIG.width / 2,
+        y: CONFIG.goalY + CONFIG.goalHeight / 2,
+      };
+
+      // Audio context
+      let audioContext;
+      function initAudio() {
+        if (!audioContext) {
+          audioContext = new (
+            window.AudioContext || window.webkitAudioContext
+          )();
+        }
+      }
+
+      function playSound(freq, duration, type = "sine") {
+        if (!soundEnabled) return;
+        initAudio();
+        const osc = audioContext.createOscillator();
+        const gain = audioContext.createGain();
+        osc.frequency.value = freq;
+        osc.type = type;
+        gain.gain.setValueAtTime(0.3, audioContext.currentTime);
+        gain.gain.exponentialRampToValueAtTime(
+          0.01,
+          audioContext.currentTime + duration,
+        );
+        osc.connect(gain);
+        gain.connect(audioContext.destination);
+        osc.start();
+        osc.stop(audioContext.currentTime + duration);
+      }
+
+      // UI Elements
+      const shootBtn = document.getElementById("shootBtn");
+      const resetBtn = document.getElementById("resetBtn");
+      const soundBtn = document.getElementById("soundBtn");
+      const powerFill = document.getElementById("powerFill");
+      const difficultySlider = document.getElementById("difficulty");
+
+      // Tournament state and UI
+      const resetTournamentBtn = document.getElementById("resetTournamentBtn");
+      const tournamentInfo = document.getElementById("tournamentInfo");
+
+      const TEAMS = [
+        {
+          id: "POR",
+          name: "Portugal",
+          flag: "🇵🇹",
+          primary: "#006600",
+          secondary: "#FF0000",
+        },
+        {
+          id: "BRA",
+          name: "Brazil",
+          flag: "🇧🇷",
+          primary: "#FFDF00",
+          secondary: "#009C3B",
+        },
+        {
+          id: "ARG",
+          name: "Argentina",
+          flag: "🇦🇷",
+          primary: "#74ACDF",
+          secondary: "#FFFFFF",
+        },
+        {
+          id: "FRA",
+          name: "France",
+          flag: "🇫🇷",
+          primary: "#002395",
+          secondary: "#ED2939",
+        },
+        {
+          id: "DEU",
+          name: "Germany",
+          flag: "🇩🇪",
+          primary: "#000000",
+          secondary: "#DD0000",
+        },
+        {
+          id: "ENG",
+          name: "England",
+          flag: "🏴",
+          primary: "#FFFFFF",
+          secondary: "#D90012",
+        },
+        {
+          id: "USA",
+          name: "USA",
+          flag: "🇺🇸",
+          primary: "#002868",
+          secondary: "#BF0A30",
+        },
+        {
+          id: "ITA",
+          name: "Italy",
+          flag: "🇮🇹",
+          primary: "#007A3D",
+          secondary: "#CE2B37",
+        },
+        {
+          id: "ESP",
+          name: "Spain",
+          flag: "🇪🇸",
+          primary: "#AA151B",
+          secondary: "#F1BF00",
+        },
+        {
+          id: "NED",
+          name: "Netherlands",
+          flag: "🇳🇱",
+          primary: "#FF4C00",
+          secondary: "#1E3A8A",
+        },
+        {
+          id: "BEL",
+          name: "Belgium",
+          flag: "🇧🇪",
+          primary: "#1A1A1A",
+          secondary: "#ED2939",
+        },
+        {
+          id: "CRO",
+          name: "Croatia",
+          flag: "🇭🇷",
+          primary: "#FF0000",
+          secondary: "#FFFFFF",
+        },
+        {
+          id: "JPN",
+          name: "Japan",
+          flag: "🇯🇵",
+          primary: "#FFFFFF",
+          secondary: "#BC002D",
+        },
+        {
+          id: "KOR",
+          name: "South Korea",
+          flag: "🇰🇷",
+          primary: "#FFFFFF",
+          secondary: "#003478",
+        },
+        {
+          id: "MEX",
+          name: "Mexico",
+          flag: "🇲🇽",
+          primary: "#006847",
+          secondary: "#CE1126",
+        },
+        {
+          id: "URU",
+          name: "Uruguay",
+          flag: "🇺🇾",
+          primary: "#7CB9E8",
+          secondary: "#FFFFFF",
+        },
+      ];
+
+      let tournament = {
+        rounds: [], // array of rounds; each round is array of match objects {a,b,scoreA,scoreB,winner}
+        currentRound: 0,
+        active: false,
+      };
+
+      function shuffleArray(arr) {
+        const a = arr.slice();
+        for (let i = a.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [a[i], a[j]] = [a[j], a[i]];
+        }
+        return a;
+      }
+
+      function generateBracket(teams) {
+        // For a single-elimination bracket, pair sequentially after shuffling
+        const shuffled = shuffleArray(teams);
+        const matches = [];
+        for (let i = 0; i < shuffled.length; i += 2) {
+          // store team ids (not objects) so rendering is consistent
+          matches.push({
+            a: shuffled[i].id,
+            b: shuffled[i + 1].id,
+            scoreA: null,
+            scoreB: null,
+            winner: null,
+          });
+        }
+        tournament.rounds = [matches];
+        // fill empty rounds up to final
+        let matchCount = matches.length;
+        while (matchCount > 1) {
+          matchCount = Math.ceil(matchCount / 2);
+          tournament.rounds.push(
+            new Array(matchCount).fill(null).map(() => ({
+              a: null,
+              b: null,
+              scoreA: null,
+              scoreB: null,
+              winner: null,
+            })),
+          );
+        }
+        tournament.currentRound = 0;
+      }
+
+      function samplePoisson(lambda) {
+        // Knuth algorithm
+        let L = Math.exp(-lambda);
+        let k = 0;
+        let p = 1;
+        do {
+          k++;
+          p *= Math.random();
+        } while (p > L);
+        return k - 1;
+      }
+
+      function simulateMatch(a, b) {
+        // simple simulation using Poisson goals with small randomness
+        const base = 1.3; // expected goals per team
+        const lambdaA = base + (Math.random() - 0.5) * 0.6;
+        const lambdaB = base + (Math.random() - 0.5) * 0.6;
+        let gA = samplePoisson(lambdaA);
+        let gB = samplePoisson(lambdaB);
+        // extra-time if tie
+        if (gA === gB) {
+          const etA = samplePoisson(0.6);
+          const etB = samplePoisson(0.6);
+          gA += etA;
+          gB += etB;
+        }
+        // penalties if still tied
+        if (gA === gB) {
+          // choose winner randomly but produce penalty score-like result
+          const winnerA = Math.random() > 0.5;
+          if (winnerA) gA += 1;
+          else gB += 1;
+        }
+        return { scoreA: gA, scoreB: gB, winner: gA > gB ? a : b };
+      }
+
+      function renderBracket() {
+        const bracketModalContent = document.getElementById(
+          "bracketModalContent",
+        );
+        if (!bracketModalContent) return;
+        if (bracketModalContent) bracketModalContent.innerHTML = "";
+        for (let r = 0; r < tournament.rounds.length; r++) {
+          const col = document.createElement("div");
+          col.style.display = "inline-block";
+          col.style.verticalAlign = "top";
+          col.style.marginRight = "12px";
+          const title = document.createElement("div");
+          title.style.fontWeight = "700";
+          title.style.color = "var(--accent)";
+          title.style.marginBottom = "6px";
+          // dynamic round title based on teams remaining
+          const initialTeams = tournament.rounds[0].length * 2;
+          const teamsRemaining = Math.max(1, initialTeams / Math.pow(2, r));
+          function roundName(n) {
+            if (n >= 16) return `Round of ${n}`;
+            if (n === 8) return "Quarterfinals (8)";
+            if (n === 4) return "Semifinals (4)";
+            if (n === 2) return "Final (2)";
+            return "Result";
+          }
+          title.textContent = roundName(teamsRemaining);
+          col.appendChild(title);
+          tournament.rounds[r].forEach((m, idx) => {
+            const mEl = document.createElement("div");
+            mEl.style.padding = "6px 8px";
+            mEl.style.borderRadius = "8px";
+            mEl.style.marginBottom = "8px";
+            mEl.style.background = "rgba(255,255,255,0.02)";
+            mEl.style.fontFamily = "'Share Tech Mono', monospace";
+            mEl.style.display = "flex";
+            mEl.style.justifyContent = "space-between";
+            mEl.style.alignItems = "center";
+
+            if (!m || !m.a || !m.b) {
+              const text = document.createElement("div");
+              text.textContent = "TBD";
+              mEl.appendChild(text);
             } else {
-              resetGame();
+              // left: teams with color boxes
+              const teamWrap = document.createElement("div");
+              teamWrap.style.display = "flex";
+              teamWrap.style.gap = "8px";
+              teamWrap.style.alignItems = "center";
+
+              const aBox = document.createElement("div");
+              aBox.style.display = "flex";
+              aBox.style.alignItems = "center";
+              aBox.style.gap = "8px";
+              aBox.style.padding = "6px 8px";
+              aBox.style.borderRadius = "6px";
+              const teamA = TEAMS.find((t) => t.id === m.a) || {
+                flag: "?",
+                name: m.a,
+                primary: "#ffffff",
+              };
+              aBox.style.background = teamA.primary || "#ffffff";
+              aBox.style.color = "#021018";
+              aBox.innerHTML = `<div style="font-size:16px">${teamA.flag}</div><div style="font-size:12px">${teamA.name}</div>`;
+
+              const vsDiv = document.createElement("div");
+              vsDiv.style.color = "var(--muted)";
+              vsDiv.style.fontSize = "12px";
+              vsDiv.textContent = m.scoreA != null ? `${m.scoreA}` : "";
+
+              const bBox = document.createElement("div");
+              bBox.style.display = "flex";
+              bBox.style.alignItems = "center";
+              bBox.style.gap = "8px";
+              bBox.style.padding = "6px 8px";
+              bBox.style.borderRadius = "6px";
+              const teamB = TEAMS.find((t) => t.id === m.b) || {
+                flag: "?",
+                name: m.b,
+                primary: "#ffffff",
+              };
+              bBox.style.background = teamB.primary || "#ffffff";
+              bBox.style.color = "#021018";
+              bBox.innerHTML = `<div style="font-size:16px">${teamB.flag}</div><div style="font-size:12px">${teamB.name}</div>`;
+
+              teamWrap.appendChild(aBox);
+              const middle = document.createElement("div");
+              middle.style.display = "flex";
+              middle.style.flexDirection = "column";
+              middle.style.alignItems = "center";
+              middle.innerHTML = `<div style="font-weight:700; color:var(--accent)">${teamA.flag} ${teamA.name} <span style="color:var(--muted);">vs</span> ${teamB.flag} ${teamB.name}</div><div style="font-family:'Share Tech Mono'">${m.scoreA != null ? m.scoreA : "-"} - ${m.scoreB != null ? m.scoreB : "-"}</div>`;
+              teamWrap.appendChild(middle);
+              teamWrap.appendChild(bBox);
+
+              mEl.appendChild(teamWrap);
+
+              // no manual controls; matches resolve automatically
             }
+
+            col.appendChild(mEl);
+          });
+        }
+        if (bracketModalContent) {
+          const round = tournament.rounds[0] || [];
+          const hero = document.createElement("div");
+          hero.className = "bracket-hero";
+          hero.innerHTML = `
+            <h2>ROUND OF 16</h2>
+            <div class="sub">FABRIZIO ROMANO</div>
+            <div class="flags">
+              <div class="flag-dot" style="background:#e11d48"></div>
+              <div class="flag-dot" style="background:#2563eb"></div>
+              <div class="flag-dot" style="background:#f59e0b"></div>
+              <div class="flag-dot" style="background:#22c55e"></div>
+              <div class="flag-dot" style="background:#ef4444"></div>
+              <div class="flag-dot" style="background:#ffffff"></div>
+            </div>
+          `;
+
+          const body = document.createElement("div");
+          body.className = "bracket-body";
+
+          const left = document.createElement("div");
+          left.className = "bracket-col left";
+          const right = document.createElement("div");
+          right.className = "bracket-col right";
+          const center = document.createElement("div");
+          center.className = "bracket-center";
+          center.innerHTML = `
+            <div class="trophy">EURO<br/>TROPHY</div>
+            <div class="bracket-progress">
+              Round ${tournament.currentRound + 1} / ${tournament.rounds.length}
+            </div>
+          `;
+
+          const pairs = round.slice(0, 8);
+          pairs.forEach((m, idx) => {
+            const a = TEAMS.find((t) => t.id === m.a) || {
+              id: "TBD",
+              name: m.a,
+              primary: "#ffffff",
+            };
+            const b = TEAMS.find((t) => t.id === m.b) || {
+              id: "TBD",
+              name: m.b,
+              primary: "#ffffff",
+            };
+            const matchEl = document.createElement("div");
+            matchEl.className = "bracket-match";
+            matchEl.innerHTML = `
+              <div class="bracket-team"><span class="flag" style="background:${a.primary}; color:#0b3bd9">${a.id}</span><span>${a.name}</span></div>
+              <div class="bracket-team"><span class="flag" style="background:${b.primary}; color:#0b3bd9">${b.id}</span><span>${b.name}</span></div>
+            `;
+            if (idx < 4) left.appendChild(matchEl);
+            else right.appendChild(matchEl);
+          });
+
+          body.appendChild(left);
+          body.appendChild(center);
+          body.appendChild(right);
+
+          bracketModalContent.innerHTML = "";
+          bracketModalContent.appendChild(hero);
+          bracketModalContent.appendChild(body);
+        }
+        if (tournamentInfo) {
+          tournamentInfo.textContent = tournament.active
+            ? `Current Round: ${tournament.currentRound + 1} / ${tournament.rounds.length}`
+            : "Tournament not started";
+        }
+      }
+
+      function advanceWinnerToNextRound(roundIdx, matchIdx, winner) {
+        const nextRound = roundIdx + 1;
+        if (nextRound >= tournament.rounds.length) return;
+        const targetIdx = Math.floor(matchIdx / 2);
+        const slot = tournament.rounds[nextRound][targetIdx];
+        if (!slot)
+          tournament.rounds[nextRound][targetIdx] = {
+            a: winner,
+            b: null,
+            scoreA: null,
+            scoreB: null,
+            winner: null,
+          };
+        else {
+          if (!slot.a) slot.a = winner;
+          else slot.b = winner;
+        }
+      }
+
+      function isRoundComplete(r) {
+        const matches = tournament.rounds[r] || [];
+        return matches.every((m) => m && m.winner);
+      }
+
+      function updateRoundProgression() {
+        while (
+          tournament.currentRound < tournament.rounds.length &&
+          isRoundComplete(tournament.currentRound)
+        ) {
+          tournament.currentRound++;
+        }
+        if (tournament.currentRound >= tournament.rounds.length) {
+          tournament.active = false;
+        }
+      }
+
+      function findPlayerMatch(roundIdx) {
+        const matches = tournament.rounds[roundIdx] || [];
+        for (let i = 0; i < matches.length; i++) {
+          const m = matches[i];
+          if (!m || !m.a || !m.b) continue;
+          if (m.scoreA != null) continue;
+          if (m.a === playerTeamId || m.b === playerTeamId) {
+            return { match: m, idx: i };
+          }
+        }
+        return null;
+      }
+
+      function simulateOtherMatchesInRound(roundIdx, excludeIdx) {
+        const matches = tournament.rounds[roundIdx] || [];
+        matches.forEach((m, idx) => {
+          if (!m || !m.a || !m.b) return;
+          if (idx === excludeIdx) return;
+          if (m.scoreA != null) return;
+          const res = simulateMatch(m.a, m.b);
+          m.scoreA = res.scoreA;
+          m.scoreB = res.scoreB;
+          m.winner = res.winner;
+          advanceWinnerToNextRound(roundIdx, idx, m.winner);
+        });
+      }
+
+      function autoStartNextMatch() {
+        updateRoundProgression();
+        if (!tournament.active) {
+          showGameOver("Champion! You won the tournament.");
+          return;
+        }
+        const found = findPlayerMatch(tournament.currentRound);
+        if (found) {
+          playMatch(found.match, tournament.currentRound, found.idx);
+        }
+      }
+
+      function startTournament() {
+        generateBracket(TEAMS);
+        tournament.active = true;
+        tournament.currentRound = 0;
+        playerScore = 0;
+        aiScore = 0;
+        setTurn("player");
+        renderBracket();
+        autoStartNextMatch();
+      }
+
+      function resetTournament() {
+        tournament = { rounds: [], currentRound: 0, active: false };
+        if (tournamentInfo) tournamentInfo.textContent = "Tournament reset";
+        playerScore = 0;
+        aiScore = 0;
+        kickHistoryPlayer = [];
+        kickHistoryAI = [];
+        setTurn("player");
+        resetGame();
+      }
+
+      // --- Penalty shootout play integration ---
+      let shootoutActive = false;
+      let shootoutState = null;
+      let lastShotPending = false; // true while a kick is in flight
+      let lastShotOwner = null; // 'player' or 'ai'
+
+      function playMatch(match, roundIdx, matchIdx) {
+        if (!match || !match.a || !match.b) return;
+        const teamA = TEAMS.find((t) => t.id === match.a) || null;
+        const teamB = TEAMS.find((t) => t.id === match.b) || null;
+        opponentTeamData =
+          playerTeamId === match.a
+            ? teamB
+            : playerTeamId === match.b
+              ? teamA
+              : null;
+        if (opponentTeamData) {
+          keeper.primaryColor = opponentTeamData.primary;
+          keeper.gloveColor = opponentTeamData.secondary;
+          crowdDots = [];
+        }
+        // initialize shootout state
+        shootoutActive = true;
+        shootoutState = {
+          matchRef: match,
+          roundIdx,
+          matchIdx,
+          scoreA: 0,
+          scoreB: 0,
+          kickNum: 0, // total kicks taken so far
+          totalEach: 5,
+          playerIsA: match.a === playerTeamId,
+          // explicit flag: does the player shoot on the upcoming kick? (true -> player shoots)
+          playerShootsNext: true,
+          history: [],
+        };
+
+        // per-team kick histories for UI tracker (true=goal, false=miss)
+        shootoutState.scoreHistoryA = [];
+        shootoutState.scoreHistoryB = [];
+
+        // populate overlay UI
+        const a = TEAMS.find((t) => t.id === match.a) || {
+          flag: "?",
+          name: match.a,
+          primary: "#ddd",
+        };
+        const b = TEAMS.find((t) => t.id === match.b) || {
+          flag: "?",
+          name: match.b,
+          primary: "#ddd",
+        };
+        document.getElementById("teamAFlag").textContent = a.flag;
+        document.getElementById("teamAName").textContent = a.name;
+        document.getElementById("teamBBox").style.background = b.primary;
+        document.getElementById("teamABox").style.background = a.primary;
+        document.getElementById("teamBFlag").textContent = b.flag;
+        document.getElementById("teamBName").textContent = b.name;
+        document.getElementById("shootoutScore").textContent = "0 - 0";
+        document.getElementById("shootoutKicks").textContent = "0";
+        document.getElementById("shootoutStatus").textContent =
+          "You shoot first for your team";
+        document.getElementById("shootoutOverlay").style.display = "flex";
+
+        // show top penalty tracker and initialize labels
+        const aLabel = document.getElementById("teamAName");
+        const bLabel = document.getElementById("teamBName");
+        const track = document.getElementById("penaltyTracker");
+        if (track) {
+          track.style.display = "flex";
+          track.style.zIndex = "2200";
+          track.style.alignItems = "center";
+        }
+        const tAL = document.getElementById("penaltyTeamALabel");
+        const tBL = document.getElementById("penaltyTeamBLabel");
+        if (tAL) tAL.textContent = a.name;
+        if (tBL) tBL.textContent = b.name;
+        updatePenaltyTracker();
+
+        // lock tournament UI while playing
+        tournament.active = false;
+
+        // start first kick (player shoots first)
+        startNextKick();
+      }
+
+      function closeShootout() {
+        shootoutActive = false;
+        shootoutState = null;
+        lastShotPending = false;
+        lastShotOwner = null;
+        document.getElementById("shootoutOverlay").style.display = "none";
+        const track = document.getElementById("penaltyTracker");
+        if (track) track.style.display = "none";
+        // resume tournament UI
+        tournament.active = true;
+        renderBracket();
+        setTurn("player");
+      }
+
+      // AI shoot variant for shootout (doesn't touch global attempts/goals/stats)
+      function aiShootForShootout() {
+        if (ball.active) return;
+        const difficulty = parseInt(difficultySlider.value);
+        const base = 0.55 + (difficulty - 1) * 0.12;
+        const powerLevel = Math.min(
+          1,
+          Math.max(0.15, base + (Math.random() - 0.5) * 0.2),
+        );
+        const err = 120 - difficulty * 18;
+        const tx =
+          CONFIG.goalX +
+          40 +
+          Math.random() * (CONFIG.goalWidth - 80) +
+          (Math.random() - 0.5) * err;
+        const ty =
+          CONFIG.goalY +
+          20 +
+          Math.random() * (CONFIG.goalHeight - 40) +
+          (Math.random() - 0.5) * err * 0.4;
+
+        // place ball at penalty spot
+        ball.x = CONFIG.width / 2;
+        ball.y = CONFIG.height - 100;
+        ball.z = 0;
+        ball.trail = [];
+        ball.missedGoal = false;
+        ball.inGoal = false;
+        ball.scored = false;
+
+        const dx = tx - ball.x;
+        const dy = ty - ball.y;
+        let speed = 420 + powerLevel * 420;
+        speed *= 1.05;
+
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        const timeToGoal = Math.max(0.2, distance / speed);
+        ball.vx = dx / timeToGoal;
+        ball.vy = dy / timeToGoal - 0.5 * CONFIG.gravity * timeToGoal;
+        ball.vz = 0;
+        ball.spin = (Math.random() - 0.5) * 120;
+        ball.active = true;
+
+        // mark pending shot
+        lastShotPending = true;
+        lastShotOwner = "ai";
+
+        // Player controls keeper movement during AI shots
+      }
+
+      function updatePenaltyTracker() {
+        const s = shootoutState;
+        const aEl = document.getElementById("teamAPenalties");
+        const bEl = document.getElementById("teamBPenalties");
+        if (!s || !aEl || !bEl) return;
+        aEl.innerHTML = "";
+        bEl.innerHTML = "";
+        // total slots
+        const total = s.totalEach || 5;
+        const nextShooterIsA = s.playerShootsNext ? s.playerIsA : !s.playerIsA;
+        for (let i = 0; i < total; i++) {
+          const slot = document.createElement("div");
+          slot.className = "penalty-slot";
+          const valA = s.scoreHistoryA[i];
+          if (valA === true) {
+            slot.classList.add("scored");
+            slot.textContent = "✅";
+          } else if (valA === false) {
+            slot.classList.add("missed");
+            slot.textContent = "❌";
+          } else {
+            slot.classList.add("pending");
+            slot.textContent = "▫";
+          }
+          // highlight next upcoming slot for team A
+          if (nextShooterIsA && i === s.scoreHistoryA.length)
+            slot.classList.add("next");
+          aEl.appendChild(slot);
+        }
+        for (let i = 0; i < total; i++) {
+          const slot = document.createElement("div");
+          slot.className = "penalty-slot";
+          const valB = s.scoreHistoryB[i];
+          if (valB === true) {
+            slot.classList.add("scored");
+            slot.textContent = "✅";
+          } else if (valB === false) {
+            slot.classList.add("missed");
+            slot.textContent = "❌";
+          } else {
+            slot.classList.add("pending");
+            slot.textContent = "▫";
+          }
+          // highlight next upcoming slot for team B
+          if (!nextShooterIsA && i === s.scoreHistoryB.length)
+            slot.classList.add("next");
+          bEl.appendChild(slot);
+        }
+      }
+
+      function startNextKick() {
+        if (!shootoutActive || !shootoutState) return;
+        const s = shootoutState;
+        // show kicks count
+        document.getElementById("shootoutKicks").textContent = String(
+          s.kickNum,
+        );
+        // determine who shoots next based on explicit flag
+        if (s.playerShootsNext) {
+          // player will shoot now
+          document.getElementById("shootoutStatus").textContent =
+            "Your turn to shoot";
+          setTurn("player");
+          lastShotPending = false;
+          lastShotOwner = null; // will be set when player fires
+          // wait for player to click and call shoot(); when shot finishes, resolution will be handled in loop
+        } else {
+          // AI will shoot next
+          document.getElementById("shootoutStatus").textContent =
+            "AI is shooting";
+          setTurn("ai");
+          // schedule a short delay so the UI updates first
+          setTimeout(() => {
+            aiShootForShootout();
           }, 500);
         }
       }
-    }
-    
-    // Add to trail
-    ball.trail.push({ x: ball.x, y: ball.y, z: ball.z });
-    if (ball.trail.length > 20) ball.trail.shift();
-    
-    // Check if ball has reached goal area
-    if (ball.y <= CONFIG.goalY + CONFIG.goalHeight && !ball.missedGoal && !ball.inGoal) {
-      // Check if inside goal boundaries
-      if (ball.x > CONFIG.goalX + 20 && 
-          ball.x < CONFIG.goalX + CONFIG.goalWidth - 20 &&
-          ball.y > CONFIG.goalY + 10 && 
-          ball.y < CONFIG.goalY + CONFIG.goalHeight - 10) {
-        // Goal! Start going into net
-        ball.inGoal = true;
-        ball.vz = -Math.abs(ball.vy) * 0.8; // Move into goal depth
-        playSound(600, 0.5);
-        streak++;
-        updateStats();
-        return;
-      } else if (ball.y <= CONFIG.goalY) {
-        // Missed - turn ball red
-        ball.missedGoal = true;
-        streak = 0;
-        updateStats();
-      }
-    }
-    
-    // Check keeper collision with deflection (make save chance scale with difficulty)
-    if ((keeper.diving || keeper.deflecting) && !keeper.deflecting) {
-      const dist = Math.sqrt((ball.x - keeper.x) ** 2 + (ball.y - keeper.y) ** 2);
-      const difficulty = parseInt(difficultySlider.value);
-      const saveRadius = 70 + difficulty * 8; // higher difficulty -> larger save radius
-      if (dist < saveRadius) {
-        // Save with deflection!
-        keeper.deflecting = true;
-        keeper.deflectTime = Date.now();
-        
-        // Deflect ball away
-        const angle = Math.atan2(ball.y - keeper.y, ball.x - keeper.x);
-        // Ensure ball is no longer considered 'in the goal'
+
+      function resolveShotOutcome() {
+        if (!shootoutActive || !shootoutState) return;
+        const s = shootoutState;
+        // determine if last shot scored
+        const scored = !!ball.scored || (!!ball.inGoal && !ball.missedGoal);
+        // Update state depending on which side took the shot
+        const playerShot = lastShotOwner === "player";
+        if (playerShot) {
+          if (s.playerIsA) {
+            if (scored) s.scoreA++;
+          } else {
+            if (scored) s.scoreB++;
+          }
+        } else {
+          if (s.playerIsA) {
+            if (scored) s.scoreB++;
+          } else {
+            if (scored) s.scoreA++;
+          }
+        }
+
+        s.kickNum++;
+        // flip who will shoot next so player alternates between shooter and keeper every kick
+        s.playerShootsNext = !s.playerShootsNext;
+        s.history.push({ owner: lastShotOwner, scored });
+        // push into per-team history for UI
+        if (playerShot) {
+          if (s.playerIsA) s.scoreHistoryA.push(!!scored);
+          else s.scoreHistoryB.push(!!scored);
+        } else {
+          if (s.playerIsA) s.scoreHistoryB.push(!!scored);
+          else s.scoreHistoryA.push(!!scored);
+        }
+        if (playerShot) {
+          kickHistoryPlayer.push(!!scored);
+          if (kickHistoryPlayer.length > 5) kickHistoryPlayer.shift();
+        } else {
+          kickHistoryAI.push(!!scored);
+          if (kickHistoryAI.length > 5) kickHistoryAI.shift();
+        }
+        updatePenaltyTracker();
+        document.getElementById("shootoutScore").textContent =
+          `${s.scoreA} - ${s.scoreB}`;
+        document.getElementById("shootoutKicks").textContent = String(
+          s.kickNum,
+        );
+
+        // reset ball state for next kick
+        ball.active = false;
+        ball.trail = [];
+        ball.missedGoal = false;
         ball.inGoal = false;
         ball.scored = false;
-        ball.missedGoal = true; // Turn red after save
-        ball.vz = 0;
-        ball.z = 0;
 
-        // Push ball outwards from keeper and slightly downwards
-        ball.vx = Math.cos(angle) * 600;
-        ball.vy = Math.sin(angle) * 450 + 300; // stronger bounce away and down
-        // Nudge position so it visibly appears deflected away
-        ball.x = keeper.x + Math.cos(angle) * 40;
-        ball.y = keeper.y + Math.sin(angle) * 40;
-        
-        streak = 0;
-        playSound(300, 0.3);
-        
-        setTimeout(() => {
-          ball.active = false;
-          updateStats();
-          
-          // Check if game is over (5 attempts)
-          if (attempts >= 5) {
-            setTimeout(() => {
-              alert(`Game Over! Final Score: ${goals} / ${attempts}`);
-              // Reset everything
-              goals = 0;
-              attempts = 0;
-              streak = 0;
-              updateStats();
-              resetGame();
-            }, 500);
-          } else {
-            setTimeout(() => {
-              resetGame();
-            }, 800);
+        // End after both sides have taken 5 kicks; if tied, go to sudden death
+        const kicksA = s.scoreHistoryA.length;
+        const kicksB = s.scoreHistoryB.length;
+        const minKicks = Math.min(kicksA, kicksB);
+        const maxKicks = Math.max(kicksA, kicksB);
+        if (minKicks >= s.totalEach && s.kickNum % 2 === 0) {
+          if (s.scoreA !== s.scoreB) {
+            finalizeShootout(s);
+            return;
           }
-        }, 600);
-        return;
+        }
+        // sudden death: once beyond 5 each, resolve on first pair with difference
+        if (maxKicks > s.totalEach && s.kickNum % 2 === 0) {
+          if (s.scoreA !== s.scoreB) {
+            finalizeShootout(s);
+            return;
+          }
+        }
+
+        // continue next kick
+        lastShotPending = false;
+        lastShotOwner = null;
+        // small delay before next kick
+        setTimeout(() => {
+          startNextKick();
+        }, 700);
       }
-    }
-    
-    // Out of bounds
-    if (ball.y > CONFIG.height + 100 || ball.x < -100 || ball.x > CONFIG.width + 100 || ball.y < -100) {
-      if (!ball.missedGoal && !ball.inGoal) {
-        streak = 0;
+
+      function finalizeShootout(s) {
+        // determine winner id
+        const winnerId = s.scoreA > s.scoreB ? s.matchRef.a : s.matchRef.b;
+        s.matchRef.scoreA = s.scoreA;
+        s.matchRef.scoreB = s.scoreB;
+        s.matchRef.winner = winnerId;
+        advanceWinnerToNextRound(s.roundIdx, s.matchIdx, winnerId);
+        // close overlay and render bracket
+        document.getElementById("shootoutOverlay").style.display = "none";
+        shootoutActive = false;
+        shootoutState = null;
+        const track = document.getElementById("penaltyTracker");
+        if (track) track.style.display = "none";
+        tournament.active = true;
+        renderBracket();
+
+        simulateOtherMatchesInRound(s.roundIdx, s.matchIdx);
+        updateRoundProgression();
+        renderBracket();
+
+        if (winnerId !== playerTeamId) {
+          showGameOver("Nice try. Try again.");
+          return;
+        }
+        autoStartNextMatch();
+      }
+
+      // startTournamentBtn removed from side panel; start tournament is triggered from modal/team selection or via View Bracket flow
+      if (resetTournamentBtn)
+        resetTournamentBtn.addEventListener("click", resetTournament);
+      const viewBracketBtn = document.getElementById("viewBracketBtn");
+      const bracketModal = document.getElementById("bracketModal");
+      const closeBracketBtn = document.getElementById("closeBracketBtn");
+      const gameOverModal = document.getElementById("gameOverModal");
+      const playAgainBtn = document.getElementById("playAgainBtn");
+      if (viewBracketBtn)
+        viewBracketBtn.addEventListener("click", () => {
+          renderBracket();
+          if (bracketModal) bracketModal.style.display = "flex";
+        });
+      if (closeBracketBtn)
+        closeBracketBtn.addEventListener("click", () => {
+          if (bracketModal) bracketModal.style.display = "none";
+        });
+      if (playAgainBtn)
+        playAgainBtn.addEventListener("click", () => {
+          if (gameOverModal) gameOverModal.style.display = "none";
+          localStorage.removeItem("neonstrike_team");
+          playerTeamId = null;
+          playerTeamData = null;
+          opponentTeamData = null;
+          crowdDots = [];
+          resetTournament();
+          if (startupModal) startupModal.style.display = "flex";
+          buildTeamSelector();
+        });
+
+      // Startup modal: team selection only
+      const startupModal = document.getElementById("startupModal");
+
+      // build team selector inside modal
+      let playerTeamId = null;
+      let playerTeamData = null;
+
+      function applyFieldTheme() {
+        const root = document.documentElement.style;
+        root.setProperty("--accent", "#ffffff");
+        root.setProperty("--accent-2", "#d6f5d6");
+        root.setProperty("--good", "#22c55e");
+        root.setProperty("--bad", "#ef4444");
+        root.setProperty(
+          "--panel",
+          "linear-gradient(180deg, rgba(6,20,10,0.92), rgba(8,24,12,0.92))",
+        );
+      }
+
+      playerTeamId = null;
+      playerTeamData = null;
+
+      function buildTeamSelector() {
+        const modalCard = document.querySelector(".startup-card");
+        if (!modalCard) return;
+        if (modalCard.querySelector(".team-selector")) return; // already built
+        const selDiv = document.createElement("div");
+        selDiv.className = "team-selector";
+        selDiv.style.display = "grid";
+        // selector: 4 columns x 4 rows for 16 teams
+        selDiv.style.gridTemplateColumns = "repeat(4, 1fr)";
+        selDiv.style.gridAutoRows = "96px";
+        selDiv.style.gap = "10px";
+        selDiv.style.margin = "8px 0 12px 0";
+        selDiv.style.padding = "14px";
+        selDiv.style.borderRadius = "8px";
+        selDiv.style.background =
+          "linear-gradient(180deg, rgba(0,24,12,0.7), rgba(0,48,80,0.6))";
+        TEAMS.forEach((t) => {
+          const b = document.createElement("button");
+          b.className = "btn";
+          b.style.display = "flex";
+          b.style.flexDirection = "column";
+          b.style.alignItems = "center";
+          b.style.justifyContent = "center";
+          b.style.padding = "8px";
+          b.style.height = "72px";
+          b.innerHTML = `<div style="font-size:22px">${t.flag}</div><div style="font-size:13px;margin-top:6px">${t.name}</div>`;
+          b.addEventListener("click", () => {
+            selectPlayerTeam(t.id);
+            modalCard
+              .querySelectorAll(".team-selector .btn")
+              .forEach((x) => x.classList.remove("active"));
+            b.classList.add("active");
+            if (startupModal) {
+              startupModal.classList.add("fade-out");
+              setTimeout(() => {
+                startupModal.style.display = "none";
+                startupModal.classList.remove("fade-out");
+              }, 600);
+            }
+            applyFieldTheme();
+            startTournament();
+            if (tournamentInfo)
+              tournamentInfo.textContent = "Tournament started";
+          });
+          selDiv.appendChild(b);
+        });
+        modalCard.insertBefore(selDiv, modalCard.children[2]);
+      }
+
+      function selectPlayerTeam(id) {
+        playerTeamId = id;
+        playerTeamData = TEAMS.find((t) => t.id === id) || null;
+        // apply keeper skin colors for player's team
+        if (playerTeamData) {
+          keeper.primaryColor = playerTeamData.primary;
+          keeper.gloveColor = playerTeamData.secondary;
+        }
+        crowdDots = [];
+        crowdMood.cheer = 0;
+        crowdMood.boo = 0;
+      }
+      // Build selector immediately and show modal
+      buildTeamSelector();
+
+      if (startupModal) startupModal.style.display = "flex";
+
+      // Shootout overlay buttons
+      const shootoutForfeit = document.getElementById("shootoutForfeit");
+      const shootoutSimulate = document.getElementById("shootoutSimulate");
+      const shootoutClose = document.getElementById("shootoutClose");
+      if (shootoutForfeit)
+        shootoutForfeit.addEventListener("click", () => {
+          if (!shootoutActive || !shootoutState) return;
+          // award win to opponent
+          const s = shootoutState;
+          const winnerId = s.playerIsA ? s.matchRef.b : s.matchRef.a;
+          s.matchRef.scoreA = s.scoreA;
+          s.matchRef.scoreB = s.scoreB;
+          s.matchRef.winner = winnerId;
+          advanceWinnerToNextRound(s.roundIdx, s.matchIdx, winnerId);
+          document.getElementById("shootoutOverlay").style.display = "none";
+          shootoutActive = false;
+          shootoutState = null;
+          tournament.active = true;
+          renderBracket();
+        });
+      if (shootoutSimulate)
+        shootoutSimulate.addEventListener("click", () => {
+          // auto-simulate the current kick (quick random result)
+          if (!shootoutActive || !shootoutState) return;
+          // random chance to score
+          const chance = 0.7;
+          const scored = Math.random() < chance;
+          // emulate immediate resolution
+          lastShotOwner = shootoutState.playerShootsNext ? "player" : "ai";
+          lastShotPending = true;
+          // set ball flags to emulate
+          ball.active = false;
+          ball.scored = scored;
+          ball.inGoal = scored;
+          ball.missedGoal = !scored;
+          resolveShotOutcome();
+        });
+      if (shootoutClose)
+        shootoutClose.addEventListener("click", () => {
+          closeShootout();
+        });
+
+      // Competition turn control
+
+      // Update target point based on zone
+      function updateTargetPoint() {
+        const zones = {
+          tl: { x: 0.2, y: 0.25 },
+          tm: { x: 0.5, y: 0.25 },
+          tr: { x: 0.8, y: 0.25 },
+          ml: { x: 0.2, y: 0.5 },
+          mm: { x: 0.5, y: 0.5 },
+          mr: { x: 0.8, y: 0.5 },
+          bl: { x: 0.2, y: 0.75 },
+          bm: { x: 0.5, y: 0.75 },
+          br: { x: 0.8, y: 0.75 },
+        };
+
+        const zone = zones[selectedZone] || zones.mm;
+        targetPoint.x = CONFIG.goalX + CONFIG.goalWidth * zone.x;
+        targetPoint.y = CONFIG.goalY + CONFIG.goalHeight * zone.y;
+      }
+
+      updateTargetPoint();
+
+      // Canvas click to set target
+      canvas.addEventListener("click", (e) => {
+        const rect = canvas.getBoundingClientRect();
+        const scaleX = CONFIG.width / rect.width;
+        const scaleY = CONFIG.height / rect.height;
+        const x = (e.clientX - rect.left) * scaleX;
+        const y = (e.clientY - rect.top) * scaleY;
+
+        // If click is inside goal -> aim there and immediately shoot.
+        if (
+          x >= CONFIG.goalX &&
+          x <= CONFIG.goalX + CONFIG.goalWidth &&
+          y >= CONFIG.goalY &&
+          y <= CONFIG.goalY + CONFIG.goalHeight
+        ) {
+          targetPoint.x = x;
+          targetPoint.y = y;
+          selectedZone = null;
+
+          // Power determined by vertical click position inside goal (higher -> stronger)
+          const relY =
+            (CONFIG.goalY + CONFIG.goalHeight - y) / CONFIG.goalHeight;
+          const powerLevel = Math.min(1, Math.max(0.15, relY));
+          if (Date.now() >= nextShootAllowedAt) shoot(powerLevel);
+        } else {
+          // Click outside goal just moves target crosshair
+          targetPoint.x = x;
+          targetPoint.y = y;
+        }
+      });
+
+      // Keeper controls (WASD/Arrows) when AI is shooting
+      function triggerManualDive() {
+        if (currentTurn !== "ai") return;
+        if (keeper.diving || keeper.deflecting) return;
+        // dive toward ball if active, otherwise forward/up
+        const targetX = ball.active ? ball.x : keeper.x;
+        const targetY = ball.active
+          ? Math.max(CONFIG.goalY + 20, ball.y - 30)
+          : CONFIG.goalY + 60;
+        keeper.diving = true;
+        keeper.diveTime = Date.now();
+        keeper.startX = keeper.x;
+        keeper.startY = keeper.y;
+        keeper.targetX = Math.max(
+          CONFIG.goalX + 30,
+          Math.min(CONFIG.goalX + CONFIG.goalWidth - 30, targetX),
+        );
+        keeper.targetY = Math.max(
+          CONFIG.goalY + 20,
+          Math.min(CONFIG.goalY + CONFIG.goalHeight - 20, targetY),
+        );
+        keeper.diveDuration = 0.32;
+        const sign = Math.sign(keeper.targetX - keeper.startX) || 1;
+        keeper.rotation = sign * (Math.PI / 4);
+      }
+      document.addEventListener("keydown", (e) => {
+        if (currentTurn !== "ai") return;
+        if (e.key === "a" || e.key === "A" || e.key === "ArrowLeft")
+          keys.left = true;
+        if (e.key === "d" || e.key === "D" || e.key === "ArrowRight")
+          keys.right = true;
+        if (e.key === "w" || e.key === "W" || e.key === "ArrowUp")
+          keys.up = true;
+        if (e.key === "s" || e.key === "S" || e.key === "ArrowDown")
+          keys.down = true;
+        if (e.code === "Space") triggerManualDive();
+      });
+      document.addEventListener("keyup", (e) => {
+        if (e.key === "a" || e.key === "A" || e.key === "ArrowLeft")
+          keys.left = false;
+        if (e.key === "d" || e.key === "D" || e.key === "ArrowRight")
+          keys.right = false;
+        if (e.key === "w" || e.key === "W" || e.key === "ArrowUp")
+          keys.up = false;
+        if (e.key === "s" || e.key === "S" || e.key === "ArrowDown")
+          keys.down = false;
+      });
+
+      // Shoot button - hold to charge (only if element exists)
+      if (shootBtn) {
+        shootBtn.addEventListener("mousedown", () => {
+          if (ball.active || currentTurn !== "player") return;
+          if (Date.now() < nextShootAllowedAt) return;
+          isCharging = true;
+          chargeStartTime = Date.now();
+          initAudio();
+        });
+
+        shootBtn.addEventListener("touchstart", (e) => {
+          e.preventDefault();
+          if (ball.active || currentTurn !== "player") return;
+          if (Date.now() < nextShootAllowedAt) return;
+          isCharging = true;
+          chargeStartTime = Date.now();
+          initAudio();
+        });
+      }
+
+      function releaseShot() {
+        if (!isCharging) return;
+        isCharging = false;
+        shoot(power);
+        power = 0;
+        if (powerFill) powerFill.style.width = "0%";
+      }
+
+      document.addEventListener("mouseup", releaseShot);
+      document.addEventListener("touchend", releaseShot);
+
+      resetBtn.addEventListener("click", resetGame);
+
+      soundBtn.addEventListener("click", () => {
+        soundEnabled = !soundEnabled;
+        soundBtn.textContent = soundEnabled ? "Sound: ON" : "Sound: OFF";
+      });
+
+      function keeperReact(tx, ty) {
+        const difficulty = parseInt(difficultySlider.value);
+        const reactionTime = 0.35 - difficulty * 0.04;
+        setTimeout(() => {
+          keeper.diving = true;
+          keeper.diveTime = Date.now();
+          keeper.startX = keeper.x;
+          keeper.startY = keeper.y;
+          keeper.diveDuration = Math.max(0.25, 0.7 - difficulty * 0.08);
+          const errorMargin = 80 * (6 - difficulty);
+          keeper.targetX = tx + (Math.random() - 0.5) * errorMargin;
+          keeper.targetY = ty + (Math.random() - 0.5) * errorMargin * 0.6;
+          keeper.targetX = Math.max(
+            CONFIG.goalX + 40,
+            Math.min(CONFIG.goalX + CONFIG.goalWidth - 40, keeper.targetX),
+          );
+          keeper.targetY = Math.max(
+            CONFIG.goalY + 40,
+            Math.min(CONFIG.goalY + CONFIG.goalHeight - 40, keeper.targetY),
+          );
+          keeper.rotation = Math.atan2(
+            keeper.targetY - keeper.y,
+            keeper.targetX - keeper.x,
+          );
+        }, reactionTime * 1000);
+      }
+
+      // Shoot function with 3D physics
+      function shoot(powerLevel) {
+        if (ball.active || currentTurn !== "player") return;
+        ball.active = true;
+        ball.missedGoal = false;
+        ball.trail = [];
+
+        const dx = targetPoint.x - ball.x;
+        const dy = targetPoint.y - ball.y;
+
+        let speed = 420 + powerLevel * 420;
+        ball.spin = (Math.random() - 0.5) * 120;
+
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        const timeToGoal = distance / speed;
+
+        ball.vx = dx / timeToGoal;
+        ball.vy = dy / timeToGoal - 0.5 * CONFIG.gravity * timeToGoal;
+        ball.vz = 0;
+
+        playSound(150, 0.2, "sawtooth");
+
+        lastShotPending = true;
+        lastShotOwner = "player";
+
+        keeperReact(targetPoint.x, targetPoint.y);
+      }
+
+      function resetGame() {
+        ball.x = CONFIG.width / 2;
+        ball.y = CONFIG.height - 100;
+        ball.z = 0;
+        ball.vx = 0;
+        ball.vy = 0;
+        ball.vz = 0;
+        ball.spin = 0;
+        ball.active = false;
+        ball.missedGoal = false;
+        ball.inGoal = false;
+        ball.scored = false;
+        ball.trail = [];
+
+        keeper.x = CONFIG.goalX + CONFIG.goalWidth / 2;
+        keeper.y = CONFIG.goalY + CONFIG.goalHeight - 30;
+        keeper.diving = false;
+        keeper.deflecting = false;
+        keeper.rotation = 0;
+      }
+
+      function updateStats() {
+        document.getElementById("goals").textContent =
+          `${playerScore} - ${aiScore}`;
+        document.getElementById("streak").textContent =
+          currentTurn === "player" ? "Player" : "AI";
+        const hudScore = document.getElementById("hudScore");
+        const hudTurn = document.getElementById("hudTurn");
+        if (hudScore) hudScore.textContent = `${playerScore} - ${aiScore}`;
+        if (hudTurn)
+          hudTurn.textContent = currentTurn === "player" ? "Player" : "AI";
+        renderKickRow("kickRowPlayer", kickHistoryPlayer);
+        renderKickRow("kickRowAI", kickHistoryAI);
+      }
+
+      function renderKickRow(id, history) {
+        const row = document.getElementById(id);
+        if (!row) return;
+        row.innerHTML = "";
+        for (let i = 0; i < 5; i++) {
+          const slot = document.createElement("div");
+          slot.className = "kick-slot";
+          const val = history[i];
+          if (val === true) slot.classList.add("scored");
+          if (val === false) slot.classList.add("missed");
+          row.appendChild(slot);
+        }
+      }
+
+      function setTurn(turn) {
+        currentTurn = turn;
+        if (shootBtn) shootBtn.disabled = currentTurn !== "player";
+        if (currentTurn === "player") {
+          nextShootAllowedAt = Date.now() + 2000;
+        }
         updateStats();
       }
-      ball.active = false;
-      
-      // Check if game is over (5 attempts)
-      if (attempts >= 5) {
-        setTimeout(() => {
-          alert(`Game Over! Final Score: ${goals} / ${attempts}`);
-          // Reset everything
-          goals = 0;
-          attempts = 0;
-          streak = 0;
-          updateStats();
-          resetGame();
-        }, 500);
+
+      function showGameOver(message) {
+        const modal = document.getElementById("gameOverModal");
+        const text = document.getElementById("gameOverText");
+        if (text) text.textContent = message;
+        if (modal) modal.style.display = "flex";
+      }
+
+      function crowdReact(type) {
+        if (type === "cheer") {
+          crowdMood.cheer = 1;
+          crowdMood.boo = 0;
+          setTimeout(() => {
+            crowdMood.cheer = 0;
+          }, 1200);
+        } else {
+          crowdMood.boo = 1;
+          crowdMood.cheer = 0;
+          setTimeout(() => {
+            crowdMood.boo = 0;
+          }, 1200);
+        }
+      }
+
+      function resolveCompetitiveTurn() {
+        const scored = !!ball.scored || (!!ball.inGoal && !ball.missedGoal);
+        if (lastShotOwner === "player") {
+          if (scored) {
+            playerScore++;
+            crowdReact("cheer");
+          } else {
+            crowdReact("boo");
+          }
+          kickHistoryPlayer.push(!!scored);
+          if (kickHistoryPlayer.length > 5) kickHistoryPlayer.shift();
+          setTurn("ai");
+          aiTurnScheduled = true;
+          setTimeout(() => {
+            aiTurnScheduled = false;
+            aiShootForShootout();
+          }, 2000);
+        } else {
+          if (scored) {
+            aiScore++;
+            crowdReact("boo");
+          } else {
+            crowdReact("cheer");
+          }
+          kickHistoryAI.push(!!scored);
+          if (kickHistoryAI.length > 5) kickHistoryAI.shift();
+          setTurn("player");
+        }
+
+        lastShotPending = false;
+        lastShotOwner = null;
+
+        // reset ball state for next kick
+        ball.active = false;
+        ball.trail = [];
+        ball.missedGoal = false;
+        ball.inGoal = false;
+        ball.scored = false;
+        resetGame();
+      }
+
+      // Physics update with 3D depth
+      function update(dt) {
+        if (isCharging) {
+          const chargeTime = (Date.now() - chargeStartTime) / 1000;
+          power = Math.min(1, chargeTime / 1.2);
+          if (powerFill) powerFill.style.width = power * 100 + "%";
+        }
+
+        if (ball.active) {
+          // Gravity
+          ball.vy += CONFIG.gravity * dt;
+
+          // Light spin effect
+          if (Math.abs(ball.spin) > 0.01) {
+            ball.vx += ball.spin * dt * 0.2;
+          }
+
+          // Update position
+          ball.x += ball.vx * dt;
+          ball.y += ball.vy * dt;
+
+          // If ball entered goal, move into net (z-depth)
+          if (ball.inGoal) {
+            // advance into net
+            ball.z += ball.vz * dt;
+            // Slight dampening but keep motion so ball sinks into net smoothly
+            const friction = 0.95;
+            ball.vx *= friction;
+            ball.vy *= friction;
+            ball.vz *= friction;
+            // slow sideways movement when entering net
+            ball.vx *= 0.98;
+
+            // Stop when deep enough
+            if (Math.abs(ball.z) > 260) {
+              ball.vx = 0;
+              ball.vy = 0;
+              ball.vz = 0;
+              ball.active = false;
+
+              if (!ball.scored) {
+                ball.scored = true;
+              }
+            }
+          }
+
+          // Add to trail
+          ball.trail.push({ x: ball.x, y: ball.y, z: ball.z });
+          if (ball.trail.length > 20) ball.trail.shift();
+
+          // Check if ball has reached goal area
+          if (
+            ball.y <= CONFIG.goalY + CONFIG.goalHeight &&
+            !ball.missedGoal &&
+            !ball.inGoal
+          ) {
+            // Check if inside goal boundaries
+            if (
+              ball.x > CONFIG.goalX + 20 &&
+              ball.x < CONFIG.goalX + CONFIG.goalWidth - 20 &&
+              ball.y > CONFIG.goalY + 10 &&
+              ball.y < CONFIG.goalY + CONFIG.goalHeight - 10
+            ) {
+              // Goal! Start going into net
+              ball.inGoal = true;
+              ball.scored = true;
+              ball.missedGoal = false;
+              ball.vz = -Math.abs(ball.vy) * 0.8; // Move into goal depth
+              playSound(600, 0.5);
+              netRipple.active = true;
+              netRipple.x = ball.x;
+              netRipple.y = ball.y;
+              netRipple.t = Date.now();
+              return;
+            } else if (ball.y <= CONFIG.goalY) {
+              // Missed - turn ball red
+              ball.missedGoal = true;
+            }
+          }
+
+          // Check keeper collision with deflection (make save chance scale with difficulty)
+          const manualSaveAllowed = currentTurn === "ai";
+          if (
+            (keeper.diving || keeper.deflecting || manualSaveAllowed) &&
+            !keeper.deflecting
+          ) {
+            const dist = Math.sqrt(
+              (ball.x - keeper.x) ** 2 + (ball.y - keeper.y) ** 2,
+            );
+            const difficulty = parseInt(difficultySlider.value);
+            const heightFactor =
+              1 - (ball.y - CONFIG.goalY) / CONFIG.goalHeight; // higher shot -> bigger factor
+            const baseRadius = manualSaveAllowed ? 62 : 70;
+            const saveRadius =
+              baseRadius + difficulty * 8 - Math.max(0, heightFactor * 20); // harder to save top corners
+            if (dist < saveRadius) {
+              // Save with deflection!
+              keeper.deflecting = true;
+              keeper.deflectTime = Date.now();
+
+              // Deflect ball away
+              const angle = Math.atan2(ball.y - keeper.y, ball.x - keeper.x);
+              // Ensure ball is no longer considered 'in the goal'
+              ball.inGoal = false;
+              ball.scored = false;
+              ball.missedGoal = true; // Turn red after save
+              ball.vz = 0;
+              ball.z = 0;
+
+              // Push ball outwards from keeper and slightly downwards
+              ball.vx = Math.cos(angle) * 420;
+              ball.vy = Math.sin(angle) * 320 + 220; // softer bounce away and down
+              // Nudge position so it visibly appears deflected away
+              ball.x = keeper.x + Math.cos(angle) * 40;
+              ball.y = keeper.y + Math.sin(angle) * 40;
+              playSound(300, 0.3);
+              // let it travel out briefly for a smoother feel
+              setTimeout(() => {
+                ball.active = false;
+              }, 250);
+              return;
+            }
+          }
+
+          // Out of bounds
+          if (
+            ball.y > CONFIG.height + 100 ||
+            ball.x < -100 ||
+            ball.x > CONFIG.width + 100 ||
+            ball.y < -100
+          ) {
+            ball.active = false;
+          }
+        }
+
+        // Update keeper
+        const baseY = CONFIG.goalY + CONFIG.goalHeight - 30; // keeper baseline near the ground
+        if (keeper.diving) {
+          const elapsed = (Date.now() - keeper.diveTime) / 1000;
+          const diveDuration = keeper.diveDuration || 0.6;
+          const progress = Math.min(1, elapsed / diveDuration);
+
+          // Smooth dive motion (interpolate from start -> target) - snappier curve
+          const easeProgress = 1 - Math.pow(1 - progress, 4);
+          keeper.x =
+            (keeper.startX || keeper.x) +
+            (keeper.targetX - (keeper.startX || keeper.x)) * easeProgress;
+          keeper.y =
+            (keeper.startY || keeper.y) +
+            (keeper.targetY - (keeper.startY || keeper.y)) * easeProgress;
+
+          // End diving state when reached
+          if (progress >= 1) {
+            keeper.diving = false;
+            keeper.playerDive = false;
+            keeper.y = baseY;
+            keeper.rotation = 0;
+          }
+        } else if (!keeper.deflecting) {
+          if (currentTurn === "ai") {
+            const moveSpeed = 420; // px/sec
+            if (keys.left) keeper.x -= moveSpeed * dt;
+            if (keys.right) keeper.x += moveSpeed * dt;
+            if (keys.up) keeper.y -= moveSpeed * dt * 0.6;
+            if (keys.down) keeper.y += moveSpeed * dt * 0.6;
+            keeper.x = Math.max(
+              CONFIG.goalX + 30,
+              Math.min(CONFIG.goalX + CONFIG.goalWidth - 30, keeper.x),
+            );
+            keeper.y = Math.max(
+              CONFIG.goalY + 40,
+              Math.min(CONFIG.goalY + CONFIG.goalHeight - 20, keeper.y),
+            );
+          } else {
+            // Idle animation between shots
+            keeper.x =
+              CONFIG.goalX +
+              CONFIG.goalWidth / 2 +
+              Math.sin(Date.now() / 800) * 12;
+            keeper.y = baseY + Math.sin(Date.now() / 600) * 4;
+          }
+        }
+
+        // Reset deflecting state
+        if (keeper.deflecting && Date.now() - keeper.deflectTime > 1000) {
+          keeper.deflecting = false;
+        }
+      }
+
+      // Draw function with 3D perspective
+      function draw() {
+        // Clear - field base
+        ctx.fillStyle = "#1f8b3a";
+        ctx.fillRect(0, 0, CONFIG.width, CONFIG.height);
+
+        // Field gradient
+        const fieldGrad = ctx.createLinearGradient(0, 0, 0, CONFIG.height);
+        fieldGrad.addColorStop(0, "#27a146");
+        fieldGrad.addColorStop(1, "#1b7d35");
+        ctx.fillStyle = fieldGrad;
+        ctx.fillRect(0, 0, CONFIG.width, CONFIG.height);
+
+        // Field line (white)
+        ctx.strokeStyle = "rgba(255,255,255,0.8)";
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(0, CONFIG.goalY + CONFIG.goalHeight);
+        ctx.lineTo(CONFIG.width, CONFIG.goalY + CONFIG.goalHeight);
+        ctx.stroke();
+
+        // Penalty spot (white)
+        ctx.beginPath();
+        ctx.arc(CONFIG.width / 2, CONFIG.height - 100, 8, 0, Math.PI * 2);
+        ctx.fillStyle = "rgba(255,255,255,0.9)";
+        ctx.fill();
+
+        // Stands behind goal (team colors)
+        drawStands();
+
+        // Goal frame with 3D depth
+        drawGoal3D();
+
+        // Target crosshair
+        if (!ball.active) {
+          ctx.strokeStyle = "rgba(255,255,255,0.95)";
+          ctx.lineWidth = 3;
+          ctx.beginPath();
+          ctx.arc(targetPoint.x, targetPoint.y, 14, 0, Math.PI * 2);
+          ctx.stroke();
+          ctx.beginPath();
+          ctx.moveTo(targetPoint.x - 22, targetPoint.y);
+          ctx.lineTo(targetPoint.x + 22, targetPoint.y);
+          ctx.moveTo(targetPoint.x, targetPoint.y - 22);
+          ctx.lineTo(targetPoint.x, targetPoint.y + 22);
+          ctx.stroke();
+        }
+
+        // Goalkeeper with animation
+        drawGoalkeeper();
+
+        // Ball with trail
+        drawBall3D();
+
+        // Debug HUD (confirm canvas is rendering)
+        ctx.save();
+        ctx.fillStyle = "rgba(0,255,246,0.95)";
+        ctx.font = "20px Orbitron, sans-serif";
+        ctx.textBaseline = "top";
+        ctx.fillText("Neon Strike", 18, 12);
+        // Minimal HUD
+        ctx.restore();
+      }
+
+      function drawStands() {
+        const teamPrimary =
+          (opponentTeamData && opponentTeamData.primary) ||
+          (playerTeamData && playerTeamData.primary) ||
+          "#0f172a";
+        const teamSecondary =
+          (opponentTeamData && opponentTeamData.secondary) ||
+          (playerTeamData && playerTeamData.secondary) ||
+          "#f8fafc";
+        const standTop = 0;
+        const standBottom = CONFIG.goalY + CONFIG.goalHeight + 20;
+
+        // Stand base gradient
+        const standGrad = ctx.createLinearGradient(0, standTop, 0, standBottom);
+        standGrad.addColorStop(0, "rgba(10,10,12,0.9)");
+        standGrad.addColorStop(1, "rgba(5,8,12,0.95)");
+        ctx.fillStyle = standGrad;
+        ctx.fillRect(0, standTop, CONFIG.width, standBottom);
+
+        // Banner stripes in team colors
+        const bannerHeight = 26;
+        ctx.fillStyle = teamPrimary;
+        ctx.fillRect(0, standTop + 20, CONFIG.width, bannerHeight);
+        ctx.fillStyle = teamSecondary;
+        ctx.fillRect(
+          0,
+          standTop + 20 + bannerHeight,
+          CONFIG.width,
+          bannerHeight,
+        );
+
+        // Crowd dots (precomputed)
+        if (crowdDots.length === 0) {
+          const rows = 6;
+          const cols = 40;
+          for (let r = 0; r < rows; r++) {
+            for (let c = 0; c < cols; c++) {
+              const x = 20 + (CONFIG.width - 40) * (c / (cols - 1));
+              const y = standTop + 80 + r * 28 + Math.sin((c + r) * 0.6) * 4;
+              crowdDots.push({
+                x,
+                y,
+                tint: Math.random() > 0.5 ? 1 : 0,
+              });
+            }
+          }
+        }
+        const t = Date.now() / 600;
+        const cheerPulse = Math.sin(Date.now() / 120) * crowdMood.cheer * 0.8;
+        const booPulse = Math.sin(Date.now() / 180) * crowdMood.boo * 0.6;
+        for (const d of crowdDots) {
+          ctx.beginPath();
+          const wave =
+            Math.sin(t + d.x * 0.02 + d.y * 0.04) *
+            (1.2 + crowdMood.cheer * 1.6);
+          const y = d.y + wave + cheerPulse - booPulse;
+          ctx.fillStyle = d.tint
+            ? "rgba(255,255,255,0.65)"
+            : "rgba(200,220,255,0.35)";
+          ctx.arc(d.x, y, 2, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+
+      function drawGoal3D() {
+        // Goal depth/shadow
+        ctx.fillStyle = "rgba(0, 0, 0, 0.3)";
+        ctx.fillRect(
+          CONFIG.goalX - 5,
+          CONFIG.goalY - 5,
+          CONFIG.goalWidth + 10,
+          CONFIG.goalHeight + 10,
+        );
+
+        // Net
+        ctx.strokeStyle = "rgba(255,255,255,0.12)";
+        ctx.lineWidth = 1;
+        for (let i = 0; i <= 12; i++) {
+          const x = CONFIG.goalX + (CONFIG.goalWidth / 12) * i;
+          ctx.beginPath();
+          ctx.moveTo(x, CONFIG.goalY);
+          ctx.lineTo(x - 8, CONFIG.goalY + CONFIG.goalHeight);
+          ctx.stroke();
+        }
+        for (let i = 0; i <= 10; i++) {
+          const y = CONFIG.goalY + (CONFIG.goalHeight / 10) * i;
+          ctx.beginPath();
+          ctx.moveTo(CONFIG.goalX, y);
+          ctx.lineTo(CONFIG.goalX + CONFIG.goalWidth, y);
+          ctx.stroke();
+        }
+
+        // Back net plane for extra depth
+        const depth = 30;
+        ctx.strokeStyle = "rgba(255,255,255,0.08)";
+        ctx.beginPath();
+        ctx.rect(
+          CONFIG.goalX - depth,
+          CONFIG.goalY + depth,
+          CONFIG.goalWidth + depth * 2,
+          CONFIG.goalHeight - depth,
+        );
+        ctx.stroke();
+        // Net ripple effect
+        if (netRipple.active) {
+          const elapsed = (Date.now() - netRipple.t) / 1000;
+          const rippleLife = 0.6;
+          const p = Math.min(1, elapsed / rippleLife);
+          const alpha = 0.5 * (1 - p);
+          ctx.save();
+          ctx.strokeStyle = `rgba(255,255,255,${alpha})`;
+          ctx.lineWidth = 2;
+          const radius = 10 + p * 80;
+          ctx.beginPath();
+          ctx.ellipse(
+            netRipple.x,
+            netRipple.y,
+            radius,
+            radius * 0.6,
+            0,
+            0,
+            Math.PI * 2,
+          );
+          ctx.stroke();
+          ctx.restore();
+          if (p >= 1) netRipple.active = false;
+        }
+
+        // Goal posts (white)
+        ctx.fillStyle = "rgba(255,255,255,0.98)";
+        // Left post
+        ctx.fillRect(CONFIG.goalX - 8, CONFIG.goalY, 8, CONFIG.goalHeight + 8);
+        // Right post
+        ctx.fillRect(
+          CONFIG.goalX + CONFIG.goalWidth,
+          CONFIG.goalY,
+          8,
+          CONFIG.goalHeight + 8,
+        );
+        // Top bar
+        ctx.fillRect(
+          CONFIG.goalX - 8,
+          CONFIG.goalY - 8,
+          CONFIG.goalWidth + 16,
+          8,
+        );
+
+        // Post highlights
+        ctx.fillStyle = "rgba(255,255,255,0.08)";
+        ctx.fillRect(CONFIG.goalX - 6, CONFIG.goalY, 2, CONFIG.goalHeight);
+        ctx.fillRect(
+          CONFIG.goalX + CONFIG.goalWidth,
+          CONFIG.goalY,
+          2,
+          CONFIG.goalHeight,
+        );
+      }
+
+      function drawGoalkeeper() {
+        // Detailed goalkeeper drawing with articulated limbs and dive-friendly origin
+        ctx.save();
+        ctx.translate(keeper.x, keeper.y);
+
+        // rotate during dives/deflects
+        if (keeper.diving || keeper.deflecting) ctx.rotate(keeper.rotation);
+
+        // soft shadow
+        ctx.fillStyle = "rgba(0,0,0,0.36)";
+        ctx.beginPath();
+        ctx.ellipse(0, 64, 56, 16, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Legs (thighs and shins)
+        ctx.fillStyle = "rgba(30,30,60,0.98)";
+        ctx.fillRect(-14, 32, 12, 36); // left shin
+        ctx.fillRect(4, 32, 12, 36); // right shin
+        // boots
+        ctx.fillStyle = "rgba(10,10,20,0.98)";
+        ctx.fillRect(-18, 66, 18, 8);
+        ctx.fillRect(0, 66, 18, 8);
+
+        // Shorts / hips
+        ctx.fillStyle = "rgba(18,18,40,0.96)";
+        ctx.fillRect(-22, 12, 44, 28);
+
+        // Torso (jersey) - tapered with slight collar
+        ctx.fillStyle = keeper.primaryColor || "rgba(255,45,212,0.98)";
+        ctx.beginPath();
+        ctx.moveTo(-34, 6);
+        ctx.quadraticCurveTo(-36, -30, -14, -58);
+        ctx.lineTo(14, -58);
+        ctx.quadraticCurveTo(36, -30, 34, 6);
+        ctx.closePath();
+        ctx.fill();
+
+        // Shoulders highlights
+        ctx.fillStyle = "rgba(255,255,255,0.06)";
+        ctx.beginPath();
+        ctx.ellipse(-12, -18, 8, 4, -0.3, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.beginPath();
+        ctx.ellipse(12, -18, 8, 4, 0.3, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Arms (upper arm + forearm as one block) and gloves - left
+        ctx.save();
+        ctx.translate(-28, -14);
+        if (!keeper.deflecting) ctx.rotate(-0.22);
+        ctx.fillStyle = keeper.primaryColor || "rgba(255,45,212,0.98)";
+        ctx.fillRect(0, -6, 14, 40);
+        ctx.fillStyle = keeper.gloveColor || "rgba(126,255,161,0.98)";
+        ctx.beginPath();
+        ctx.arc(10, 24, 12, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+
+        // right arm
+        ctx.save();
+        ctx.translate(28, -14);
+        if (!keeper.deflecting) ctx.rotate(0.22);
+        ctx.fillStyle = keeper.primaryColor || "rgba(255,45,212,0.98)";
+        ctx.fillRect(-14, -6, 14, 40);
+        ctx.fillStyle = keeper.gloveColor || "rgba(126,255,161,0.98)";
+        ctx.beginPath();
+        ctx.arc(-10, 24, 12, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+
+        // Deflecting override: wide bar with gloves to suggest reach
+        if (keeper.deflecting) {
+          ctx.save();
+          ctx.fillStyle = keeper.primaryColor || "rgba(255,45,212,0.98)";
+          ctx.fillRect(-56, -26, 112, 36);
+          ctx.fillStyle = keeper.gloveColor || "rgba(126,255,161,0.98)";
+          ctx.beginPath();
+          ctx.arc(-58, -6, 12, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.beginPath();
+          ctx.arc(58, -6, 12, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.restore();
+        }
+
+        // Neck and head
+        ctx.beginPath();
+        ctx.fillStyle = "#ffd8b0";
+        ctx.arc(0, -78, 16, 0, Math.PI * 2);
+        ctx.fill();
+        // subtle visor shadow
+        ctx.fillStyle = "rgba(0,0,0,0.12)";
+        ctx.fillRect(-9, -88, 18, 6);
+
+        ctx.restore();
+      }
+
+      function drawBall3D() {
+        // Draw trail with depth perspective
+        ctx.save();
+        for (let i = 0; i < ball.trail.length; i++) {
+          const t = ball.trail[i];
+          const alpha = (i / ball.trail.length) * 0.2;
+
+          // Scale based on depth - farther into goal = smaller
+          const depthScale = 1 - (Math.abs(t.z || 0) / 200) * 0.5;
+          const size =
+            CONFIG.ballRadius *
+            (0.5 + (i / ball.trail.length) * 0.5) *
+            depthScale;
+
+          // Offset position based on depth for 3D effect
+          const depthOffset = (t.z || 0) * 0.15;
+
+          ctx.globalAlpha = alpha;
+          ctx.beginPath();
+          ctx.arc(
+            t.x - depthOffset,
+            t.y + depthOffset * 0.5,
+            size,
+            0,
+            Math.PI * 2,
+          );
+          ctx.fillStyle = ball.missedGoal ? "#ff6b6b" : "#e0e0e0";
+          ctx.fill();
+        }
+        ctx.restore();
+
+        // Calculate depth scale for 3D effect
+        const depthScale = 1 - (Math.abs(ball.z) / 200) * 0.6;
+        const ballSize = CONFIG.ballRadius * depthScale;
+        const depthOffset = ball.z * 0.15;
+
+        // Ball shadow on field/net
+        if (ball.y > CONFIG.goalY + CONFIG.goalHeight || ball.inGoal) {
+          ctx.save();
+          ctx.globalAlpha = 0.3 * depthScale;
+          ctx.fillStyle = "#000";
+          ctx.beginPath();
+          const shadowX = ball.x - depthOffset;
+          const shadowY = ball.y + depthOffset * 0.5 + 20;
+          ctx.ellipse(
+            shadowX,
+            shadowY,
+            ballSize * 1.2,
+            ballSize * 0.4,
+            0,
+            0,
+            Math.PI * 2,
+          );
+          ctx.fill();
+          ctx.restore();
+        }
+
+        // Ball with depth offset for 3D
+        const drawX = ball.x - depthOffset;
+        const drawY = ball.y + depthOffset * 0.5;
+
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(drawX, drawY, ballSize, 0, Math.PI * 2);
+
+        // Ball color - green if scored in goal, red if missed
+        const gradient = ctx.createRadialGradient(
+          drawX - ballSize * 0.3,
+          drawY - ballSize * 0.3,
+          ballSize * 0.1,
+          drawX,
+          drawY,
+          ballSize,
+        );
+
+        if (ball.inGoal || ball.scored) {
+          // Green for successful goal
+          gradient.addColorStop(0, "#99ff99");
+          gradient.addColorStop(0.5, "#44ff44");
+          gradient.addColorStop(1, "#00cc00");
+        } else if (ball.missedGoal) {
+          // Red for missed
+          gradient.addColorStop(0, "#ff9999");
+          gradient.addColorStop(0.5, "#ff4444");
+          gradient.addColorStop(1, "#cc0000");
+        } else {
+          // White for active
+          gradient.addColorStop(0, "#ffffff");
+          gradient.addColorStop(0.6, "#f0f0f0");
+          gradient.addColorStop(1, "#cccccc");
+        }
+
+        ctx.fillStyle = gradient;
+        ctx.fill();
+
+        // Soccer-style patches overlay (FIFA-like)
+        const rotation = Date.now() / 500;
+        const patchColor = ball.missedGoal ? "#8b0000" : "#0b0b0b";
+        const patches = 6;
+        ctx.save();
+        ctx.translate(drawX, drawY);
+        ctx.rotate(rotation * 0.12);
+        for (let p = 0; p < patches; p++) {
+          const ang = (p / patches) * Math.PI * 2;
+          // center offset for each patch
+          const cx = Math.cos(ang) * ballSize * 0.18;
+          const cy = Math.sin(ang) * ballSize * 0.18;
+          ctx.beginPath();
+          const petals = 5;
+          for (let k = 0; k < petals; k++) {
+            const a = ang + (k * (Math.PI * 2)) / petals;
+            const rr = ballSize * (0.22 + 0.03 * Math.cos(k * 2));
+            const px = cx + Math.cos(a) * rr;
+            const py = cy + Math.sin(a) * rr;
+            if (k === 0) ctx.moveTo(px, py);
+            else ctx.lineTo(px, py);
+          }
+          ctx.closePath();
+          ctx.fillStyle = patchColor;
+          ctx.fill();
+        }
+        ctx.restore();
+
+        ctx.restore();
+      }
+
+      // Game loop
+      let lastTime = Date.now();
+      function gameLoop() {
+        const now = Date.now();
+        const dt = Math.min((now - lastTime) / 1000, 0.1);
+        lastTime = now;
+
+        update(dt);
+        draw();
+        // If in shootout and a shot finished in flight, resolve it
+        if (
+          shootoutActive &&
+          lastShotOwner &&
+          lastShotPending &&
+          !ball.active
+        ) {
+          // resolve last shot
+          resolveShotOutcome();
+        } else if (!shootoutActive && lastShotOwner && lastShotPending) {
+          if (!ball.active) resolveCompetitiveTurn();
+        }
+
+        requestAnimationFrame(gameLoop);
+      }
+
+      setTurn("player");
+      gameLoop();
+    </script>
+
+    <!-- Code injected by live-server -->
+    <script>
+      // <![CDATA[  <-- For SVG support
+      if ("WebSocket" in window) {
+        (function () {
+          function refreshCSS() {
+            var sheets = [].slice.call(document.getElementsByTagName("link"));
+            var head = document.getElementsByTagName("head")[0];
+            for (var i = 0; i < sheets.length; ++i) {
+              var elem = sheets[i];
+              var parent = elem.parentElement || head;
+              parent.removeChild(elem);
+              var rel = elem.rel;
+              if (
+                (elem.href && typeof rel != "string") ||
+                rel.length == 0 ||
+                rel.toLowerCase() == "stylesheet"
+              ) {
+                var url = elem.href.replace(/(&|\?)_cacheOverride=\d+/, "");
+                elem.href =
+                  url +
+                  (url.indexOf("?") >= 0 ? "&" : "?") +
+                  "_cacheOverride=" +
+                  new Date().valueOf();
+              }
+              parent.appendChild(elem);
+            }
+          }
+          var protocol =
+            window.location.protocol === "http:" ? "ws://" : "wss://";
+          var address =
+            protocol + window.location.host + window.location.pathname + "/ws";
+          var socket = new WebSocket(address);
+          socket.onmessage = function (msg) {
+            if (msg.data == "reload") window.location.reload();
+            else if (msg.data == "refreshcss") refreshCSS();
+          };
+          if (
+            sessionStorage &&
+            !sessionStorage.getItem("IsThisFirstTime_Log_From_LiveServer")
+          ) {
+            console.log("Live reload enabled.");
+            sessionStorage.setItem("IsThisFirstTime_Log_From_LiveServer", true);
+          }
+        })();
       } else {
-        setTimeout(() => {
-          resetGame();
-        }, 1000);
+        console.error(
+          "Upgrade your browser. This Browser is NOT supported WebSocket for Live-Reloading.",
+        );
       }
-    }
-  }
-  
-  // Update keeper
-  const baseY = CONFIG.goalY + CONFIG.goalHeight - 30; // keeper baseline near the ground
-  if (keeper.diving) {
-    const elapsed = (Date.now() - keeper.diveTime) / 1000;
-    const diveDuration = keeper.diveDuration || 0.6;
-    const progress = Math.min(1, elapsed / diveDuration);
-
-    // Smooth dive motion (interpolate from start -> target) - snappier curve
-    const easeProgress = 1 - Math.pow(1 - progress, 4);
-    keeper.x = (keeper.startX || keeper.x) + (keeper.targetX - (keeper.startX || keeper.x)) * easeProgress;
-    keeper.y = (keeper.startY || keeper.y) + (keeper.targetY - (keeper.startY || keeper.y)) * easeProgress;
-
-    // End diving state when reached
-    if (progress >= 1) { keeper.diving = false; keeper.playerDive = false; keeper.y = baseY; keeper.rotation = 0; }
-  } else if (!keeper.deflecting) {
-    if (gameMode === 'shooter') {
-      // Idle animation when player is shooter (small bob near ground)
-      keeper.x = CONFIG.goalX + CONFIG.goalWidth / 2 + Math.sin(Date.now() / 800) * 12;
-      keeper.y = baseY + Math.sin(Date.now() / 600) * 4;
-    } else {
-      // In keeper mode, allow keyboard movement only when not diving (player nor AI)
-      const moveSpeed = 420; // px/sec
-      if (!keeper.diving && !keeper.playerDive && !aiPending && !aiScheduled) {
-        if (keys.left) keeper.x -= moveSpeed * dt;
-        if (keys.right) keeper.x += moveSpeed * dt;
-      }
-      // keep within goal bounds
-      keeper.x = Math.max(CONFIG.goalX + 30, Math.min(CONFIG.goalX + CONFIG.goalWidth - 30, keeper.x));
-      keeper.y = baseY;
-    }
-  }
-  
-  // Reset deflecting state
-  if (keeper.deflecting && (Date.now() - keeper.deflectTime) > 1000) {
-    keeper.deflecting = false;
-  }
-}
-
-// Draw function with 3D perspective
-function draw() {
-  // Clear - dark field base
-  ctx.fillStyle = '#020014';
-  ctx.fillRect(0, 0, CONFIG.width, CONFIG.height);
-
-  // Sky gradient (subtle)
-  const skyGrad = ctx.createLinearGradient(0, 0, 0, CONFIG.goalY + CONFIG.goalHeight);
-  skyGrad.addColorStop(0, '#070018');
-  skyGrad.addColorStop(0.6, '#02102a');
-  skyGrad.addColorStop(1, '#01000a');
-  ctx.fillStyle = skyGrad;
-  ctx.fillRect(0, 0, CONFIG.width, CONFIG.goalY + CONFIG.goalHeight);
-
-  // Field with solid deep tone
-  ctx.fillStyle = '#041125';
-  ctx.fillRect(0, CONFIG.goalY + CONFIG.goalHeight, CONFIG.width, CONFIG.height);
-
-  // Field line (neon)
-  ctx.strokeStyle = 'rgba(0,255,246,0.12)';
-  ctx.lineWidth = 2;
-  ctx.beginPath();
-  ctx.moveTo(0, CONFIG.goalY + CONFIG.goalHeight);
-  ctx.lineTo(CONFIG.width, CONFIG.goalY + CONFIG.goalHeight);
-  ctx.stroke();
-
-  // Penalty spot (neon)
-  ctx.beginPath();
-  ctx.arc(CONFIG.width / 2, CONFIG.height - 100, 8, 0, Math.PI * 2);
-  ctx.fillStyle = 'rgba(0,255,246,0.9)';
-  ctx.fill();
-  
-  // Goal frame with 3D depth
-  drawGoal3D();
-  
-  // Target crosshair (neon) - only show when player is shooter
-  if (!ball.active && gameMode === 'shooter') {
-    ctx.strokeStyle = 'rgba(0,255,246,0.95)';
-    ctx.lineWidth = 3;
-    ctx.beginPath();
-    ctx.arc(targetPoint.x, targetPoint.y, 14, 0, Math.PI * 2);
-    ctx.stroke();
-    ctx.beginPath();
-    ctx.moveTo(targetPoint.x - 22, targetPoint.y);
-    ctx.lineTo(targetPoint.x + 22, targetPoint.y);
-    ctx.moveTo(targetPoint.x, targetPoint.y - 22);
-    ctx.lineTo(targetPoint.x, targetPoint.y + 22);
-    ctx.stroke();
-  }
-  
-  // Goalkeeper with animation
-  drawGoalkeeper();
-  
-  // Ball with trail
-  drawBall3D();
-
-  // Debug HUD (confirm canvas is rendering)
-  ctx.save();
-  ctx.fillStyle = 'rgba(0,255,246,0.95)';
-  ctx.font = '20px Orbitron, sans-serif';
-  ctx.textBaseline = 'top';
-  ctx.fillText('Neon Strike', 18, 12);
-  // Shooter HUD: show selected shot type and curve spin when in shooter mode
-  // removed on-canvas control hints for cleaner UI (side controls handle shot settings)
-  // Draw AI countdown if pending
-  if (aiPending && aiCountdownEnd) {
-    const msLeft = Math.max(0, aiCountdownEnd - Date.now());
-    const sec = Math.ceil(msLeft / 1000);
-    ctx.fillStyle = 'rgba(255,45,212,0.95)';
-    ctx.font = '28px Orbitron, sans-serif';
-    ctx.fillText(`AI fires in ${sec}`, CONFIG.width - 220, 12);
-  }
-  ctx.restore();
-}
-
-function drawGoal3D() {
-  // Goal depth/shadow
-  ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
-  ctx.fillRect(CONFIG.goalX - 5, CONFIG.goalY - 5, CONFIG.goalWidth + 10, CONFIG.goalHeight + 10);
-  
-  // Net
-  ctx.strokeStyle = 'rgba(0,255,246,0.06)';
-  ctx.lineWidth = 1;
-  for (let i = 0; i <= 12; i++) {
-    const x = CONFIG.goalX + (CONFIG.goalWidth / 12) * i;
-    ctx.beginPath();
-    ctx.moveTo(x, CONFIG.goalY);
-    ctx.lineTo(x - 8, CONFIG.goalY + CONFIG.goalHeight);
-    ctx.stroke();
-  }
-  for (let i = 0; i <= 10; i++) {
-    const y = CONFIG.goalY + (CONFIG.goalHeight / 10) * i;
-    ctx.beginPath();
-    ctx.moveTo(CONFIG.goalX, y);
-    ctx.lineTo(CONFIG.goalX + CONFIG.goalWidth, y);
-    ctx.stroke();
-  }
-  
-  // Goal posts (white)
-  ctx.fillStyle = 'rgba(0,255,246,0.95)';
-  // Left post
-  ctx.fillRect(CONFIG.goalX - 8, CONFIG.goalY, 8, CONFIG.goalHeight + 8);
-  // Right post
-  ctx.fillRect(CONFIG.goalX + CONFIG.goalWidth, CONFIG.goalY, 8, CONFIG.goalHeight + 8);
-  // Top bar
-  ctx.fillRect(CONFIG.goalX - 8, CONFIG.goalY - 8, CONFIG.goalWidth + 16, 8);
-  
-  // Post highlights
-  ctx.fillStyle = 'rgba(255,255,255,0.08)';
-  ctx.fillRect(CONFIG.goalX - 6, CONFIG.goalY, 2, CONFIG.goalHeight);
-  ctx.fillRect(CONFIG.goalX + CONFIG.goalWidth, CONFIG.goalY, 2, CONFIG.goalHeight);
-}
-
-function drawGoalkeeper() {
-  // Detailed goalkeeper drawing with articulated limbs and dive-friendly origin
-  ctx.save();
-  ctx.translate(keeper.x, keeper.y);
-
-  // rotate during dives/deflects
-  if (keeper.diving || keeper.deflecting) ctx.rotate(keeper.rotation);
-
-  // soft shadow
-  ctx.fillStyle = 'rgba(0,0,0,0.36)'; ctx.beginPath(); ctx.ellipse(0, 64, 56, 16, 0, 0, Math.PI * 2); ctx.fill();
-
-  // Legs (thighs and shins)
-  ctx.fillStyle = 'rgba(30,30,60,0.98)';
-  ctx.fillRect(-14, 32, 12, 36); // left shin
-  ctx.fillRect(4, 32, 12, 36);   // right shin
-  // boots
-  ctx.fillStyle = 'rgba(10,10,20,0.98)'; ctx.fillRect(-18, 66, 18, 8); ctx.fillRect(0, 66, 18, 8);
-
-  // Shorts / hips
-  ctx.fillStyle = 'rgba(18,18,40,0.96)'; ctx.fillRect(-22, 12, 44, 28);
-
-  // Torso (jersey) - tapered with slight collar
-  ctx.fillStyle = keeper.primaryColor || 'rgba(255,45,212,0.98)';
-  ctx.beginPath();
-  ctx.moveTo(-34, 6);
-  ctx.quadraticCurveTo(-36, -30, -14, -58);
-  ctx.lineTo(14, -58);
-  ctx.quadraticCurveTo(36, -30, 34, 6);
-  ctx.closePath(); ctx.fill();
-
-  // Shoulders highlights
-  ctx.fillStyle = 'rgba(255,255,255,0.06)'; ctx.beginPath(); ctx.ellipse(-12, -18, 8, 4, -0.3, 0, Math.PI*2); ctx.fill();
-  ctx.beginPath(); ctx.ellipse(12, -18, 8, 4, 0.3, 0, Math.PI*2); ctx.fill();
-
-  // Arms (upper arm + forearm as one block) and gloves - left
-  ctx.save(); ctx.translate(-28, -14);
-  if (!keeper.deflecting) ctx.rotate(-0.22);
-  ctx.fillStyle = keeper.primaryColor || 'rgba(255,45,212,0.98)'; ctx.fillRect(0, -6, 14, 40);
-  ctx.fillStyle = keeper.gloveColor || 'rgba(126,255,161,0.98)'; ctx.beginPath(); ctx.arc(10, 24, 12, 0, Math.PI*2); ctx.fill();
-  ctx.restore();
-
-  // right arm
-  ctx.save(); ctx.translate(28, -14);
-  if (!keeper.deflecting) ctx.rotate(0.22);
-  ctx.fillStyle = keeper.primaryColor || 'rgba(255,45,212,0.98)'; ctx.fillRect(-14, -6, 14, 40);
-  ctx.fillStyle = keeper.gloveColor || 'rgba(126,255,161,0.98)'; ctx.beginPath(); ctx.arc(-10, 24, 12, 0, Math.PI*2); ctx.fill();
-  ctx.restore();
-
-  // Deflecting override: wide bar with gloves to suggest reach
-  if (keeper.deflecting) {
-    ctx.save();
-    ctx.fillStyle = keeper.primaryColor || 'rgba(255,45,212,0.98)'; ctx.fillRect(-56, -26, 112, 36);
-    ctx.fillStyle = keeper.gloveColor || 'rgba(126,255,161,0.98)'; ctx.beginPath(); ctx.arc(-58, -6, 12, 0, Math.PI*2); ctx.fill(); ctx.beginPath(); ctx.arc(58, -6, 12, 0, Math.PI*2); ctx.fill();
-    ctx.restore();
-  }
-
-  // Neck and head
-  ctx.beginPath(); ctx.fillStyle = '#ffd8b0'; ctx.arc(0, -78, 16, 0, Math.PI*2); ctx.fill();
-  // subtle visor shadow
-  ctx.fillStyle = 'rgba(0,0,0,0.12)'; ctx.fillRect(-9, -88, 18, 6);
-
-  ctx.restore();
-}
-
-function drawBall3D() {
-  // Draw trail with depth perspective
-  ctx.save();
-  for (let i = 0; i < ball.trail.length; i++) {
-    const t = ball.trail[i];
-    const alpha = (i / ball.trail.length) * 0.2;
-    
-    // Scale based on depth - farther into goal = smaller
-    const depthScale = 1 - (Math.abs(t.z || 0) / 200) * 0.5;
-    const size = CONFIG.ballRadius * (0.5 + (i / ball.trail.length) * 0.5) * depthScale;
-    
-    // Offset position based on depth for 3D effect
-    const depthOffset = (t.z || 0) * 0.15;
-    
-    ctx.globalAlpha = alpha;
-    ctx.beginPath();
-    ctx.arc(t.x - depthOffset, t.y + depthOffset * 0.5, size, 0, Math.PI * 2);
-    ctx.fillStyle = ball.missedGoal ? '#ff6b6b' : '#e0e0e0';
-    ctx.fill();
-  }
-  ctx.restore();
-  
-  // Calculate depth scale for 3D effect
-  const depthScale = 1 - (Math.abs(ball.z) / 200) * 0.6;
-  const ballSize = CONFIG.ballRadius * depthScale;
-  const depthOffset = ball.z * 0.15;
-  
-  // Ball shadow on field/net
-  if (ball.y > CONFIG.goalY + CONFIG.goalHeight || ball.inGoal) {
-    ctx.save();
-    ctx.globalAlpha = 0.3 * depthScale;
-    ctx.fillStyle = '#000';
-    ctx.beginPath();
-    const shadowX = ball.x - depthOffset;
-    const shadowY = ball.y + depthOffset * 0.5 + 20;
-    ctx.ellipse(shadowX, shadowY, ballSize * 1.2, ballSize * 0.4, 0, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.restore();
-  }
-  
-  // Ball with depth offset for 3D
-  const drawX = ball.x - depthOffset;
-  const drawY = ball.y + depthOffset * 0.5;
-  
-  ctx.save();
-  ctx.beginPath();
-  ctx.arc(drawX, drawY, ballSize, 0, Math.PI * 2);
-  
-  // Ball color - green if scored in goal, red if missed
-  const gradient = ctx.createRadialGradient(
-    drawX - ballSize * 0.3, 
-    drawY - ballSize * 0.3, 
-    ballSize * 0.1, 
-    drawX, 
-    drawY, 
-    ballSize
-  );
-  
-  if (ball.inGoal && !ball.active) {
-    // Green for successful goal
-    gradient.addColorStop(0, '#99ff99');
-    gradient.addColorStop(0.5, '#44ff44');
-    gradient.addColorStop(1, '#00cc00');
-  } else if (ball.missedGoal) {
-    // Red for missed
-    gradient.addColorStop(0, '#ff9999');
-    gradient.addColorStop(0.5, '#ff4444');
-    gradient.addColorStop(1, '#cc0000');
-  } else {
-    // White for active
-    gradient.addColorStop(0, '#ffffff');
-    gradient.addColorStop(0.6, '#f0f0f0');
-    gradient.addColorStop(1, '#cccccc');
-  }
-  
-  ctx.fillStyle = gradient;
-  ctx.fill();
-  
-  // Soccer-style patches overlay (FIFA-like)
-  const rotation = Date.now() / 500;
-  const patchColor = ball.missedGoal ? '#8b0000' : '#0b0b0b';
-  const patches = 6;
-  ctx.save();
-  ctx.translate(drawX, drawY);
-  ctx.rotate(rotation * 0.12);
-  for (let p = 0; p < patches; p++) {
-    const ang = (p / patches) * Math.PI * 2;
-    // center offset for each patch
-    const cx = Math.cos(ang) * ballSize * 0.18;
-    const cy = Math.sin(ang) * ballSize * 0.18;
-    ctx.beginPath();
-    const petals = 5;
-    for (let k = 0; k < petals; k++) {
-      const a = ang + k * (Math.PI * 2) / petals;
-      const rr = ballSize * (0.22 + 0.03 * Math.cos(k * 2));
-      const px = cx + Math.cos(a) * rr;
-      const py = cy + Math.sin(a) * rr;
-      if (k === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
-    }
-    ctx.closePath();
-    ctx.fillStyle = patchColor;
-    ctx.fill();
-  }
-  ctx.restore();
-  
-  ctx.restore();
-}
-
-// Game loop
-let lastTime = Date.now();
-function gameLoop() {
-  const now = Date.now();
-  const dt = Math.min((now - lastTime) / 1000, 0.1);
-  lastTime = now;
-  
-  update(dt);
-  draw();
-  // run AI loop each frame (it will only act when appropriate)
-  aiLoop();
-  // If AI countdown finished, fire the shot
-  if (aiPending && aiCountdownEnd && Date.now() >= aiCountdownEnd) {
-    aiPending = false;
-    aiCountdownEnd = 0;
-    aiShoot();
-  }
-  // If in shootout and a shot finished in flight, resolve it
-  if (shootoutActive && lastShotOwner && lastShotPending && !ball.active) {
-    // resolve last shot
-    resolveShotOutcome();
-  }
-  
-  requestAnimationFrame(gameLoop);
-}
-
-gameLoop();
-</script>
-
-<!-- Code injected by live-server -->
-<script>
-	// <![CDATA[  <-- For SVG support
-	if ('WebSocket' in window) {
-		(function () {
-			function refreshCSS() {
-				var sheets = [].slice.call(document.getElementsByTagName("link"));
-				var head = document.getElementsByTagName("head")[0];
-				for (var i = 0; i < sheets.length; ++i) {
-					var elem = sheets[i];
-					var parent = elem.parentElement || head;
-					parent.removeChild(elem);
-					var rel = elem.rel;
-					if (elem.href && typeof rel != "string" || rel.length == 0 || rel.toLowerCase() == "stylesheet") {
-						var url = elem.href.replace(/(&|\?)_cacheOverride=\d+/, '');
-						elem.href = url + (url.indexOf('?') >= 0 ? '&' : '?') + '_cacheOverride=' + (new Date().valueOf());
-					}
-					parent.appendChild(elem);
-				}
-			}
-			var protocol = window.location.protocol === 'http:' ? 'ws://' : 'wss://';
-			var address = protocol + window.location.host + window.location.pathname + '/ws';
-			var socket = new WebSocket(address);
-			socket.onmessage = function (msg) {
-				if (msg.data == 'reload') window.location.reload();
-				else if (msg.data == 'refreshcss') refreshCSS();
-			};
-			if (sessionStorage && !sessionStorage.getItem('IsThisFirstTime_Log_From_LiveServer')) {
-				console.log('Live reload enabled.');
-				sessionStorage.setItem('IsThisFirstTime_Log_From_LiveServer', true);
-			}
-		})();
-	}
-	else {
-		console.error('Upgrade your browser. This Browser is NOT supported WebSocket for Live-Reloading.');
-	}
-	// ]]>
-</script>
-</body>
+      // ]]>
+    </script>
+  </body>
 </html>
-
