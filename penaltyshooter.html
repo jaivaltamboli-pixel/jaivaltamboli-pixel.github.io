@@ -120,6 +120,66 @@
         opacity: 0.85;
         letter-spacing: 0.5px;
       }
+      .shot-timing-meter {
+        position: absolute;
+        left: 50%;
+        bottom: 14px;
+        transform: translateX(-50%);
+        width: min(420px, 78%);
+        z-index: 11;
+        pointer-events: none;
+      }
+      .shot-timing-bar {
+        position: relative;
+        height: 18px;
+        border-radius: 999px;
+        background: linear-gradient(
+          90deg,
+          #b00020 0%,
+          #ef4444 18%,
+          #f59e0b 38%,
+          #fde047 47.5%,
+          #22c55e 50%,
+          #fde047 52.5%,
+          #f59e0b 62%,
+          #ef4444 82%,
+          #b00020 100%
+        );
+        border: 1px solid rgba(255, 255, 255, 0.35);
+        box-shadow:
+          inset 0 0 10px rgba(0, 0, 0, 0.35),
+          0 2px 10px rgba(0, 0, 0, 0.28);
+      }
+      .shot-timing-perfect-point {
+        position: absolute;
+        left: 50%;
+        width: 3px;
+        top: -4px;
+        bottom: -4px;
+        transform: translateX(-50%);
+        background: rgba(255, 255, 255, 0.96);
+        border-radius: 2px;
+        box-shadow: 0 0 10px rgba(255, 255, 255, 0.95);
+      }
+      .shot-timing-needle {
+        position: absolute;
+        top: -5px;
+        width: 4px;
+        height: 28px;
+        border-radius: 2px;
+        background: #ffffff;
+        box-shadow: 0 0 8px rgba(255, 255, 255, 0.9);
+        transform: translateX(-50%);
+        left: 50%;
+      }
+      .shot-timing-label {
+        margin-top: 6px;
+        text-align: center;
+        font-size: 11px;
+        color: #e2fce8;
+        letter-spacing: 0.5px;
+        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.45);
+      }
       .kick-row {
         display: flex;
         gap: 6px;
@@ -352,6 +412,89 @@
         padding: 8px 10px;
         font-size: 12px;
         text-align: center;
+      }
+      .bracket-grid-wrap {
+        padding: 8px 14px 18px 14px;
+      }
+      .bracket-grid-head {
+        display: grid;
+        gap: 12px;
+        margin-bottom: 10px;
+      }
+      .bracket-grid-title {
+        text-align: center;
+        font-size: 11px;
+        color: var(--muted);
+        letter-spacing: 1px;
+        font-weight: 700;
+        text-transform: uppercase;
+      }
+      .bracket-grid-board {
+        display: grid;
+        gap: 12px;
+        align-items: stretch;
+      }
+      .bracket-grid-match {
+        border: 1px solid rgba(255, 255, 255, 0.28);
+        border-radius: 10px;
+        background: rgba(0, 0, 0, 0.22);
+        padding: 8px 10px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 7px;
+        box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+        align-self: center;
+      }
+      .bracket-grid-match.pending {
+        opacity: 0.8;
+        border-style: dashed;
+      }
+      .bracket-grid-team {
+        display: grid;
+        grid-template-columns: 28px 1fr auto;
+        align-items: center;
+        gap: 8px;
+        font-size: 12px;
+      }
+      .bracket-grid-team.winner {
+        color: #dcfce7;
+        font-weight: 700;
+      }
+      .bracket-grid-team.eliminated {
+        opacity: 0.62;
+      }
+      .team-flag-chip {
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        color: #0b1220;
+        font-size: 10px;
+        font-weight: 700;
+        border: 1px solid rgba(255, 255, 255, 0.5);
+        position: relative;
+      }
+      .team-flag-chip.eliminated::after {
+        content: "X";
+        position: absolute;
+        inset: -5px -5px auto auto;
+        width: 15px;
+        height: 15px;
+        border-radius: 50%;
+        background: #ef4444;
+        color: #fff;
+        font-size: 9px;
+        display: grid;
+        place-items: center;
+        border: 1px solid rgba(255, 255, 255, 0.7);
+      }
+      .team-score-chip {
+        min-width: 16px;
+        text-align: right;
+        color: var(--accent);
+        font-family: "Share Tech Mono", monospace;
       }
       .shootout-header {
         font-weight: 700;
@@ -665,6 +808,15 @@
               <div class="label">AI</div>
             </div>
             <canvas id="canvas"></canvas>
+            <div id="shotTimingMeter" class="shot-timing-meter">
+              <div class="shot-timing-bar">
+                <div class="shot-timing-perfect-point"></div>
+                <div id="shotTimingNeedle" class="shot-timing-needle"></div>
+              </div>
+              <div class="shot-timing-label">
+                Exact center line = perfect shot
+              </div>
+            </div>
           </div>
         </div>
 
@@ -672,7 +824,8 @@
           <div>
             <div class="section-title">Neon Strike</div>
             <div class="subtitle">
-              Click inside the goal to aim and instantly shoot.
+              Click inside the goal to aim and instantly shoot. Use WASD/Arrows
+              plus Space to dive when defending.
             </div>
           </div>
 
@@ -698,21 +851,21 @@
             <div class="stat-label">Difficulty</div>
             <div class="slider-group">
               <span style="color: var(--muted); font-size: 13px">Easy</span>
-              <input type="range" id="difficulty" min="1" max="5" value="3" />
-              <span style="color: var(--muted); font-size: 13px">Hard</span>
+              <input type="range" id="difficulty" min="1" max="6" value="3" />
+              <span style="color: var(--muted); font-size: 13px">Extreme</span>
+            </div>
+            <div class="subtitle" id="difficultyNote" style="margin-top: 6px">
+              Current: Normal
             </div>
           </div>
           <div>
             <div style="margin-top: 14px">
-              <div class="stat-label">Power (hold Shoot)</div>
-              <div class="power-bar">
-                <div id="powerFill" class="power-fill"></div>
-              </div>
               <div style="margin-top: 10px; display: flex; gap: 8px">
                 <button class="btn shoot" id="shootBtn">Shoot</button>
               </div>
               <div class="subtitle" style="margin-top: 8px">
-                Tip: Click inside the goal to aim and fire instantly.
+                Tip: Left red = weak shot, center green = perfect, right red =
+                overpower.
               </div>
             </div>
           </div>
@@ -835,7 +988,7 @@
           <div style="display: flex; gap: 8px; align-items: center">
             <button id="shootoutForfeit" class="btn">Forfeit</button>
             <button id="shootoutSimulate" class="btn">
-              Auto-Simulate Kick
+              Auto-Simulate Shootout
             </button>
           </div>
           <div style="margin-top: 6px; color: var(--muted); font-size: 13px">
@@ -885,9 +1038,9 @@
 
       // Game state
       let selectedZone = "mm";
-      let power = 0;
-      let isCharging = false;
-      let chargeStartTime = 0;
+      let shotTimingValue = 0.5;
+      let shotTimingDir = 1;
+      let shotTimingLocked = false;
       let soundEnabled = true;
 
       let playerScore = 0;
@@ -901,7 +1054,11 @@
       let kickHistoryPlayer = [];
       let kickHistoryAI = [];
       let netRipple = { active: false, x: 0, y: 0, t: 0 };
+      let goalConfetti = [];
       const keys = { left: false, right: false, up: false, down: false };
+      let lastManualDiveAt = 0;
+      let autoSimulatingShootout = false;
+      let spaceShootHeld = false;
 
       let ball = {
         x: CONFIG.width / 2,
@@ -915,6 +1072,8 @@
         missedGoal: false,
         inGoal: false,
         scored: false,
+        burstScheduled: false,
+        forceGoal: false,
         trail: [],
       };
 
@@ -922,6 +1081,8 @@
         x: CONFIG.goalX + CONFIG.goalWidth / 2,
         // place keeper close to net floor (slightly above ground)
         y: CONFIG.goalY + CONFIG.goalHeight - 30,
+        vx: 0,
+        vy: 0,
         targetX: CONFIG.goalX + CONFIG.goalWidth / 2,
         targetY: CONFIG.goalY + CONFIG.goalHeight - 30,
         diving: false,
@@ -966,16 +1127,111 @@
         osc.stop(audioContext.currentTime + duration);
       }
 
+      function spawnGoalConfetti(x, y) {
+        const colors = ["#22c55e", "#16a34a", "#4ade80", "#86efac", "#dcfce7"];
+        for (let i = 0; i < 90; i++) {
+          const angle = Math.random() * Math.PI * 2;
+          const speed = 150 + Math.random() * 360;
+          goalConfetti.push({
+            x,
+            y,
+            vx: Math.cos(angle) * speed,
+            vy: Math.sin(angle) * speed - (80 + Math.random() * 220),
+            size: 4 + Math.random() * 7,
+            color: colors[(Math.random() * colors.length) | 0],
+            life: 0.9 + Math.random() * 0.8,
+            spin: (Math.random() - 0.5) * 14,
+            rot: Math.random() * Math.PI * 2,
+          });
+        }
+      }
+
+      function getGoalkeepingTeamData() {
+        if (currentTurn === "player") return opponentTeamData || playerTeamData;
+        if (currentTurn === "ai") return playerTeamData || opponentTeamData;
+        return opponentTeamData || playerTeamData;
+      }
+
       // UI Elements
       const shootBtn = document.getElementById("shootBtn");
       const resetBtn = document.getElementById("resetBtn");
       const soundBtn = document.getElementById("soundBtn");
       const powerFill = document.getElementById("powerFill");
       const difficultySlider = document.getElementById("difficulty");
+      const difficultyNote = document.getElementById("difficultyNote");
+      const shotTimingMeter = document.getElementById("shotTimingMeter");
+      const shotTimingNeedle = document.getElementById("shotTimingNeedle");
+
+      function getDifficultyTuning() {
+        const difficulty = Math.max(
+          1,
+          Math.min(6, parseInt(difficultySlider?.value || "3", 10)),
+        );
+        const t = (difficulty - 1) / 5; // 0 = easy, 1 = extreme
+        if (difficulty === 6) {
+          return {
+            difficulty,
+            t: 1,
+            label: "Extreme",
+            aiKeeperReaction: 0.02,
+            aiKeeperDiveDuration: 0.16,
+            aiKeeperError: 4,
+            aiKeeperSaveRadius: 420,
+            aiKeeperWrongDiveChance: 0.0,
+            playerKeeperSaveRadius: 74,
+            playerDiveDuration: 0.28,
+            playerDiveCooldown: 140,
+            playerMoveSpeed: 470,
+            aiShotError: 90,
+            aiShotPowerBase: 0.76,
+          };
+        }
+        return {
+          difficulty,
+          t,
+          label: ["Easy", "Casual", "Normal", "Hard", "Very Hard"][
+            difficulty - 1
+          ],
+          aiKeeperReaction: 0.78 - t * 0.54,
+          aiKeeperDiveDuration: 1.05 - t * 0.56,
+          aiKeeperError: 340 - t * 255,
+          aiKeeperSaveRadius: 42 + t * 54,
+          aiKeeperWrongDiveChance: 0.34 - t * 0.26,
+          playerKeeperSaveRadius: 122 - t * 46,
+          playerDiveDuration: 0.36 - t * 0.08,
+          playerDiveCooldown: 260 - t * 120,
+          playerMoveSpeed: 620 - t * 150,
+          aiShotError: 250 - t * 134,
+          aiShotPowerBase: 0.36 + t * 0.36,
+        };
+      }
+
+      function getAutoSimulatedKickChance(owner) {
+        const tune = getDifficultyTuning();
+        if (tune.difficulty === 6) {
+          return owner === "player" ? 0.01 : 0.99;
+        }
+        const easyFactor = 1 - tune.t;
+        const raw =
+          owner === "player"
+            ? 0.56 + easyFactor * 0.32
+            : 0.8 - easyFactor * 0.28;
+        return Math.max(0.2, Math.min(0.95, raw));
+      }
+
+      function updateDifficultyLabel() {
+        if (!difficultyNote) return;
+        const cfg = getDifficultyTuning();
+        difficultyNote.textContent = `Current: ${cfg.label}`;
+      }
 
       // Tournament state and UI
       const resetTournamentBtn = document.getElementById("resetTournamentBtn");
       const tournamentInfo = document.getElementById("tournamentInfo");
+      if (difficultySlider) {
+        difficultySlider.addEventListener("input", updateDifficultyLabel);
+      }
+      updateDifficultyLabel();
 
       const TEAMS = [
         {
@@ -1180,165 +1436,104 @@
           "bracketModalContent",
         );
         if (!bracketModalContent) return;
-        if (bracketModalContent) bracketModalContent.innerHTML = "";
-        for (let r = 0; r < tournament.rounds.length; r++) {
-          const col = document.createElement("div");
-          col.style.display = "inline-block";
-          col.style.verticalAlign = "top";
-          col.style.marginRight = "12px";
-          const title = document.createElement("div");
-          title.style.fontWeight = "700";
-          title.style.color = "var(--accent)";
-          title.style.marginBottom = "6px";
-          // dynamic round title based on teams remaining
-          const initialTeams = tournament.rounds[0].length * 2;
+        bracketModalContent.innerHTML = "";
+
+        const initialMatches = tournament.rounds[0]?.length || 0;
+        const initialTeams = initialMatches * 2;
+        if (!initialMatches) return;
+
+        function roundName(n) {
+          if (n >= 16) return `Round of ${n}`;
+          if (n === 8) return "Quarterfinals";
+          if (n === 4) return "Semifinals";
+          if (n === 2) return "Final";
+          return "Result";
+        }
+
+        const hero = document.createElement("div");
+        hero.className = "bracket-hero";
+        hero.innerHTML = `
+          <h2>Tournament Progression</h2>
+          <div class="sub">Symmetric Grid Bracket</div>
+          <div class="flags">
+            <div class="flag-dot" style="background:#e11d48"></div>
+            <div class="flag-dot" style="background:#2563eb"></div>
+            <div class="flag-dot" style="background:#f59e0b"></div>
+            <div class="flag-dot" style="background:#22c55e"></div>
+            <div class="flag-dot" style="background:#ef4444"></div>
+            <div class="flag-dot" style="background:#ffffff"></div>
+          </div>
+        `;
+
+        const wrap = document.createElement("div");
+        wrap.className = "bracket-grid-wrap";
+
+        const head = document.createElement("div");
+        head.className = "bracket-grid-head";
+        head.style.gridTemplateColumns = `repeat(${tournament.rounds.length}, minmax(210px, 1fr))`;
+        tournament.rounds.forEach((round, r) => {
+          const label = document.createElement("div");
+          label.className = "bracket-grid-title";
           const teamsRemaining = Math.max(1, initialTeams / Math.pow(2, r));
-          function roundName(n) {
-            if (n >= 16) return `Round of ${n}`;
-            if (n === 8) return "Quarterfinals (8)";
-            if (n === 4) return "Semifinals (4)";
-            if (n === 2) return "Final (2)";
-            return "Result";
-          }
-          title.textContent = roundName(teamsRemaining);
-          col.appendChild(title);
-          tournament.rounds[r].forEach((m, idx) => {
-            const mEl = document.createElement("div");
-            mEl.style.padding = "6px 8px";
-            mEl.style.borderRadius = "8px";
-            mEl.style.marginBottom = "8px";
-            mEl.style.background = "rgba(255,255,255,0.02)";
-            mEl.style.fontFamily = "'Share Tech Mono', monospace";
-            mEl.style.display = "flex";
-            mEl.style.justifyContent = "space-between";
-            mEl.style.alignItems = "center";
+          label.textContent = roundName(teamsRemaining);
+          head.appendChild(label);
+        });
 
-            if (!m || !m.a || !m.b) {
-              const text = document.createElement("div");
-              text.textContent = "TBD";
-              mEl.appendChild(text);
-            } else {
-              // left: teams with color boxes
-              const teamWrap = document.createElement("div");
-              teamWrap.style.display = "flex";
-              teamWrap.style.gap = "8px";
-              teamWrap.style.alignItems = "center";
+        const board = document.createElement("div");
+        board.className = "bracket-grid-board";
+        board.style.gridTemplateColumns = `repeat(${tournament.rounds.length}, minmax(210px, 1fr))`;
+        board.style.gridTemplateRows = `repeat(${initialTeams}, 42px)`;
 
-              const aBox = document.createElement("div");
-              aBox.style.display = "flex";
-              aBox.style.alignItems = "center";
-              aBox.style.gap = "8px";
-              aBox.style.padding = "6px 8px";
-              aBox.style.borderRadius = "6px";
-              const teamA = TEAMS.find((t) => t.id === m.a) || {
-                flag: "?",
-                name: m.a,
-                primary: "#ffffff",
-              };
-              aBox.style.background = teamA.primary || "#ffffff";
-              aBox.style.color = "#021018";
-              aBox.innerHTML = `<div style="font-size:16px">${teamA.flag}</div><div style="font-size:12px">${teamA.name}</div>`;
-
-              const vsDiv = document.createElement("div");
-              vsDiv.style.color = "var(--muted)";
-              vsDiv.style.fontSize = "12px";
-              vsDiv.textContent = m.scoreA != null ? `${m.scoreA}` : "";
-
-              const bBox = document.createElement("div");
-              bBox.style.display = "flex";
-              bBox.style.alignItems = "center";
-              bBox.style.gap = "8px";
-              bBox.style.padding = "6px 8px";
-              bBox.style.borderRadius = "6px";
-              const teamB = TEAMS.find((t) => t.id === m.b) || {
-                flag: "?",
-                name: m.b,
-                primary: "#ffffff",
-              };
-              bBox.style.background = teamB.primary || "#ffffff";
-              bBox.style.color = "#021018";
-              bBox.innerHTML = `<div style="font-size:16px">${teamB.flag}</div><div style="font-size:12px">${teamB.name}</div>`;
-
-              teamWrap.appendChild(aBox);
-              const middle = document.createElement("div");
-              middle.style.display = "flex";
-              middle.style.flexDirection = "column";
-              middle.style.alignItems = "center";
-              middle.innerHTML = `<div style="font-weight:700; color:var(--accent)">${teamA.flag} ${teamA.name} <span style="color:var(--muted);">vs</span> ${teamB.flag} ${teamB.name}</div><div style="font-family:'Share Tech Mono'">${m.scoreA != null ? m.scoreA : "-"} - ${m.scoreB != null ? m.scoreB : "-"}</div>`;
-              teamWrap.appendChild(middle);
-              teamWrap.appendChild(bBox);
-
-              mEl.appendChild(teamWrap);
-
-              // no manual controls; matches resolve automatically
-            }
-
-            col.appendChild(mEl);
-          });
+        function renderTeamRow(match, teamId, score, winnerId) {
+          const team = TEAMS.find((t) => t.id === teamId) || {
+            id: teamId || "TBD",
+            name: teamId || "TBD",
+            primary: "#ffffff",
+          };
+          const eliminated = !!winnerId && teamId && winnerId !== teamId;
+          const winner = !!winnerId && winnerId === teamId;
+          return `
+            <div class="bracket-grid-team ${winner ? "winner" : ""} ${eliminated ? "eliminated" : ""}">
+              <span class="team-flag-chip ${eliminated ? "eliminated" : ""}" style="background:${team.primary};">${team.id}</span>
+              <span>${team.name}</span>
+              <span class="team-score-chip">${score != null ? score : "-"}</span>
+            </div>
+          `;
         }
-        if (bracketModalContent) {
-          const round = tournament.rounds[0] || [];
-          const hero = document.createElement("div");
-          hero.className = "bracket-hero";
-          hero.innerHTML = `
-            <h2>ROUND OF 16</h2>
-            <div class="sub">FABRIZIO ROMANO</div>
-            <div class="flags">
-              <div class="flag-dot" style="background:#e11d48"></div>
-              <div class="flag-dot" style="background:#2563eb"></div>
-              <div class="flag-dot" style="background:#f59e0b"></div>
-              <div class="flag-dot" style="background:#22c55e"></div>
-              <div class="flag-dot" style="background:#ef4444"></div>
-              <div class="flag-dot" style="background:#ffffff"></div>
-            </div>
-          `;
 
-          const body = document.createElement("div");
-          body.className = "bracket-body";
-
-          const left = document.createElement("div");
-          left.className = "bracket-col left";
-          const right = document.createElement("div");
-          right.className = "bracket-col right";
-          const center = document.createElement("div");
-          center.className = "bracket-center";
-          center.innerHTML = `
-            <div class="trophy">EURO<br/>TROPHY</div>
-            <div class="bracket-progress">
-              Round ${tournament.currentRound + 1} / ${tournament.rounds.length}
-            </div>
-          `;
-
-          const pairs = round.slice(0, 8);
-          pairs.forEach((m, idx) => {
-            const a = TEAMS.find((t) => t.id === m.a) || {
-              id: "TBD",
-              name: m.a,
-              primary: "#ffffff",
-            };
-            const b = TEAMS.find((t) => t.id === m.b) || {
-              id: "TBD",
-              name: m.b,
-              primary: "#ffffff",
-            };
+        tournament.rounds.forEach((round, r) => {
+          const slot = Math.pow(2, r);
+          round.forEach((m, idx) => {
+            const rowCenter = (idx * 2 + 1) * slot;
             const matchEl = document.createElement("div");
-            matchEl.className = "bracket-match";
-            matchEl.innerHTML = `
-              <div class="bracket-team"><span class="flag" style="background:${a.primary}; color:#0b3bd9">${a.id}</span><span>${a.name}</span></div>
-              <div class="bracket-team"><span class="flag" style="background:${b.primary}; color:#0b3bd9">${b.id}</span><span>${b.name}</span></div>
-            `;
-            if (idx < 4) left.appendChild(matchEl);
-            else right.appendChild(matchEl);
+            matchEl.className = "bracket-grid-match";
+            if (!m || !m.a || !m.b) {
+              matchEl.classList.add("pending");
+              matchEl.innerHTML = `
+                <div class="bracket-grid-team"><span class="team-flag-chip">TBD</span><span>TBD</span><span class="team-score-chip">-</span></div>
+                <div class="bracket-grid-team"><span class="team-flag-chip">TBD</span><span>TBD</span><span class="team-score-chip">-</span></div>
+              `;
+            } else {
+              matchEl.innerHTML =
+                renderTeamRow(m, m.a, m.scoreA, m.winner) +
+                renderTeamRow(m, m.b, m.scoreB, m.winner);
+            }
+            matchEl.style.gridColumn = String(r + 1);
+            matchEl.style.gridRow = String(rowCenter);
+            board.appendChild(matchEl);
           });
+        });
 
-          body.appendChild(left);
-          body.appendChild(center);
-          body.appendChild(right);
+        const progress = document.createElement("div");
+        progress.className = "bracket-progress";
+        progress.textContent = `Round ${tournament.currentRound + 1} / ${tournament.rounds.length}`;
 
-          bracketModalContent.innerHTML = "";
-          bracketModalContent.appendChild(hero);
-          bracketModalContent.appendChild(body);
-        }
+        wrap.appendChild(head);
+        wrap.appendChild(board);
+        wrap.appendChild(progress);
+        bracketModalContent.appendChild(hero);
+        bracketModalContent.appendChild(wrap);
+
         if (tournamentInfo) {
           tournamentInfo.textContent = tournament.active
             ? `Current Round: ${tournament.currentRound + 1} / ${tournament.rounds.length}`
@@ -1421,13 +1616,24 @@
         }
       }
 
+      function resetMatchDisplayState() {
+        playerScore = 0;
+        aiScore = 0;
+        kickHistoryPlayer = [];
+        kickHistoryAI = [];
+        lastShotPending = false;
+        lastShotOwner = null;
+        autoSimulatingShootout = false;
+        aiTurnScheduled = false;
+        resetGame();
+        setTurn("player");
+      }
+
       function startTournament() {
         generateBracket(TEAMS);
         tournament.active = true;
         tournament.currentRound = 0;
-        playerScore = 0;
-        aiScore = 0;
-        setTurn("player");
+        resetMatchDisplayState();
         renderBracket();
         autoStartNextMatch();
       }
@@ -1435,12 +1641,7 @@
       function resetTournament() {
         tournament = { rounds: [], currentRound: 0, active: false };
         if (tournamentInfo) tournamentInfo.textContent = "Tournament reset";
-        playerScore = 0;
-        aiScore = 0;
-        kickHistoryPlayer = [];
-        kickHistoryAI = [];
-        setTurn("player");
-        resetGame();
+        resetMatchDisplayState();
       }
 
       // --- Penalty shootout play integration ---
@@ -1451,6 +1652,7 @@
 
       function playMatch(match, roundIdx, matchIdx) {
         if (!match || !match.a || !match.b) return;
+        resetMatchDisplayState();
         const teamA = TEAMS.find((t) => t.id === match.a) || null;
         const teamB = TEAMS.find((t) => t.id === match.b) || null;
         opponentTeamData =
@@ -1534,6 +1736,7 @@
         shootoutState = null;
         lastShotPending = false;
         lastShotOwner = null;
+        autoSimulatingShootout = false;
         document.getElementById("shootoutOverlay").style.display = "none";
         const track = document.getElementById("penaltyTracker");
         if (track) track.style.display = "none";
@@ -1546,23 +1749,23 @@
       // AI shoot variant for shootout (doesn't touch global attempts/goals/stats)
       function aiShootForShootout() {
         if (ball.active) return;
-        const difficulty = parseInt(difficultySlider.value);
-        const base = 0.55 + (difficulty - 1) * 0.12;
+        const tune = getDifficultyTuning();
+        const centerX = CONFIG.goalX + CONFIG.goalWidth / 2;
+        const centerY = CONFIG.goalY + CONFIG.goalHeight * 0.58;
         const powerLevel = Math.min(
           1,
-          Math.max(0.15, base + (Math.random() - 0.5) * 0.2),
+          Math.max(0.2, tune.aiShotPowerBase + (Math.random() - 0.5) * 0.18),
         );
-        const err = 120 - difficulty * 18;
+        const spreadX = CONFIG.goalWidth * (0.24 + tune.t * 0.16);
+        const spreadY = CONFIG.goalHeight * (0.2 + tune.t * 0.2);
         const tx =
-          CONFIG.goalX +
-          40 +
-          Math.random() * (CONFIG.goalWidth - 80) +
-          (Math.random() - 0.5) * err;
+          centerX +
+          (Math.random() - 0.5) * spreadX +
+          (Math.random() - 0.5) * tune.aiShotError;
         const ty =
-          CONFIG.goalY +
-          20 +
-          Math.random() * (CONFIG.goalHeight - 40) +
-          (Math.random() - 0.5) * err * 0.4;
+          centerY +
+          (Math.random() - 0.5) * spreadY +
+          (Math.random() - 0.5) * tune.aiShotError * 0.4;
 
         // place ball at penalty spot
         ball.x = CONFIG.width / 2;
@@ -1572,11 +1775,13 @@
         ball.missedGoal = false;
         ball.inGoal = false;
         ball.scored = false;
+        ball.burstScheduled = false;
+        ball.burstScheduled = false;
 
         const dx = tx - ball.x;
         const dy = ty - ball.y;
         let speed = 420 + powerLevel * 420;
-        speed *= 1.05;
+        speed *= 0.98 + tune.t * 0.14;
 
         const distance = Math.sqrt(dx * dx + dy * dy);
         const timeToGoal = Math.max(0.2, distance / speed);
@@ -1725,28 +1930,23 @@
         ball.inGoal = false;
         ball.scored = false;
 
-        // End after both sides have taken 5 kicks; if tied, go to sudden death
+        // End logic: finish only after both teams have taken 5 kicks.
         const kicksA = s.scoreHistoryA.length;
         const kicksB = s.scoreHistoryB.length;
-        const minKicks = Math.min(kicksA, kicksB);
-        const maxKicks = Math.max(kicksA, kicksB);
-        if (minKicks >= s.totalEach && s.kickNum % 2 === 0) {
-          if (s.scoreA !== s.scoreB) {
-            finalizeShootout(s);
-            return;
+        if (kicksA >= s.totalEach && kicksB >= s.totalEach) {
+          if (s.scoreA === s.scoreB) {
+            const winnerA = Math.random() > 0.5;
+            if (winnerA) s.scoreA += 1;
+            else s.scoreB += 1;
           }
-        }
-        // sudden death: once beyond 5 each, resolve on first pair with difference
-        if (maxKicks > s.totalEach && s.kickNum % 2 === 0) {
-          if (s.scoreA !== s.scoreB) {
-            finalizeShootout(s);
-            return;
-          }
+          finalizeShootout(s);
+          return;
         }
 
         // continue next kick
         lastShotPending = false;
         lastShotOwner = null;
+        if (autoSimulatingShootout) return;
         // small delay before next kick
         setTimeout(() => {
           startNextKick();
@@ -1764,6 +1964,9 @@
         document.getElementById("shootoutOverlay").style.display = "none";
         shootoutActive = false;
         shootoutState = null;
+        lastShotPending = false;
+        lastShotOwner = null;
+        autoSimulatingShootout = false;
         const track = document.getElementById("penaltyTracker");
         if (track) track.style.display = "none";
         tournament.active = true;
@@ -1915,25 +2118,31 @@
           document.getElementById("shootoutOverlay").style.display = "none";
           shootoutActive = false;
           shootoutState = null;
+          lastShotPending = false;
+          lastShotOwner = null;
+          autoSimulatingShootout = false;
           tournament.active = true;
           renderBracket();
         });
       if (shootoutSimulate)
         shootoutSimulate.addEventListener("click", () => {
-          // auto-simulate the current kick (quick random result)
+          // auto-simulate the remaining shootout with difficulty-aware odds
           if (!shootoutActive || !shootoutState) return;
-          // random chance to score
-          const chance = 0.7;
-          const scored = Math.random() < chance;
-          // emulate immediate resolution
-          lastShotOwner = shootoutState.playerShootsNext ? "player" : "ai";
-          lastShotPending = true;
-          // set ball flags to emulate
-          ball.active = false;
-          ball.scored = scored;
-          ball.inGoal = scored;
-          ball.missedGoal = !scored;
-          resolveShotOutcome();
+          autoSimulatingShootout = true;
+          const s = shootoutState;
+          while (shootoutActive && shootoutState === s) {
+            const owner = s.playerShootsNext ? "player" : "ai";
+            const chance = getAutoSimulatedKickChance(owner);
+            const scored = Math.random() < chance;
+            lastShotOwner = owner;
+            lastShotPending = true;
+            ball.active = false;
+            ball.scored = scored;
+            ball.inGoal = scored;
+            ball.missedGoal = !scored;
+            resolveShotOutcome();
+          }
+          autoSimulatingShootout = false;
         });
       if (shootoutClose)
         shootoutClose.addEventListener("click", () => {
@@ -1961,6 +2170,70 @@
         targetPoint.y = CONFIG.goalY + CONFIG.goalHeight * zone.y;
       }
 
+      function getShotTimingProfile(value) {
+        const v = Math.max(0, Math.min(1, value));
+        const centerDist = Math.abs(v - 0.5);
+        const inPerfectZone = centerDist <= 0.01;
+        const redLeft = v <= 0.24;
+        const redRight = v >= 0.76;
+
+        if (v < 0.4) {
+          const t = v / 0.4;
+          return {
+            powerLevel: 0.1 + t * 0.1, // 10-20%
+            accuracyError: 70 + (1 - t) * 220,
+            yBias: 18 + (1 - t) * 90,
+            inPerfectZone,
+            redZone: redLeft || redRight,
+            redSide: redLeft ? "left" : redRight ? "right" : null,
+          };
+        }
+
+        if (v <= 0.6) {
+          const edge = Math.abs(v - 0.5) / 0.1;
+          return {
+            powerLevel: 1 - edge * 0.08,
+            accuracyError: edge * 12,
+            yBias: 0,
+            inPerfectZone,
+            redZone: false,
+            redSide: null,
+          };
+        }
+
+        const t = (v - 0.6) / 0.4;
+        return {
+          powerLevel: 1 + t * 1.0, // up to 200%
+          accuracyError: 35 + t * 190,
+          yBias: -90 - t * 240, // overhit above goal
+          inPerfectZone,
+          redZone: redLeft || redRight,
+          redSide: redLeft ? "left" : redRight ? "right" : null,
+        };
+      }
+
+      function updateShotTimingMeter(dt) {
+        const meterActive =
+          currentTurn === "player" && !ball.active && !shotTimingLocked;
+        if (meterActive) {
+          const tune = getDifficultyTuning();
+          const swingSpeed = 0.7 + tune.t * 1.8; // harder difficulties move faster
+          shotTimingValue += shotTimingDir * dt * swingSpeed;
+          if (shotTimingValue >= 1) {
+            shotTimingValue = 1;
+            shotTimingDir = -1;
+          } else if (shotTimingValue <= 0) {
+            shotTimingValue = 0;
+            shotTimingDir = 1;
+          }
+        }
+        if (shotTimingNeedle)
+          shotTimingNeedle.style.left = `${shotTimingValue * 100}%`;
+        if (powerFill) powerFill.style.width = `${shotTimingValue * 100}%`;
+        if (shotTimingMeter)
+          shotTimingMeter.style.opacity = meterActive ? "1" : "0.45";
+      }
+
       updateTargetPoint();
 
       // Canvas click to set target
@@ -1981,12 +2254,7 @@
           targetPoint.x = x;
           targetPoint.y = y;
           selectedZone = null;
-
-          // Power determined by vertical click position inside goal (higher -> stronger)
-          const relY =
-            (CONFIG.goalY + CONFIG.goalHeight - y) / CONFIG.goalHeight;
-          const powerLevel = Math.min(1, Math.max(0.15, relY));
-          if (Date.now() >= nextShootAllowedAt) shoot(powerLevel);
+          if (Date.now() >= nextShootAllowedAt) shoot();
         } else {
           // Click outside goal just moves target crosshair
           targetPoint.x = x;
@@ -1997,41 +2265,77 @@
       // Keeper controls (WASD/Arrows) when AI is shooting
       function triggerManualDive() {
         if (currentTurn !== "ai") return;
-        if (keeper.diving || keeper.deflecting) return;
-        // dive toward ball if active, otherwise forward/up
-        const targetX = ball.active ? ball.x : keeper.x;
+        if (keeper.deflecting) return;
+        const now = Date.now();
+        const tune = getDifficultyTuning();
+        if (now - lastManualDiveAt < tune.playerDiveCooldown) return;
+        lastManualDiveAt = now;
+        const lead = ball.active ? 0.1 + (1 - tune.t) * 0.12 : 0.06;
+        const targetX = ball.active ? ball.x + ball.vx * lead : keeper.x;
+        const baseY = CONFIG.goalY + CONFIG.goalHeight - 30;
         const targetY = ball.active
-          ? Math.max(CONFIG.goalY + 20, ball.y - 30)
-          : CONFIG.goalY + 60;
+          ? Math.max(CONFIG.goalY + 20, ball.y + ball.vy * lead - 26)
+          : baseY - 14;
         keeper.diving = true;
-        keeper.diveTime = Date.now();
+        keeper.diveTime = now;
         keeper.startX = keeper.x;
         keeper.startY = keeper.y;
         keeper.targetX = Math.max(
           CONFIG.goalX + 30,
           Math.min(CONFIG.goalX + CONFIG.goalWidth - 30, targetX),
         );
-        keeper.targetY = Math.max(
-          CONFIG.goalY + 20,
-          Math.min(CONFIG.goalY + CONFIG.goalHeight - 20, targetY),
-        );
-        keeper.diveDuration = 0.32;
+        keeper.targetY = Math.max(baseY - 28, Math.min(baseY + 10, targetY));
+        keeper.diveDuration = tune.playerDiveDuration;
         const sign = Math.sign(keeper.targetX - keeper.startX) || 1;
-        keeper.rotation = sign * (Math.PI / 4);
+        keeper.rotation = sign * (Math.PI / 5.8);
       }
       document.addEventListener("keydown", (e) => {
-        if (currentTurn !== "ai") return;
-        if (e.key === "a" || e.key === "A" || e.key === "ArrowLeft")
-          keys.left = true;
-        if (e.key === "d" || e.key === "D" || e.key === "ArrowRight")
-          keys.right = true;
-        if (e.key === "w" || e.key === "W" || e.key === "ArrowUp")
-          keys.up = true;
-        if (e.key === "s" || e.key === "S" || e.key === "ArrowDown")
-          keys.down = true;
-        if (e.code === "Space") triggerManualDive();
+        const isArrowKey =
+          e.key === "ArrowLeft" ||
+          e.key === "ArrowRight" ||
+          e.key === "ArrowUp" ||
+          e.key === "ArrowDown";
+        const isDiveKey =
+          e.code === "AltLeft" ||
+          e.code === "AltRight" ||
+          e.code === "Space" ||
+          e.code === "ShiftLeft" ||
+          e.code === "ShiftRight";
+
+        if (currentTurn === "ai") {
+          if (isArrowKey || isDiveKey) e.preventDefault();
+          if (e.key === "a" || e.key === "A" || e.key === "ArrowLeft")
+            keys.left = true;
+          if (e.key === "d" || e.key === "D" || e.key === "ArrowRight")
+            keys.right = true;
+          if (e.key === "w" || e.key === "W" || e.key === "ArrowUp")
+            keys.up = true;
+          if (e.key === "s" || e.key === "S" || e.key === "ArrowDown")
+            keys.down = true;
+          if (isDiveKey && !e.repeat) triggerManualDive();
+          return;
+        }
+
+        if (currentTurn === "player" && e.code === "Space") {
+          e.preventDefault();
+          if (e.repeat || ball.active || Date.now() < nextShootAllowedAt)
+            return;
+          spaceShootHeld = true;
+          initAudio();
+          shoot();
+        }
       });
       document.addEventListener("keyup", (e) => {
+        if (currentTurn === "player" && e.code === "Space") {
+          e.preventDefault();
+          spaceShootHeld = false;
+          return;
+        }
+        if (
+          currentTurn === "ai" &&
+          (e.code === "Space" || e.key.startsWith("Arrow"))
+        )
+          e.preventDefault();
         if (e.key === "a" || e.key === "A" || e.key === "ArrowLeft")
           keys.left = false;
         if (e.key === "d" || e.key === "D" || e.key === "ArrowRight")
@@ -2042,36 +2346,23 @@
           keys.down = false;
       });
 
-      // Shoot button - hold to charge (only if element exists)
+      // Shoot button - fire using current timing meter value
       if (shootBtn) {
-        shootBtn.addEventListener("mousedown", () => {
+        shootBtn.addEventListener("click", () => {
           if (ball.active || currentTurn !== "player") return;
           if (Date.now() < nextShootAllowedAt) return;
-          isCharging = true;
-          chargeStartTime = Date.now();
           initAudio();
+          shoot();
         });
 
         shootBtn.addEventListener("touchstart", (e) => {
           e.preventDefault();
           if (ball.active || currentTurn !== "player") return;
           if (Date.now() < nextShootAllowedAt) return;
-          isCharging = true;
-          chargeStartTime = Date.now();
           initAudio();
+          shoot();
         });
       }
-
-      function releaseShot() {
-        if (!isCharging) return;
-        isCharging = false;
-        shoot(power);
-        power = 0;
-        if (powerFill) powerFill.style.width = "0%";
-      }
-
-      document.addEventListener("mouseup", releaseShot);
-      document.addEventListener("touchend", releaseShot);
 
       resetBtn.addEventListener("click", resetGame);
 
@@ -2081,17 +2372,23 @@
       });
 
       function keeperReact(tx, ty) {
-        const difficulty = parseInt(difficultySlider.value);
-        const reactionTime = 0.35 - difficulty * 0.04;
+        const tune = getDifficultyTuning();
+        const reactionTime = tune.aiKeeperReaction;
         setTimeout(() => {
+          if (currentTurn !== "player" || !ball.active) return;
           keeper.diving = true;
           keeper.diveTime = Date.now();
           keeper.startX = keeper.x;
           keeper.startY = keeper.y;
-          keeper.diveDuration = Math.max(0.25, 0.7 - difficulty * 0.08);
-          const errorMargin = 80 * (6 - difficulty);
+          keeper.diveDuration = tune.aiKeeperDiveDuration;
+          const errorMargin = tune.aiKeeperError;
           keeper.targetX = tx + (Math.random() - 0.5) * errorMargin;
           keeper.targetY = ty + (Math.random() - 0.5) * errorMargin * 0.6;
+          if (Math.random() < tune.aiKeeperWrongDiveChance) {
+            const direction = Math.random() < 0.5 ? -1 : 1;
+            keeper.targetX += direction * (95 + Math.random() * 105);
+            keeper.targetY += 14 + Math.random() * 42;
+          }
           keeper.targetX = Math.max(
             CONFIG.goalX + 40,
             Math.min(CONFIG.goalX + CONFIG.goalWidth - 40, keeper.targetX),
@@ -2110,12 +2407,59 @@
       // Shoot function with 3D physics
       function shoot(powerLevel) {
         if (ball.active || currentTurn !== "player") return;
+        const timing = getShotTimingProfile(shotTimingValue);
+        const tune = getDifficultyTuning();
+        const forcePerfectGoal = timing.inPerfectZone && tune.difficulty >= 5;
+        powerLevel = Math.max(
+          0.1,
+          Math.min(2, powerLevel ?? timing.powerLevel),
+        );
+        if (forcePerfectGoal) powerLevel = 1.04;
+        shotTimingLocked = true;
         ball.active = true;
         ball.missedGoal = false;
+        ball.inGoal = false;
+        ball.scored = false;
+        ball.burstScheduled = false;
+        ball.forceGoal = forcePerfectGoal;
         ball.trail = [];
 
-        const dx = targetPoint.x - ball.x;
-        const dy = targetPoint.y - ball.y;
+        const aimX =
+          targetPoint.x + (Math.random() - 0.5) * timing.accuracyError;
+        const aimY =
+          targetPoint.y +
+          (Math.random() - 0.5) * timing.accuracyError * 0.45 +
+          timing.yBias;
+        let tx = Math.max(
+          CONFIG.goalX - 220,
+          Math.min(CONFIG.goalX + CONFIG.goalWidth + 220, aimX),
+        );
+        let ty = Math.max(
+          CONFIG.goalY - 420,
+          Math.min(CONFIG.goalY + CONFIG.goalHeight + 260, aimY),
+        );
+        // Red zones are forced misses.
+        if (timing.redZone) {
+          if (timing.redSide === "left") {
+            ty = CONFIG.goalY + CONFIG.goalHeight + 150 + Math.random() * 70;
+            tx += (Math.random() - 0.5) * 130;
+          } else if (timing.redSide === "right") {
+            ty = CONFIG.goalY - 260 - Math.random() * 160;
+            tx += (Math.random() - 0.5) * 220;
+          }
+        }
+        if (forcePerfectGoal) {
+          tx = Math.max(
+            CONFIG.goalX + 40,
+            Math.min(CONFIG.goalX + CONFIG.goalWidth - 40, targetPoint.x),
+          );
+          ty = Math.max(
+            CONFIG.goalY + 36,
+            Math.min(CONFIG.goalY + CONFIG.goalHeight - 40, targetPoint.y),
+          );
+        }
+        const dx = tx - ball.x;
+        const dy = ty - ball.y;
 
         let speed = 420 + powerLevel * 420;
         ball.spin = (Math.random() - 0.5) * 120;
@@ -2132,7 +2476,7 @@
         lastShotPending = true;
         lastShotOwner = "player";
 
-        keeperReact(targetPoint.x, targetPoint.y);
+        keeperReact(tx, ty);
       }
 
       function resetGame() {
@@ -2147,10 +2491,15 @@
         ball.missedGoal = false;
         ball.inGoal = false;
         ball.scored = false;
+        ball.burstScheduled = false;
+        ball.forceGoal = false;
+        shotTimingLocked = false;
         ball.trail = [];
 
         keeper.x = CONFIG.goalX + CONFIG.goalWidth / 2;
         keeper.y = CONFIG.goalY + CONFIG.goalHeight - 30;
+        keeper.vx = 0;
+        keeper.vy = 0;
         keeper.diving = false;
         keeper.deflecting = false;
         keeper.rotation = 0;
@@ -2187,6 +2536,20 @@
       function setTurn(turn) {
         currentTurn = turn;
         if (shootBtn) shootBtn.disabled = currentTurn !== "player";
+        if (currentTurn !== "player") {
+          spaceShootHeld = false;
+        }
+        if (currentTurn === "player" && !ball.active && !lastShotPending) {
+          shotTimingLocked = false;
+        }
+        if (currentTurn !== "ai") {
+          keys.left = false;
+          keys.right = false;
+          keys.up = false;
+          keys.down = false;
+          keeper.vx = 0;
+          keeper.vy = 0;
+        }
         if (currentTurn === "player") {
           nextShootAllowedAt = Date.now() + 2000;
         }
@@ -2218,6 +2581,7 @@
 
       function resolveCompetitiveTurn() {
         const scored = !!ball.scored || (!!ball.inGoal && !ball.missedGoal);
+        let shouldScheduleAiKick = false;
         if (lastShotOwner === "player") {
           if (scored) {
             playerScore++;
@@ -2227,12 +2591,8 @@
           }
           kickHistoryPlayer.push(!!scored);
           if (kickHistoryPlayer.length > 5) kickHistoryPlayer.shift();
+          shouldScheduleAiKick = true;
           setTurn("ai");
-          aiTurnScheduled = true;
-          setTimeout(() => {
-            aiTurnScheduled = false;
-            aiShootForShootout();
-          }, 2000);
         } else {
           if (scored) {
             aiScore++;
@@ -2245,6 +2605,9 @@
           setTurn("player");
         }
 
+        const reachedKickLimit =
+          kickHistoryPlayer.length >= 5 && kickHistoryAI.length >= 5;
+
         lastShotPending = false;
         lastShotOwner = null;
 
@@ -2254,16 +2617,69 @@
         ball.missedGoal = false;
         ball.inGoal = false;
         ball.scored = false;
+        ball.burstScheduled = false;
+        ball.forceGoal = false;
+        shotTimingLocked = false;
         resetGame();
+
+        if (reachedKickLimit) {
+          setTurn("player");
+          const roundIdx = tournament.currentRound;
+          const found = tournament.active ? findPlayerMatch(roundIdx) : null;
+
+          if (found && found.match) {
+            const m = found.match;
+            const playerIsA = m.a === playerTeamId;
+            let scoreA = playerIsA ? playerScore : aiScore;
+            let scoreB = playerIsA ? aiScore : playerScore;
+            if (scoreA === scoreB) {
+              if (Math.random() > 0.5) scoreA += 1;
+              else scoreB += 1;
+            }
+            m.scoreA = scoreA;
+            m.scoreB = scoreB;
+            m.winner = scoreA > scoreB ? m.a : m.b;
+            advanceWinnerToNextRound(roundIdx, found.idx, m.winner);
+
+            simulateOtherMatchesInRound(roundIdx, found.idx);
+            updateRoundProgression();
+            renderBracket();
+
+            if (m.winner !== playerTeamId) {
+              showGameOver("Nice try. Try again.");
+              return;
+            }
+            autoStartNextMatch();
+            return;
+          }
+
+          if (playerScore > aiScore)
+            showGameOver(
+              `You win ${playerScore} - ${aiScore} after 5 kicks each.`,
+            );
+          else if (aiScore > playerScore)
+            showGameOver(
+              `AI wins ${aiScore} - ${playerScore} after 5 kicks each.`,
+            );
+          else
+            showGameOver(
+              `Draw ${playerScore} - ${aiScore} after 5 kicks each.`,
+            );
+          return;
+        }
+
+        if (shouldScheduleAiKick) {
+          aiTurnScheduled = true;
+          setTimeout(() => {
+            aiTurnScheduled = false;
+            aiShootForShootout();
+          }, 2000);
+        }
       }
 
       // Physics update with 3D depth
       function update(dt) {
-        if (isCharging) {
-          const chargeTime = (Date.now() - chargeStartTime) / 1000;
-          power = Math.min(1, chargeTime / 1.2);
-          if (powerFill) powerFill.style.width = power * 100 + "%";
-        }
+        updateShotTimingMeter(dt);
 
         if (ball.active) {
           // Gravity
@@ -2324,6 +2740,25 @@
               ball.inGoal = true;
               ball.scored = true;
               ball.missedGoal = false;
+              if (!ball.burstScheduled) {
+                ball.burstScheduled = true;
+                const burstX = ball.x;
+                const burstY = Math.min(
+                  CONFIG.goalY + CONFIG.goalHeight - 10,
+                  Math.max(CONFIG.goalY + 30, ball.y + 12),
+                );
+                spawnGoalConfetti(burstX, burstY);
+                playSound(860, 0.12, "triangle");
+                playSound(700, 0.16, "square");
+                setTimeout(() => {
+                  if (!ball.scored || !ball.burstScheduled) return;
+                  ball.active = false;
+                  ball.inGoal = false;
+                  ball.vx = 0;
+                  ball.vy = 0;
+                  ball.vz = 0;
+                }, 200);
+              }
               ball.vz = -Math.abs(ball.vy) * 0.8; // Move into goal depth
               playSound(600, 0.5);
               netRipple.active = true;
@@ -2341,17 +2776,24 @@
           const manualSaveAllowed = currentTurn === "ai";
           if (
             (keeper.diving || keeper.deflecting || manualSaveAllowed) &&
-            !keeper.deflecting
+            !keeper.deflecting &&
+            !ball.inGoal &&
+            !ball.scored &&
+            !ball.burstScheduled &&
+            !ball.forceGoal
           ) {
             const dist = Math.sqrt(
               (ball.x - keeper.x) ** 2 + (ball.y - keeper.y) ** 2,
             );
-            const difficulty = parseInt(difficultySlider.value);
+            const tune = getDifficultyTuning();
             const heightFactor =
               1 - (ball.y - CONFIG.goalY) / CONFIG.goalHeight; // higher shot -> bigger factor
-            const baseRadius = manualSaveAllowed ? 62 : 70;
+            const baseRadius = manualSaveAllowed
+              ? tune.playerKeeperSaveRadius
+              : tune.aiKeeperSaveRadius;
+            const cornerPenalty = manualSaveAllowed ? 16 : 22;
             const saveRadius =
-              baseRadius + difficulty * 8 - Math.max(0, heightFactor * 20); // harder to save top corners
+              baseRadius - Math.max(0, heightFactor * cornerPenalty);
             if (dist < saveRadius) {
               // Save with deflection!
               keeper.deflecting = true;
@@ -2392,6 +2834,22 @@
           }
         }
 
+        // Goal celebration confetti particles
+        if (goalConfetti.length) {
+          const confettiGravity = 520;
+          goalConfetti = goalConfetti.filter((p) => {
+            p.life -= dt;
+            if (p.life <= 0) return false;
+            p.vy += confettiGravity * dt;
+            p.x += p.vx * dt;
+            p.y += p.vy * dt;
+            p.rot += p.spin * dt;
+            p.vx *= 0.988;
+            p.vy *= 0.992;
+            return p.y < CONFIG.height + 40;
+          });
+        }
+
         // Update keeper
         const baseY = CONFIG.goalY + CONFIG.goalHeight - 30; // keeper baseline near the ground
         if (keeper.diving) {
@@ -2399,8 +2857,7 @@
           const diveDuration = keeper.diveDuration || 0.6;
           const progress = Math.min(1, elapsed / diveDuration);
 
-          // Smooth dive motion (interpolate from start -> target) - snappier curve
-          const easeProgress = 1 - Math.pow(1 - progress, 4);
+          const easeProgress = progress * progress * (3 - 2 * progress);
           keeper.x =
             (keeper.startX || keeper.x) +
             (keeper.targetX - (keeper.startX || keeper.x)) * easeProgress;
@@ -2412,25 +2869,33 @@
           if (progress >= 1) {
             keeper.diving = false;
             keeper.playerDive = false;
-            keeper.y = baseY;
-            keeper.rotation = 0;
+            keeper.vx = 0;
+            keeper.vy = 0;
+            keeper.rotation *= 0.4;
           }
         } else if (!keeper.deflecting) {
           if (currentTurn === "ai") {
-            const moveSpeed = 420; // px/sec
-            if (keys.left) keeper.x -= moveSpeed * dt;
-            if (keys.right) keeper.x += moveSpeed * dt;
-            if (keys.up) keeper.y -= moveSpeed * dt * 0.6;
-            if (keys.down) keeper.y += moveSpeed * dt * 0.6;
+            const tune = getDifficultyTuning();
+            const moveSpeed = tune.playerMoveSpeed;
+            const axisX = (keys.right ? 1 : 0) - (keys.left ? 1 : 0);
+            const axisY = (keys.down ? 1 : 0) - (keys.up ? 1 : 0);
+            const targetVX = axisX * moveSpeed;
+            const targetVY = axisY * moveSpeed * 0.62;
+            const blend = Math.min(1, dt * 11);
+            keeper.vx += (targetVX - keeper.vx) * blend;
+            keeper.vy += (targetVY - keeper.vy) * blend;
+            keeper.x += keeper.vx * dt;
+            keeper.y += keeper.vy * dt;
             keeper.x = Math.max(
               CONFIG.goalX + 30,
               Math.min(CONFIG.goalX + CONFIG.goalWidth - 30, keeper.x),
             );
-            keeper.y = Math.max(
-              CONFIG.goalY + 40,
-              Math.min(CONFIG.goalY + CONFIG.goalHeight - 20, keeper.y),
-            );
+            const minY = baseY - 20;
+            const maxY = baseY + 10;
+            keeper.y = Math.max(minY, Math.min(maxY, keeper.y));
           } else {
+            keeper.vx = 0;
+            keeper.vy = 0;
             // Idle animation between shots
             keeper.x =
               CONFIG.goalX +
@@ -2499,6 +2964,7 @@
 
         // Ball with trail
         drawBall3D();
+        drawGoalConfetti();
 
         // Debug HUD (confirm canvas is rendering)
         ctx.save();
@@ -2511,14 +2977,9 @@
       }
 
       function drawStands() {
-        const teamPrimary =
-          (opponentTeamData && opponentTeamData.primary) ||
-          (playerTeamData && playerTeamData.primary) ||
-          "#0f172a";
-        const teamSecondary =
-          (opponentTeamData && opponentTeamData.secondary) ||
-          (playerTeamData && playerTeamData.secondary) ||
-          "#f8fafc";
+        const keeperTeam = getGoalkeepingTeamData();
+        const teamPrimary = (keeperTeam && keeperTeam.primary) || "#0f172a";
+        const teamSecondary = (keeperTeam && keeperTeam.secondary) || "#f8fafc";
         const standTop = 0;
         const standBottom = CONFIG.goalY + CONFIG.goalHeight + 20;
 
@@ -2888,6 +3349,22 @@
         }
         ctx.restore();
 
+        ctx.restore();
+      }
+
+      function drawGoalConfetti() {
+        if (!goalConfetti.length) return;
+        ctx.save();
+        for (const p of goalConfetti) {
+          ctx.save();
+          const alpha = Math.max(0, Math.min(1, p.life / 0.9));
+          ctx.globalAlpha = alpha;
+          ctx.translate(p.x, p.y);
+          ctx.rotate(p.rot);
+          ctx.fillStyle = p.color;
+          ctx.fillRect(-p.size * 0.5, -p.size * 0.32, p.size, p.size * 0.64);
+          ctx.restore();
+        }
         ctx.restore();
       }
 
