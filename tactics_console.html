@@ -1,9 +1,18 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="en">
 <head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-MD10W5VBMP"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-MD10W5VBMP');
+    </script>
+
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <meta name="description" content="ProTactix – a professional football tactics console for drawing formations, arrows, zones, and simulating plays. Free FIFA/EA Sports-style tactical board." />
+  <meta name="description" content="ProTactix â€“ a professional football tactics console for drawing formations, arrows, zones, and simulating plays. Free FIFA/EA Sports-style tactical board." />
   <title>ProTactix | Football Tactics Console | Draw Formations & Simulate Plays</title>
 
   <link rel="canonical" href="https://jaivaltamboli-pixel.github.io/tactics_console.html" />
@@ -253,8 +262,8 @@
       </div>
       <div class="header-controls">
         <button class="btn" id="btn-new-project">+ New Project</button>
-        <button class="btn success" id="btn-export">↓ Export</button>
-        <button class="btn" id="btn-settings">⚙ Settings</button>
+        <button class="btn success" id="btn-export">â†“ Export</button>
+        <button class="btn" id="btn-settings">âš™ Settings</button>
       </div>
     </header>
 
@@ -282,7 +291,7 @@
           <option value="3-5-2">3-5-2 Defensive</option>
           <option value="4-2-3-1">4-2-3-1 Modern</option>
         </select>
-        <button id="btn-apply-formation" class="btn small" style="width:100%;">✓ Apply Formation</button>
+        <button id="btn-apply-formation" class="btn small" style="width:100%;">âœ“ Apply Formation</button>
       </div>
 
       <div class="tool-group">
@@ -339,14 +348,14 @@
         </div>
 
         <div style="margin-top:10px;">
-          <button id="btn-3d-toggle" class="btn small">◑ 3D View</button>
+          <button id="btn-3d-toggle" class="btn small">â—‘ 3D View</button>
         </div>
       </div>
 
       <!-- Delete buttons moved below View Controls as requested -->
       <div class="tool-group">
-        <button id="btn-delete" class="btn danger" style="width:100%; margin-bottom:10px;">🗑 Delete Selected</button>
-        <button id="btn-delete-arrow" class="btn danger" style="width:100%;">🗑 Delete Arrow</button>
+        <button id="btn-delete" class="btn danger" style="width:100%; margin-bottom:10px;">ðŸ—‘ Delete Selected</button>
+        <button id="btn-delete-arrow" class="btn danger" style="width:100%;">ðŸ—‘ Delete Arrow</button>
       </div>
 
     </aside>
@@ -387,14 +396,14 @@
       </div>
 
       <div class="replay-controls">
-        <button class="btn" id="re-prev">⏮</button>
-        <button class="btn" id="re-play">⏯</button>
-        <button class="btn" id="re-next">⏭</button>
+        <button class="btn" id="re-prev">â®</button>
+        <button class="btn" id="re-play">â¯</button>
+        <button class="btn" id="re-next">â­</button>
         <div style="flex:1;height:8px;background:rgba(255,255,255,0.04);border-radius:8px;overflow:hidden;position:relative;">
           <div id="re-progress" style="width:0%;height:100%;background:var(--highlight);"></div>
         </div>
-        <button class="btn" id="re-stop">⏹</button>
-        <button class="btn" id="re-loop">↺</button>
+        <button class="btn" id="re-stop">â¹</button>
+        <button class="btn" id="re-loop">â†º</button>
       </div>
     </main>
 
@@ -409,7 +418,7 @@
           <div style="width:60px;height:60px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:var(--highlight);font-weight:700;">ST</div>
           <div>
             <div style="font-weight:800">Striker</div>
-            <div style="color:var(--muted)">Home Team · Forward</div>
+            <div style="color:var(--muted)">Home Team Â· Forward</div>
           </div>
         </div>
 
@@ -452,7 +461,7 @@
       <div class="panel-section">
         <div style="font-weight:800;margin-bottom:8px;">Recent Actions</div>
         <div id="recent-actions" style="color:var(--muted);font-size:13px;line-height:1.6;">
-          <div>→ App started</div>
+          <div>â†’ App started</div>
         </div>
       </div>
     </aside>
@@ -1075,7 +1084,7 @@
         rePlay.addEventListener('click', function() {
           isPlaying = !isPlaying;
           if (isPlaying) {
-            rePlay.textContent = '⏸';
+            rePlay.textContent = 'â¸';
             logAction('Replay started');
             
             // Simulate progress
@@ -1086,7 +1095,7 @@
               } else {
                 clearInterval(interval);
                 isPlaying = false;
-                rePlay.textContent = '⏯';
+                rePlay.textContent = 'â¯';
                 if (progress >= 100) {
                   progress = 0;
                   reProgress.style.width = '0%';
@@ -1094,7 +1103,7 @@
               }
             }, 100);
           } else {
-            rePlay.textContent = '⏯';
+            rePlay.textContent = 'â¯';
             logAction('Replay paused');
           }
         });
@@ -1103,7 +1112,7 @@
           isPlaying = false;
           progress = 0;
           reProgress.style.width = '0%';
-          rePlay.textContent = '⏯';
+          rePlay.textContent = 'â¯';
           logAction('Replay stopped');
         });
         
@@ -1128,7 +1137,7 @@
       // Log action
       function logAction(text) {
         const div = document.createElement('div');
-        div.textContent = `→ ${text}`;
+        div.textContent = `â†’ ${text}`;
         recentActions.prepend(div);
         
         // Keep only last 10 actions
@@ -1304,3 +1313,4 @@
   </script>
 </body>
 </html>
+

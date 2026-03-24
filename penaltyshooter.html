@@ -1,6 +1,15 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="en">
   <head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-MD10W5VBMP"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-MD10W5VBMP');
+    </script>
+
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>Penalty Shootout Soccer Game | Free Browser Football Game</title>
@@ -1015,12 +1024,12 @@
           <div style="height: 12px"></div>
           <div class="shootout-teams">
             <div id="teamABox" class="team-box">
-              <div class="team-flag" id="teamAFlag">🇧🇪</div>
+              <div class="team-flag" id="teamAFlag">ðŸ‡§ðŸ‡ª</div>
               <div class="team-name" id="teamAName">Team A</div>
             </div>
             <div style="font-size: 28px; color: var(--muted)">vs</div>
             <div id="teamBBox" class="team-box">
-              <div class="team-flag" id="teamBFlag">🇩🇰</div>
+              <div class="team-flag" id="teamBFlag">ðŸ‡©ðŸ‡°</div>
               <div class="team-name" id="teamBName">Team B</div>
             </div>
           </div>
@@ -1284,112 +1293,112 @@
         {
           id: "POR",
           name: "Portugal",
-          flag: "🇵🇹",
+          flag: "ðŸ‡µðŸ‡¹",
           primary: "#006600",
           secondary: "#FF0000",
         },
         {
           id: "BRA",
           name: "Brazil",
-          flag: "🇧🇷",
+          flag: "ðŸ‡§ðŸ‡·",
           primary: "#FFDF00",
           secondary: "#009C3B",
         },
         {
           id: "ARG",
           name: "Argentina",
-          flag: "🇦🇷",
+          flag: "ðŸ‡¦ðŸ‡·",
           primary: "#74ACDF",
           secondary: "#FFFFFF",
         },
         {
           id: "FRA",
           name: "France",
-          flag: "🇫🇷",
+          flag: "ðŸ‡«ðŸ‡·",
           primary: "#002395",
           secondary: "#ED2939",
         },
         {
           id: "DEU",
           name: "Germany",
-          flag: "🇩🇪",
+          flag: "ðŸ‡©ðŸ‡ª",
           primary: "#000000",
           secondary: "#DD0000",
         },
         {
           id: "ENG",
           name: "England",
-          flag: "🏴",
+          flag: "ðŸ´",
           primary: "#FFFFFF",
           secondary: "#D90012",
         },
         {
           id: "USA",
           name: "USA",
-          flag: "🇺🇸",
+          flag: "ðŸ‡ºðŸ‡¸",
           primary: "#002868",
           secondary: "#BF0A30",
         },
         {
           id: "ITA",
           name: "Italy",
-          flag: "🇮🇹",
+          flag: "ðŸ‡®ðŸ‡¹",
           primary: "#007A3D",
           secondary: "#CE2B37",
         },
         {
           id: "ESP",
           name: "Spain",
-          flag: "🇪🇸",
+          flag: "ðŸ‡ªðŸ‡¸",
           primary: "#AA151B",
           secondary: "#F1BF00",
         },
         {
           id: "NED",
           name: "Netherlands",
-          flag: "🇳🇱",
+          flag: "ðŸ‡³ðŸ‡±",
           primary: "#FF4C00",
           secondary: "#1E3A8A",
         },
         {
           id: "BEL",
           name: "Belgium",
-          flag: "🇧🇪",
+          flag: "ðŸ‡§ðŸ‡ª",
           primary: "#1A1A1A",
           secondary: "#ED2939",
         },
         {
           id: "CRO",
           name: "Croatia",
-          flag: "🇭🇷",
+          flag: "ðŸ‡­ðŸ‡·",
           primary: "#FF0000",
           secondary: "#FFFFFF",
         },
         {
           id: "JPN",
           name: "Japan",
-          flag: "🇯🇵",
+          flag: "ðŸ‡¯ðŸ‡µ",
           primary: "#FFFFFF",
           secondary: "#BC002D",
         },
         {
           id: "KOR",
           name: "South Korea",
-          flag: "🇰🇷",
+          flag: "ðŸ‡°ðŸ‡·",
           primary: "#FFFFFF",
           secondary: "#003478",
         },
         {
           id: "MEX",
           name: "Mexico",
-          flag: "🇲🇽",
+          flag: "ðŸ‡²ðŸ‡½",
           primary: "#006847",
           secondary: "#CE1126",
         },
         {
           id: "URU",
           name: "Uruguay",
-          flag: "🇺🇾",
+          flag: "ðŸ‡ºðŸ‡¾",
           primary: "#7CB9E8",
           secondary: "#FFFFFF",
         },
@@ -1861,13 +1870,13 @@
           const valA = s.scoreHistoryA[i];
           if (valA === true) {
             slot.classList.add("scored");
-            slot.textContent = "✅";
+            slot.textContent = "âœ…";
           } else if (valA === false) {
             slot.classList.add("missed");
-            slot.textContent = "❌";
+            slot.textContent = "âŒ";
           } else {
             slot.classList.add("pending");
-            slot.textContent = "▫";
+            slot.textContent = "â–«";
           }
           // highlight next upcoming slot for team A
           if (nextShooterIsA && i === s.scoreHistoryA.length)
@@ -1880,13 +1889,13 @@
           const valB = s.scoreHistoryB[i];
           if (valB === true) {
             slot.classList.add("scored");
-            slot.textContent = "✅";
+            slot.textContent = "âœ…";
           } else if (valB === false) {
             slot.classList.add("missed");
-            slot.textContent = "❌";
+            slot.textContent = "âŒ";
           } else {
             slot.classList.add("pending");
-            slot.textContent = "▫";
+            slot.textContent = "â–«";
           }
           // highlight next upcoming slot for team B
           if (!nextShooterIsA && i === s.scoreHistoryB.length)
@@ -3498,3 +3507,4 @@
     </script>
   </body>
 </html>
+
