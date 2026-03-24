@@ -2,6 +2,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta charset="UTF-8">
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-MD10W5VBMP"></script>
     <script>
@@ -22,7 +23,7 @@
 {
   "@context": "https://schema.org",
   "@type": "Article",
-  "headline": "Football Possession Tactics â€“ Tiki-Taka Principles & Formation Builder",
+  "headline": "Football Possession Tactics – Tiki-Taka Principles & Formation Builder",
   "description": "Learn football possession tactics including positional play, tiki-taka principles, and build custom team formations with an interactive tactics board.",
   "author": {
     "@type": "Person",
@@ -195,7 +196,7 @@ img.tactic-img{width:100%;border-radius:12px;margin-bottom:20px;box-shadow:0 10p
 <main class="container" role="main">
   <img src="images/Screenshot 2025-11-01 123422.png" alt="illustration of tiki-taka possession" class="tactic-img">
 
-  <h2>Possession & Control ðŸ›¡ï¸</h2>
+  <h2>Possession & Control 🛡️</h2>
   <p>Possession football controls the match by keeping the ball and forcing opponents to chase. Patient passing, movement and structured triangles are key.</p>
 
   <h3>Key Principles</h3>
@@ -392,7 +393,7 @@ calcBtn.addEventListener('click', ()=>{
   const d = parseInt(document.getElementById('def').value) || 0;
   const m = parseInt(document.getElementById('mid').value) || 0;
   const a = parseInt(document.getElementById('att').value) || 0;
-  if(d + m + a < 5){ resultEl.innerHTML = 'Please enter realistic counts (total â‰¥ 5)'; return; }
+  if(d + m + a < 5){ resultEl.innerHTML = 'Please enter realistic counts (total ≥ 5)'; return; }
 
   const best = suggestByCounts(d,m,a);
   if(!best) { resultEl.textContent = 'No suggestion available'; return; }
@@ -448,12 +449,17 @@ document.addEventListener('DOMContentLoaded', ()=>{
 </script>
   <!-- Add this section -->
   <div style="margin: 40px 0; padding: 20px; background: #f8f9fa; border-radius: 10px; border-left: 4px solid var(--gold);">
-    <h3 style="color: var(--navy-blue); margin: 0 0 10px 0; font-family: 'Oswald', sans-serif; font-size: 1.3em;">ðŸŽ¯ Deep Dive: Positional Play</h3>
-    <p style="margin: 0 0 15px 0; color: #555;">Learn the advanced tactical system of <strong>Juego de PosiciÃ³n</strong> used by Guardiola, Xavi, and Arteta.</p>
+    <h3 style="color: var(--navy-blue); margin: 0 0 10px 0; font-family: 'Oswald', sans-serif; font-size: 1.3em;">🎯 Deep Dive: Positional Play</h3>
+    <p style="margin: 0 0 15px 0; color: #555;">Learn the advanced tactical system of <strong>Juego de Posición</strong> used by Guardiola, Xavi, and Arteta.</p>
     <a href="https://jaivaltamboli-pixel.github.io/possession/positionalplay.html" style="display: inline-block; padding: 10px 20px; background: var(--navy-blue); color: white; text-decoration: none; border-radius: 25px; font-weight: 500; border: 1px solid rgba(255,255,255,0.3); transition: all 0.3s ease;">
-      Explore Positional Play Guide â†’
+      Explore Positional Play Guide →
     </a>
   </div>
 </body>
 </html>
+
+
+
+
+
 
