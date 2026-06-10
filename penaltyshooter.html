@@ -1811,7 +1811,7 @@
 
       // AI shoot variant for shootout (doesn't touch global attempts/goals/stats)
       function aiShootForShootout() {
-        if (ball.active) return;
+        if (ball.active || kicker.active) return;
         const tune = getDifficultyTuning();
         const centerX = CONFIG.goalX + CONFIG.goalWidth / 2;
         const centerY = CONFIG.goalY + CONFIG.goalHeight * 0.58;
@@ -1839,7 +1839,6 @@
         ball.inGoal = false;
         ball.scored = false;
         ball.burstScheduled = false;
-        ball.burstScheduled = false;
 
         const dx = tx - ball.x;
         const dy = ty - ball.y;
@@ -1848,15 +1847,12 @@
 
         const distance = Math.sqrt(dx * dx + dy * dy);
         const timeToGoal = Math.max(0.2, distance / speed);
-        ball.vx = dx / timeToGoal;
-        ball.vy = dy / timeToGoal - 0.5 * CONFIG.gravity * timeToGoal;
-        ball.vz = 0;
-        ball.spin = (Math.random() - 0.5) * 120;
-        ball.active = true;
+        let vx = dx / timeToGoal;
+        let vy = dy / timeToGoal - 0.5 * CONFIG.gravity * timeToGoal;
+        let vz = 0;
+        let spin = (Math.random() - 0.5) * 120;
 
-        // mark pending shot
-        lastShotPending = true;
-        lastShotOwner = "ai";
+        triggerKickAnimation("ai", vx, vy, vz, spin, false, tx, ty);
 
         // Player controls keeper movement during AI shots
       }
@@ -1992,6 +1988,7 @@
         ball.missedGoal = false;
         ball.inGoal = false;
         ball.scored = false;
+        resetGame();
 
         // End logic: finish only after both teams have taken 5 kicks.
         const kicksA = s.scoreHistoryA.length;
@@ -2333,12 +2330,21 @@
         const tune = getDifficultyTuning();
         if (now - lastManualDiveAt < tune.playerDiveCooldown) return;
         lastManualDiveAt = now;
-        const lead = ball.active ? 0.1 + (1 - tune.t) * 0.12 : 0.06;
-        const targetX = ball.active ? ball.x + ball.vx * lead : keeper.x;
+        
+        let targetX = keeper.x;
+        let targetY = CONFIG.goalY + CONFIG.goalHeight - 30 - 14;
+        
+        if (ball.active) {
+          const lead = 0.1 + (1 - tune.t) * 0.12;
+          targetX = ball.x + ball.vx * lead;
+          targetY = Math.max(CONFIG.goalY + 20, ball.y + ball.vy * lead - 26);
+        } else {
+          // Guess dive during runup
+          if (keys.left) targetX = keeper.x - 180;
+          else if (keys.right) targetX = keeper.x + 180;
+        }
+
         const baseY = CONFIG.goalY + CONFIG.goalHeight - 30;
-        const targetY = ball.active
-          ? Math.max(CONFIG.goalY + 20, ball.y + ball.vy * lead - 26)
-          : baseY - 14;
         keeper.diving = true;
         keeper.diveTime = now;
         keeper.startX = keeper.x;
@@ -2467,9 +2473,62 @@
         }, reactionTime * 1000);
       }
 
+      let kicker = {
+        active: false,
+        x: 0,
+        y: 0,
+        startX: 0,
+        startY: 0,
+        targetX: 0,
+        targetY: 0,
+        timer: 0,
+        duration: 0.5,
+        shotData: null,
+        owner: "player"
+      };
+
+      function triggerKickAnimation(owner, vx, vy, vz, spin, forcePerfectGoal, tx, ty) {
+        kicker.owner = owner;
+        kicker.active = true;
+        kicker.timer = 0;
+        kicker.targetX = ball.x;
+        kicker.targetY = ball.y + 15;
+        kicker.startX = ball.x - 80 + Math.random() * 40;
+        kicker.startY = ball.y + 160 + Math.random() * 40;
+        kicker.x = kicker.startX;
+        kicker.y = kicker.startY;
+        kicker.shotData = { vx, vy, vz, spin, forcePerfectGoal, tx, ty };
+        
+        lastShotPending = true;
+        lastShotOwner = owner;
+        if (owner === "player") {
+          shotTimingLocked = true;
+        }
+      }
+
+      function executeShot() {
+        ball.active = true;
+        ball.missedGoal = false;
+        ball.inGoal = false;
+        ball.scored = false;
+        ball.burstScheduled = false;
+        ball.forceGoal = kicker.shotData.forcePerfectGoal;
+        ball.trail = [];
+        ball.vx = kicker.shotData.vx;
+        ball.vy = kicker.shotData.vy;
+        ball.vz = kicker.shotData.vz;
+        ball.spin = kicker.shotData.spin;
+        
+        playSound(150, 0.2, "sawtooth");
+        
+        if (kicker.owner === "player") {
+           keeperReact(kicker.shotData.tx, kicker.shotData.ty);
+        }
+      }
+
       // Shoot function with 3D physics
       function shoot(powerLevel) {
-        if (ball.active || currentTurn !== "player") return;
+        if (ball.active || currentTurn !== "player" || kicker.active) return;
         const timing = getShotTimingProfile(shotTimingValue);
         const tune = getDifficultyTuning();
         const forcePerfectGoal = timing.inPerfectZone && tune.difficulty >= 5;
@@ -2530,16 +2589,12 @@
         const distance = Math.sqrt(dx * dx + dy * dy);
         const timeToGoal = distance / speed;
 
-        ball.vx = dx / timeToGoal;
-        ball.vy = dy / timeToGoal - 0.5 * CONFIG.gravity * timeToGoal;
-        ball.vz = 0;
+        let vx = dx / timeToGoal;
+        let vy = dy / timeToGoal - 0.5 * CONFIG.gravity * timeToGoal;
+        let vz = 0;
+        let spin = (Math.random() - 0.5) * 120;
 
-        playSound(150, 0.2, "sawtooth");
-
-        lastShotPending = true;
-        lastShotOwner = "player";
-
-        keeperReact(tx, ty);
+        triggerKickAnimation("player", vx, vy, vz, spin, forcePerfectGoal, tx, ty);
       }
 
       function resetGame() {
@@ -2558,6 +2613,9 @@
         ball.forceGoal = false;
         shotTimingLocked = false;
         ball.trail = [];
+        if (typeof kicker !== 'undefined') {
+          kicker.active = false;
+        }
 
         keeper.x = CONFIG.goalX + CONFIG.goalWidth / 2;
         keeper.y = CONFIG.goalY + CONFIG.goalHeight - 30;
@@ -2743,6 +2801,19 @@
       // Physics update with 3D depth
       function update(dt) {
         updateShotTimingMeter(dt);
+
+        if (typeof kicker !== 'undefined' && kicker.active) {
+          kicker.timer += dt;
+          const progress = Math.min(1, kicker.timer / kicker.duration);
+          const easeProgress = progress * progress * (3 - 2 * progress);
+          kicker.x = kicker.startX + (kicker.targetX - kicker.startX) * easeProgress;
+          kicker.y = kicker.startY + (kicker.targetY - kicker.startY) * easeProgress;
+          
+          if (progress >= 1) {
+            kicker.active = false;
+            executeShot();
+          }
+        }
 
         if (ball.active) {
           // Gravity
@@ -3008,7 +3079,7 @@
         drawGoal3D();
 
         // Target crosshair
-        if (!ball.active) {
+        if (!ball.active && (typeof kicker === 'undefined' || !kicker.active)) {
           ctx.strokeStyle = "rgba(255,255,255,0.95)";
           ctx.lineWidth = 3;
           ctx.beginPath();
@@ -3024,6 +3095,10 @@
 
         // Goalkeeper with animation
         drawGoalkeeper();
+
+        if (typeof drawPenaltyTaker === 'function') {
+           drawPenaltyTaker();
+        }
 
         // Ball with trail
         drawBall3D();
@@ -3190,6 +3265,80 @@
           2,
           CONFIG.goalHeight,
         );
+      }
+
+      function getKickerTeamData() {
+        if (typeof kicker === 'undefined') return playerTeamData;
+        if (kicker.owner === "player") return playerTeamData;
+        if (kicker.owner === "ai") return opponentTeamData;
+        return playerTeamData;
+      }
+
+      function drawPenaltyTaker() {
+        if (typeof kicker === 'undefined' || !kicker.active) return;
+        const team = getKickerTeamData();
+        const primaryColor = team ? team.primary : "#ffffff";
+        const secondaryColor = team ? team.secondary : "#000000";
+
+        ctx.save();
+        ctx.translate(kicker.x, kicker.y);
+        
+        // draw shadow
+        ctx.fillStyle = "rgba(0,0,0,0.3)";
+        ctx.beginPath();
+        ctx.ellipse(0, 10, 14, 6, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        const progress = kicker.timer / kicker.duration;
+        const legSwing = Math.sin(progress * Math.PI * 4) * 10;
+        
+        // At the very end of the run, the leg swings back then forward to kick
+        let leftLegSwing = legSwing;
+        let rightLegSwing = -legSwing;
+        if (progress > 0.8) {
+           const kickProgress = (progress - 0.8) / 0.2; // 0 to 1
+           rightLegSwing = -20 + kickProgress * 40; // swings way back then forward to ball
+           leftLegSwing = 0; // planted
+        }
+
+        // Legs
+        ctx.fillStyle = secondaryColor;
+        ctx.fillRect(-10, -20, 8, 20); // shorts L
+        ctx.fillRect(2, -20, 8, 20);  // shorts R
+        
+        ctx.fillStyle = "#ffd8b0";
+        // Shin/calf
+        ctx.fillRect(-8, -20 + leftLegSwing * 0.5, 4, 16);
+        ctx.fillRect(4, -20 + rightLegSwing * 0.5, 4, 16);
+        
+        // Shoes
+        ctx.fillStyle = "#111";
+        ctx.fillRect(-10, -4 + leftLegSwing * 0.5, 8, 6);
+        ctx.fillRect(2, -4 + rightLegSwing * 0.5, 8, 6);
+
+        // Torso
+        ctx.fillStyle = primaryColor;
+        ctx.fillRect(-12, -45, 24, 26);
+        
+        // Arms
+        const armSwing = Math.sin(progress * Math.PI * 4) * 8;
+        ctx.fillStyle = primaryColor;
+        ctx.fillRect(-18, -45 + armSwing, 6, 18); // Left arm
+        ctx.fillRect(12, -45 - armSwing, 6, 18);  // Right arm
+
+        // Head
+        ctx.fillStyle = "#ffd8b0";
+        ctx.beginPath();
+        ctx.arc(0, -56, 10, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // Hair
+        ctx.fillStyle = "#3e2723";
+        ctx.beginPath();
+        ctx.arc(0, -58, 10, 0, Math.PI, true);
+        ctx.fill();
+
+        ctx.restore();
       }
 
       function drawGoalkeeper() {
