@@ -49,7 +49,7 @@
 <style>
 :root {
     --navy-blue: #001F5B;
-    --gold-accent: #FFD700;
+    --gold-accent: #ffa500;
     --light-bg: #EAF0F6;
     --tile-bg: #FFFFFF;
     --text-color: #1A1A1A;
@@ -72,7 +72,7 @@ body {
     margin: 0;
     font-family: "Roboto", sans-serif;
     background: var(--light-bg);
-    padding-top: 60px;
+    padding-top: 140px;
     padding-bottom: 80px;
     color: var(--text-color);
     line-height: 1.8;
@@ -85,32 +85,43 @@ body {
     top: 0; width: 100%;
     z-index: 999;
     box-shadow: var(--shadow-deep);
-    height: 50px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    height: auto;
+    padding: 18px 0;
+    display: block;
+    text-align: center;
 }
 
 .header h1 {
     color: var(--gold-accent);
-    font-family: Oswald;
+    font-family: 'Oswald', sans-serif;
     margin: 0;
-    font-size: 1.4em;
-    letter-spacing: 2px;
+    font-size: 2.5em;
+    letter-spacing: 3px;
     text-transform: uppercase;
 }
 
-.btn-home {
-    position: absolute;
-    right: 20px;
-    text-decoration: none;
+.nav-menu {
+    text-align: center;
+    margin-top: 10px;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.nav-menu a {
     color: white;
-    padding: 4px 12px;
-    border-radius: 12px;
-    border: 1px solid rgba(255,255,255,0.4);
-    font-size: 0.75em;
+    text-decoration: none;
+    padding: 8px 15px;
+    margin: 5px;
+    border-radius: 20px;
+    transition: .3s;
+    border: 1px solid rgba(255,255,255,0.3);
+}
+
+.nav-menu a:hover, .nav-menu a.active {
+    background: var(--gold-accent);
+    color: var(--navy-blue);
     font-weight: 700;
-    transition: 0.25s;
 }
 
 /* MAIN CONTAINER */
@@ -207,20 +218,20 @@ body {
 }
 .btn-big-back:hover { transform: translateY(-5px); box-shadow: var(--shadow-deep); }
 
-@media (max-width: 768px) { .role-grid, .stats-grid { grid-template-columns: 1fr; } }
+@media (max-width: 768px) { .role-grid, .stats-grid { grid-template-columns: 1fr; } body { padding-top: 140px; } }
 </style>
 </head>
 <body>
-<div class="header" style="padding: 18px 0; height: auto; position: fixed; top: 0; width: 100%; z-index: 1000; display: block; text-align: center;">
-    <h1 style="color: var(--gold-accent); font-family: Oswald, sans-serif; margin: 0; font-size: 2.5em; letter-spacing: 3px;">TACTICS BOARD</h1>
-    <nav class="nav-menu" style="margin-top: 10px; display: flex; justify-content: center; flex-wrap: wrap;">
-        <a href="/index.html" style="color: white; text-decoration: none; padding: 8px 15px; margin: 5px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.3);">HOME</a>
-        <a href="/possession.html" style="color: white; text-decoration: none; padding: 8px 15px; margin: 5px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.3);">POSSESSION</a>
-        <a href="/finesse.html" style="color: white; text-decoration: none; padding: 8px 15px; margin: 5px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.3);">FINESSE</a>
-        <a href="/power-shot.html" style="color: white; text-decoration: none; padding: 8px 15px; margin: 5px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.3);">POWER SHOT</a>
-        <a href="/whip.html" style="color: white; text-decoration: none; padding: 8px 15px; margin: 5px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.3);">WHIP CROSS</a>
-        <a href="/defense.html" style="color: white; text-decoration: none; padding: 8px 15px; margin: 5px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.3); background: var(--gold-accent); color: var(--navy-blue); font-weight: 700;">DEFENDING</a>
-        <a href="/penaltyshooter.html" style="color: white; text-decoration: none; padding: 8px 15px; margin: 5px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.3);">PENALTY SHOOTER</a>
+<div class="header">
+    <h1>TACTICS BOARD</h1>
+    <nav class="nav-menu">
+        <a href="/index.html">HOME</a>
+        <a href="/possession.html">POSSESSION</a>
+        <a href="/finesse.html">FINESSE</a>
+        <a href="/power-shot.html">POWER SHOT</a>
+        <a href="/whip.html">WHIP CROSS</a>
+        <a href="/defense.html" class="active">DEFENDING</a>
+        <a href="/penaltyshooter.html">PENALTY SHOOTER</a>
     </nav>
 </div>
 
@@ -357,8 +368,3 @@ window.onload = () => {
 
 </body>
 </html>
-
-
-
-
-

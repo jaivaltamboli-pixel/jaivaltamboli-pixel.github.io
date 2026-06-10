@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -34,24 +34,44 @@
   </script>
 
   <link rel="icon" href="/favicon.png" type="image/png" />
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
   <style>
-    body { font-family: Arial, sans-serif; margin: 0; background: #eef3f8; color: #0f172a; }
-    .wrap { max-width: 860px; margin: 60px auto; background: white; padding: 32px; border-radius: 14px; box-shadow: 0 12px 30px rgba(15,23,42,.1); }
-    h1 { margin-top: 0; color: #001f5b; }
+    :root {
+        --navy-blue: #001F5B;
+        --gold-accent: #ffa500;
+        --light-bg: #EAF0F6;
+        --text-color: #1A1A1A;
+        --shadow-deep: 0 15px 30px rgba(0,0,0,0.2);
+    }
+    body { font-family: 'Roboto', sans-serif; margin: 0; background: var(--light-bg); color: var(--text-color); padding-top: 140px; }
+    .header { background: var(--navy-blue); position: fixed; top: 0; width: 100%; z-index: 1000; box-shadow: var(--shadow-deep); height: auto; padding: 18px 0; display: block; text-align: center; }
+    .header h1 { color: var(--gold-accent); font-family: 'Oswald', sans-serif; margin: 0; font-size: 2.5em; letter-spacing: 3px; text-transform: uppercase; }
+    .nav-menu { text-align: center; margin-top: 10px; display: flex; justify-content: center; flex-wrap: wrap; }
+    .nav-menu a { color: white; text-decoration: none; padding: 8px 15px; margin: 5px; border-radius: 20px; transition: .3s; border: 1px solid rgba(255,255,255,0.3); }
+    .nav-menu a:hover, .nav-menu a.active { background: var(--gold-accent); color: var(--navy-blue); font-weight: 700; }
+    .wrap { max-width: 860px; margin: 60px auto; background: white; padding: 32px; border-radius: 14px; box-shadow: 0 12px 30px rgba(15,23,42,.1); text-align: center; }
+    h1.page-title { margin-top: 0; color: #001f5b; font-family: 'Oswald', sans-serif; }
     p { line-height: 1.7; }
     .btn { display:inline-block; margin-top:18px; padding:10px 16px; background:#001f5b; color:#fff; text-decoration:none; border-radius:8px; }
   </style>
 </head>
 <body>
+<div class="header">
+    <h1>TACTICS BOARD</h1>
+    <nav class="nav-menu">
+        <a href="/index.html">HOME</a>
+        <a href="/possession.html">POSSESSION</a>
+        <a href="/finesse.html">FINESSE</a>
+        <a href="/power-shot.html">POWER SHOT</a>
+        <a href="/whip.html">WHIP CROSS</a>
+        <a href="/defense.html" class="active">DEFENDING</a>
+        <a href="/penaltyshooter.html">PENALTY SHOOTER</a>
+    </nav>
+</div>
   <main class="wrap">
-    <h1>High Press</h1>
+    <h1 class="page-title">High Press</h1>
     <p>This page is now organized in the defensive tactics section as a dedicated High Press module. Add your preferred pressing triggers, line heights, and transition patterns here.</p>
     <a class="btn" href="/defense.html">← Back to Defensive Tactics</a>
   </main>
 </body>
 </html>
-
-
-
-
-
