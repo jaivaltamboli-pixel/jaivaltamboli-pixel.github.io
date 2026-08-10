@@ -11,18 +11,18 @@
 
   <style>
     :root {
-      --bg: #fff8f2;
-      --surface: #ffffff;
-      --surface-2: #fff2e5;
-      --line: rgba(255,122,0,0.22);
-      --text: #2f1a0f;
-      --muted: #7a4b2d;
-      --accent: #ff7a00;
-      --accent2: #ff9f45;
-      --ok: #2ca56b;
+      --bg: #060606;
+      --surface: #111111;
+      --surface-2: #1a1a1a;
+      --line: rgba(255, 60, 60, 0.28);
+      --text: #f5f5f5;
+      --muted: #c2c2c2;
+      --accent: #ff2a2a;
+      --accent2: #b30000;
+      --ok: #3bd08f;
       --radius: 14px;
       --maxw: 1260px;
-      --shadow: 0 10px 28px rgba(255,122,0,0.12);
+      --shadow: 0 10px 28px rgba(255, 0, 0, 0.18);
     }
 
     * { box-sizing: border-box; }
@@ -31,8 +31,8 @@
       margin: 0;
       padding: 0;
       background:
-        radial-gradient(circle at 20% 0%, rgba(255,122,0,0.10), transparent 30%),
-        radial-gradient(circle at 100% 0%, rgba(255,159,69,0.10), transparent 34%),
+        radial-gradient(circle at 20% 0%, rgba(255,42,42,0.14), transparent 30%),
+        radial-gradient(circle at 100% 0%, rgba(179,0,0,0.16), transparent 34%),
         var(--bg);
       color: var(--text);
       font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
@@ -46,7 +46,7 @@
       top: 0;
       z-index: 20;
       backdrop-filter: blur(8px);
-      background: rgba(255,248,242,0.92);
+      background: rgba(6, 6, 6, 0.88);
       border-bottom: 1px solid var(--line);
     }
 
@@ -59,19 +59,23 @@
     }
 
     .nav a {
-      color: var(--muted);
+      color: #d6d6d6;
       text-decoration: none;
       font-weight: 600;
       font-size: 0.94rem;
     }
 
-    .nav a:hover, .nav a:focus-visible { color: var(--text); outline: none; }
+    .nav a:hover,
+    .nav a:focus-visible {
+      color: #ffffff;
+      outline: none;
+    }
 
     main { padding: 1.6rem 0 2.5rem; }
 
     .hero {
       border: 1px solid var(--line);
-      background: linear-gradient(160deg, #ffffff, #fff3e8);
+      background: linear-gradient(160deg, #141414, #0e0e0e);
       border-radius: 20px;
       padding: 1.4rem;
       margin-bottom: 1.3rem;
@@ -93,7 +97,7 @@
     .btn, select, input {
       border-radius: 10px;
       border: 1px solid var(--line);
-      background: #fff;
+      background: #151515;
       color: var(--text);
       padding: 0.62rem 0.8rem;
       font-size: 0.94rem;
@@ -132,12 +136,12 @@
     }
 
     .team {
-      border: 1px solid rgba(255,122,0,0.30);
-      background: #fffaf5;
+      border: 1px solid rgba(255,42,42,0.35);
+      background: #141414;
       border-radius: 10px;
       padding: 0.6rem 0.7rem;
       font-size: 0.93rem;
-      color: #4d2a16;
+      color: #f3f3f3;
     }
 
     .team small { color: var(--muted); display: block; font-size: 0.78rem; }
@@ -158,7 +162,7 @@
     .round {
       border: 1px solid var(--line);
       border-radius: var(--radius);
-      background: linear-gradient(180deg, #fff, #fff4ea);
+      background: linear-gradient(180deg, #141414, #101010);
       padding: 0.8rem;
     }
 
@@ -166,17 +170,17 @@
       font-size: 0.88rem;
       letter-spacing: 0.04em;
       text-transform: uppercase;
-      color: #b55a00;
+      color: #ff6b6b;
       margin-bottom: 0.6rem;
       font-weight: 700;
     }
 
     .match {
-      border: 1px solid rgba(255,122,0,0.22);
+      border: 1px solid rgba(255,42,42,0.25);
       border-radius: 10px;
       padding: 0.55rem;
       margin-bottom: 0.55rem;
-      background: #fffaf6;
+      background: #161616;
     }
 
     .slot {
@@ -196,7 +200,7 @@
       margin-top: 0.75rem;
       border-left: 3px solid var(--ok);
       padding-left: 0.62rem;
-      color: #1f7b4f;
+      color: #9df0c9;
       font-size: 0.92rem;
     }
 
@@ -274,8 +278,8 @@
           <section class="round" aria-labelledby="final-title">
             <h2 class="round-title" id="final-title">Final</h2>
             <article class="match"><div class="slot"><span>Winner SF-1</span><span class="seed">Final</span></div><div class="slot"><span>Runner-up SF-1</span><span class="seed">Final</span></div></article>
-            <article class="match" style="margin-top:1rem;border-color:rgba(44,165,107,0.55);">
-              <div class="slot"><span style="font-weight:700;color:#1f7b4f;">Predicted Champion</span><span class="seed">🏆</span></div>
+            <article class="match" style="margin-top:1rem;border-color:rgba(59,208,143,0.55);">
+              <div class="slot"><span style="font-weight:700;color:#9df0c9;">Predicted Champion</span><span class="seed">🏆</span></div>
               <div class="slot"><span>TBD</span><span class="seed">Pick</span></div>
             </article>
           </section>
