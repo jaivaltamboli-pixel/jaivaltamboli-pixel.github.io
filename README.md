@@ -1,46 +1,47 @@
-# Football Tactics Base (`jaivaltamboli-pixel.github.io`)
+# Football Tactics & Strategies
 
-Static website focused on football tactics, interactive explainers, and mini simulators.
+A modern, futuristic football tactics website focused on readability, SEO structure, and tactical learning flow.
 
-## Repository structure
+## ✅ What's updated
 
-```text
-.
-├── index.html                       # Main landing page
-├── possession.html                  # Possession overview page
-├── defense.html                     # Defensive tactics overview
-├── finesse.html                     # Finishing: finesse shots
-├── power-shot.html                  # Finishing: power shots
-├── whip.html                        # Crossing technique page
-├── game.html                        # Training/game interaction page
-├── penaltyshooter.html              # Penalty shooter simulator
-├── tactics_console.html             # Interactive tactics console
-├── PeripheralVision.html            # Peripheral vision training page
-├── defense-types/
-│   ├── counterpressing.html
-│   └── low-block.html
-├── possession/
-│   └── positionalplay.html
-├── images/                          # Shared image assets
-├── robots.txt
-├── sitemap.xml
-└── favicon.png
+- Futuristic homepage redesign with cleaner visual hierarchy.
+- Improved SEO metadata (title, description, Open Graph, canonical, robots).
+- Better content readability via spacing, responsive typography, and semantic HTML structure.
+- New **Champions League Prediction Bracket** frontend page:
+  - `predictions.html`
+  - Built as a backend-ready UI output
+  - Team list is currently sample/static
+  - Bracket rounds and champion card are ready for data wiring
+
+## Backend integration idea for bracket teams
+
+When your backend is ready, replace static team blocks in `predictions.html` with API-fed data.
+
+### Suggested response shape
+
+```json
+{
+  "season": "2026/27",
+  "teams": [
+    { "id": "rm", "name": "Real Madrid", "pot": 1 },
+    { "id": "mci", "name": "Manchester City", "pot": 1 }
+  ]
+}
 ```
 
-## Navigation/linking convention
+### Example rendering approach
 
-To keep nested pages reliable, internal links use **root-relative paths** (example: `/index.html`, `/defense.html`, `/possession/positionalplay.html`).
+1. Fetch teams from backend endpoint, e.g. `/api/ucl/teams?season=2026-27`
+2. Map each team to a `.team` card in the team pool.
+3. Persist user picks in localStorage first, then sync to backend later.
+4. Add validation to ensure each matchup has exactly one winner selected.
 
-## Local preview
+## Pages
 
-Because this is a static site, you can run a simple local server:
+- `index.html` — redesigned homepage
+- `predictions.html` — new UCL bracket page
+- Existing tactical pages remain available via navigation links
 
-```bash
-python -m http.server 8000
-```
+## Note
 
-Then open <http://localhost:8000>.
-
-## Publishing
-
-This repository is structured for GitHub Pages deployment from the default branch.
+If you want the same futuristic typography/spacing system applied to every existing tactical page (`defense.html`, `possession.html`, `finesse.html`, etc.), I can ship a second pass that standardizes each page on a shared stylesheet.
