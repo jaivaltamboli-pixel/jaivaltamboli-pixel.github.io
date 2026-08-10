@@ -1,325 +1,668 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Football Tactics & Strategies | Futuristic Tactical Analysis</title>
-  <meta name="description" content="Explore modern football tactics, strategy breakdowns, match simulation concepts, and advanced decision-making insights with an orange and white interface." />
-  <meta name="keywords" content="football tactics, soccer strategies, pressing systems, possession play, defensive shapes, champions league prediction bracket" />
-  <meta name="author" content="Football Tactics and Strategies" />
-  <meta name="robots" content="index,follow,max-image-preview:large" />
-  <meta property="og:type" content="website" />
-  <meta property="og:title" content="Football Tactics & Strategies" />
-  <meta property="og:description" content="Learn tactical football concepts, explore strategy pages, and build your Champions League prediction bracket." />
-  <meta property="og:url" content="https://jaivaltamboli-pixel.github.io/" />
-  <meta property="og:image" content="https://jaivaltamboli-pixel.github.io/favicon.png" />
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Football Tactics & Strategies" />
-  <meta name="twitter:description" content="A futuristic football tactics website with strategy guides and prediction tools." />
-  <link rel="canonical" href="https://jaivaltamboli-pixel.github.io/" />
-  <link rel="icon" type="image/png" href="/favicon.png" />
+  <head>
+    <meta charset="UTF-8" />
+    <!--- Google tag (gtag.js) main --->
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-MD10W5VBMP"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+      gtag("config", "G-MD10W5VBMP");
+    </script>
 
-  <style>
-    :root {
-      --bg: #fff8f2;
-      --surface: #ffffff;
-      --surface-2: #fff2e5;
-      --text: #2f1a0f;
-      --muted: #7a4b2d;
-      --accent: #ff7a00;
-      --accent-2: #ff9f45;
-      --ring: rgba(255, 122, 0, 0.25);
-      --maxw: 1120px;
-      --radius: 16px;
-      --shadow: 0 10px 30px rgba(255, 122, 0, 0.12);
-      --line: rgba(255, 122, 0, 0.2);
-    }
+    <link
+      rel="icon"
+      type="image/png"
+      href="https://jaivaltamboli-pixel.github.io/favicon.png?v=1"
+    />
+    <link
+      rel="apple-touch-icon"
+      href="https://jaivaltamboli-pixel.github.io/favicon.png?v=1"
+    />
+    <link
+      rel="shortcut icon"
+      href="https://jaivaltamboli-pixel.github.io/favicon.png?v=1"
+    />
 
-    * { box-sizing: border-box; }
+    <meta
+      name="description"
+      content="Interactive football tactics hub with a FIFA-style tactics console, possession play, finishing techniques, and modern defensive strategies."
+    />
 
-    html, body {
-      margin: 0;
-      padding: 0;
-      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
-      background:
-        radial-gradient(circle at 10% 0%, rgba(255,122,0,0.10), transparent 26%),
-        radial-gradient(circle at 100% 0%, rgba(255,159,69,0.12), transparent 30%),
-        var(--bg);
-      color: var(--text);
-      line-height: 1.65;
-    }
+    <meta name="keywords" content="football tactics, soccer strategy, free browser games, football games, interactive tactics board, tiki-taka, possession play, penalty shootout, FIFA formations, EA Sports FC tactics" />
+    <meta property="og:title" content="Football Tactics Base | Free Games & Strategies" />
+    <meta property="og:description" content="Master modern football with our interactive tactics console, free 2D soccer games, and comprehensive strategy guides." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://jaivaltamboli-pixel.github.io/" />
+    <meta name="twitter:card" content="summary_large_image" />
 
-    a { color: inherit; text-decoration: none; }
+    <title>
+      Football Tactics Base | Interactive Soccer Strategy – Jaival Tamboli
+    </title>
+    <!-- SCHEMA MARKUP - TELLS GOOGLE YOU'RE A LEARNING RESOURCE -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "Football Tactics Base",
+        "alternateName": "Tactics Board",
+        "url": "https://jaivaltamboli-pixel.github.io/",
+        "publisher": {
+          "@type": "Person",
+          "name": "Jaival Tamboli"
+        }
+      }
+    </script>
 
-    .container {
-      width: min(100% - 2rem, var(--maxw));
-      margin-inline: auto;
-    }
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "What is the Interactive Tactics Console?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "The Interactive Tactics Console is a FIFA-style digital board where you can drag players and simulate modern football tactics like possession play and defensive pressing."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "How can I improve my football finishing skills?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Our training modules cover Finesse Finishing, Power Shots, and Whipped Crossing techniques used by top modern football players."
+            }
+          }
+        ]
+      }
+    </script>
 
-    header {
-      position: sticky;
-      top: 0;
-      backdrop-filter: blur(8px);
-      background: rgba(255, 248, 242, 0.9);
-      border-bottom: 1px solid var(--line);
-      z-index: 100;
-    }
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "Football Tactics Console",
+        "operatingSystem": "Web Browser",
+        "applicationCategory": "EducationalApplication",
+        "aggregateRating": {
+          "@type": "AggregateRating",
+          "ratingValue": "4.9",
+          "ratingCount": "120"
+        },
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "USD"
+        }
+      }
+    </script>
 
-    .nav {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 1rem;
-      min-height: 72px;
-    }
+    <link rel="canonical" href="https://jaivaltamboli-pixel.github.io/" />
 
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 0.65rem;
-      font-weight: 700;
-      letter-spacing: 0.2px;
-    }
+    <!-- Font preconnect (performance fix, no visual change) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 
-    .brand-badge {
-      width: 34px;
-      height: 34px;
-      border-radius: 10px;
-      background: linear-gradient(135deg, var(--accent), var(--accent-2));
-      box-shadow: 0 0 0 4px rgba(255, 122, 0, 0.14);
-    }
+    <!-- Fonts -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Roboto:wght@300;400;700&display=swap"
+      rel="stylesheet"
+    />
 
-    .nav-links {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.75rem;
-    }
+    <style>
+      :root {
+        --navy-blue: #001f5b;
+        --navy-blue-dark: #001236;
+        --gold-accent: #ffa500;
+        --gold-glow: rgba(255, 165, 0, 0.6);
+        --light-bg: #eaf0f6;
+        --text-color: #1a1a1a;
+      }
 
-    .nav-links a {
-      padding: 0.5rem 0.85rem;
-      border: 1px solid var(--line);
-      border-radius: 999px;
-      color: var(--muted);
-      font-size: 0.92rem;
-      transition: 0.2s ease;
-      background: #fff;
-    }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
 
-    .nav-links a:hover,
-    .nav-links a:focus-visible {
-      color: var(--text);
-      border-color: var(--accent);
-      box-shadow: 0 0 0 3px var(--ring);
-      outline: none;
-    }
+      body {
+        font-family: "Roboto", sans-serif;
+        background: linear-gradient(135deg, var(--light-bg), #d4e0eb, #ffffff);
+        background-size: 300% 300%;
+        animation: gradientBG 15s ease infinite;
+        color: var(--text-color);
+        line-height: 1.7;
+        padding-top: 85px;
+        overflow-x: hidden;
+      }
 
-    main { padding: 2.25rem 0 4rem; }
+      @keyframes gradientBG {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+      }
 
-    .hero {
-      padding: 2.8rem;
-      border-radius: 24px;
-      background: linear-gradient(145deg, #ffffff, #fff3e9);
-      border: 1px solid var(--line);
-      box-shadow: var(--shadow);
-      display: grid;
-      gap: 1.2rem;
-    }
+      /* Header */
+      .header {
+        background-color: rgba(0, 31, 91, 0.95);
+        backdrop-filter: blur(10px);
+        padding: 18px 0;
+        position: fixed;
+        top: 0;
+        width: 100%;
+        z-index: 1000;
+        text-align: center;
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+        border-bottom: 2px solid var(--gold-accent);
+      }
+      .header h1 {
+        font-family: "Oswald", sans-serif;
+        font-size: 4.5vw; /* MASSIVE */
+        color: var(--gold-accent);
+        font-weight: 700;
+        letter-spacing: 4px;
+        text-transform: uppercase;
+        margin: 0 0 15px 0;
+        text-shadow: 0 0 15px var(--gold-glow);
+        animation: pulseText 3s infinite alternate;
+      }
 
-    .eyebrow {
-      display: inline-flex;
-      width: fit-content;
-      border-radius: 999px;
-      background: rgba(255, 122, 0, 0.12);
-      color: #a24e00;
-      font-size: 0.82rem;
-      font-weight: 700;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      padding: 0.35rem 0.7rem;
-    }
+      @keyframes pulseText {
+        0% { text-shadow: 0 0 10px var(--gold-glow); }
+        100% { text-shadow: 0 0 25px var(--gold-glow), 0 0 5px var(--gold-accent); }
+      }
 
-    h1, h2, h3 { line-height: 1.2; margin: 0; }
-    h1 { font-size: clamp(1.9rem, 4vw, 3.15rem); }
-    h2 { font-size: clamp(1.45rem, 2.4vw, 2rem); }
-    h3 { font-size: clamp(1.1rem, 1.8vw, 1.28rem); }
+      /* Nav */
+      .nav-menu {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        padding: 0 10px;
+        gap: 10px;
+      }
+      .nav-menu a {
+        color: white;
+        text-decoration: none;
+        padding: 10px 20px;
+        border-radius: 30px;
+        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        font-weight: 700;
+        font-size: 1.1em;
+        border: 2px solid rgba(255, 255, 255, 0.2);
+        position: relative;
+        overflow: hidden;
+      }
+      .nav-menu a::before {
+        content: '';
+        position: absolute;
+        top: 0; left: -100%; width: 100%; height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+        transition: all 0.5s;
+      }
+      .nav-menu a:hover::before {
+        left: 100%;
+      }
+      .nav-menu a:hover {
+        background: var(--gold-accent);
+        color: var(--navy-blue);
+        transform: translateY(-3px) scale(1.05);
+        border-color: var(--gold-accent);
+        box-shadow: 0 10px 20px rgba(255, 165, 0, 0.4);
+      }
+      .nav-menu a[href$="index.html"] {
+        background-color: var(--gold-accent);
+        color: var(--navy-blue);
+        border-color: var(--gold-accent);
+        box-shadow: 0 0 15px rgba(255, 165, 0, 0.5);
+      }
 
-    p { margin: 0; color: var(--muted); font-size: clamp(1rem, 1.35vw, 1.08rem); }
+      /* Main container */
+      .container {
+        width: 95%;
+        max-width: 1400px;
+        margin: 60px auto;
+        padding: 50px;
+        background: rgba(255, 255, 255, 0.85);
+        backdrop-filter: blur(20px);
+        border-radius: 25px;
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+        border: 1px solid rgba(255,255,255,0.5);
+        animation: slideUp 0.8s ease-out;
+      }
 
-    .cta-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.85rem;
-      margin-top: 0.35rem;
-    }
+      @keyframes slideUp {
+        from { opacity: 0; transform: translateY(40px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
 
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.4rem;
-      border-radius: 12px;
-      padding: 0.75rem 1.05rem;
-      font-weight: 650;
-      font-size: 0.95rem;
-      transition: 0.2s ease;
-      border: 1px solid transparent;
-    }
+      .hero-title {
+        font-family: "Oswald", sans-serif;
+        color: var(--navy-blue-dark);
+        border-bottom: 6px solid var(--gold-accent);
+        padding-bottom: 15px;
+        margin-bottom: 30px;
+        font-size: 4em; /* MASSIVE */
+        text-transform: uppercase;
+        line-height: 1.1;
+        letter-spacing: 1px;
+      }
+      
+      .seo-content {
+        font-size: 1.3em;
+        line-height: 1.8;
+        color: #444;
+        margin-bottom: 60px;
+      }
+      .seo-content p {
+        margin-bottom: 20px;
+        animation: fadeIn 1s ease-in;
+      }
 
-    .btn-primary {
-      background: linear-gradient(135deg, var(--accent), var(--accent-2));
-      color: #fff;
-    }
+      @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+      }
 
-    .btn-primary:hover,
-    .btn-primary:focus-visible {
-      transform: translateY(-1px);
-      box-shadow: 0 10px 22px rgba(255, 122, 0, 0.25);
-      outline: none;
-    }
+      /* Sections */
+      .section-title {
+        font-family: "Oswald", sans-serif;
+        color: var(--navy-blue);
+        font-size: 3.5em; /* MASSIVE */
+        text-align: center;
+        margin: 60px 0 40px 0;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        position: relative;
+        display: inline-block;
+        left: 50%;
+        transform: translateX(-50%);
+      }
+      .section-title::after {
+        content: '';
+        position: absolute;
+        width: 50%;
+        height: 4px;
+        background: var(--gold-accent);
+        bottom: -10px;
+        left: 25%;
+        border-radius: 2px;
+      }
 
-    .btn-ghost {
-      border-color: var(--line);
-      color: var(--text);
-      background: #fff;
-    }
+      /* Cards Grid */
+      .cards-grid {
+        display: grid;
+        gap: 2.5rem;
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        margin-bottom: 40px;
+      }
 
-    .btn-ghost:hover,
-    .btn-ghost:focus-visible {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 3px var(--ring);
-      outline: none;
-    }
+      .card {
+        padding: 40px 30px;
+        background: linear-gradient(145deg, #ffffff, #f0f0f0);
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        text-decoration: none;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        border: 2px solid transparent;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+        z-index: 1;
+      }
+      
+      .card::before {
+        content: "";
+        position: absolute;
+        top: 0; left: 0; width: 100%; height: 100%;
+        background: linear-gradient(135deg, var(--navy-blue), #003399);
+        z-index: -1;
+        transition: opacity 0.4s ease;
+        opacity: 0;
+      }
 
-    section { margin-top: 2.4rem; }
+      .card:hover {
+        transform: translateY(-15px) scale(1.03);
+        box-shadow: 0 20px 40px rgba(0, 31, 91, 0.4);
+        border: 2px solid var(--gold-accent);
+      }
+      
+      .card:hover::before {
+        opacity: 1;
+      }
 
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(12, 1fr);
-      gap: 1rem;
-    }
+      .card:hover h2, .card:hover p, .card:hover .icon, .card:hover li {
+        color: white;
+      }
 
-    .card {
-      grid-column: span 4;
-      background: linear-gradient(180deg, var(--surface), var(--surface-2));
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      padding: 1.1rem;
-      box-shadow: var(--shadow);
-      display: grid;
-      gap: 0.7rem;
-      min-height: 160px;
-    }
+      .card h2 {
+        font-family: "Oswald", sans-serif;
+        color: var(--navy-blue);
+        margin-bottom: 20px;
+        font-size: 2.5em; /* MASSIVE */
+        border-bottom: 3px solid var(--gold-accent);
+        padding-bottom: 15px;
+        text-transform: uppercase;
+        line-height: 1.2;
+        transition: color 0.4s;
+      }
 
-    .pill {
-      width: fit-content;
-      font-size: 0.75rem;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-      border: 1px solid rgba(255, 122, 0, 0.45);
-      color: #a24e00;
-      border-radius: 999px;
-      padding: 0.25rem 0.52rem;
-      background: #fff7f0;
-    }
+      .card p {
+        color: #555;
+        font-size: 1.15em;
+        margin-bottom: 20px;
+        transition: color 0.4s;
+        flex-grow: 1;
+      }
 
-    .footer {
-      margin-top: 3rem;
-      padding: 1.2rem 0 2.2rem;
-      border-top: 1px solid var(--line);
-      color: var(--muted);
-      font-size: 0.92rem;
-    }
+      .card ul {
+        list-style: none;
+        padding: 0;
+        margin-bottom: 25px;
+        text-align: left;
+      }
 
-    @media (max-width: 980px) { .card { grid-column: span 6; } }
+      .card li {
+        color: #444;
+        font-size: 1.05em;
+        margin-bottom: 8px;
+        padding-left: 25px;
+        position: relative;
+        transition: color 0.4s;
+      }
 
-    @media (max-width: 680px) {
-      .nav { align-items: flex-start; padding: 0.9rem 0; }
-      .nav-links { gap: 0.5rem; }
-      .hero { padding: 1.4rem; }
-      .card { grid-column: span 12; }
-      main { padding-top: 1.25rem; }
-    }
-  </style>
+      .card li::before {
+        content: '✓';
+        color: var(--gold-accent);
+        position: absolute;
+        left: 0;
+        font-weight: bold;
+      }
 
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "WebSite",
-    "name": "Football Tactics & Strategies",
-    "url": "https://jaivaltamboli-pixel.github.io/",
-    "description": "A resource for football tactical education, strategy guides, and prediction tools."
-  }
-  </script>
-</head>
-<body>
-  <header>
-    <div class="container nav" role="navigation" aria-label="Primary navigation">
-      <a class="brand" href="/index.html" aria-label="Football Tactics & Strategies home">
-        <span class="brand-badge" aria-hidden="true"></span>
-        <span>Football Tactics & Strategies</span>
-      </a>
-      <nav class="nav-links" aria-label="Site links">
-        <a href="/index.html" aria-current="page">Home</a>
-        <a href="/defense.html">Defense</a>
-        <a href="/possession.html">Possession</a>
-        <a href="/finesse.html">Finesse</a>
-        <a href="/power-shot.html">Power Shot</a>
-        <a href="/whip.html">Whip Shot</a>
-        <a href="/predictions.html">UCL Bracket</a>
+      .icon {
+        font-size: 3.5em;
+        margin-bottom: 15px;
+        transition: color 0.4s;
+      }
+
+      .btn-primary {
+        margin-top: auto;
+        padding: 15px 30px;
+        border-radius: 12px;
+        font-weight: bold;
+        background: var(--gold-accent);
+        color: var(--navy-blue);
+        font-size: 1.1em;
+        display: inline-block;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        transition: all 0.3s;
+        box-shadow: 0 5px 15px rgba(255, 165, 0, 0.4);
+      }
+
+      .card:hover .btn-primary {
+        background: white;
+        color: var(--navy-blue);
+      }
+
+      /* Section Divider */
+      .section-divider {
+        height: 4px;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          var(--gold-accent),
+          var(--navy-blue),
+          var(--gold-accent),
+          transparent
+        );
+        margin: 60px 0;
+        border-radius: 2px;
+      }
+
+      /* Floating Animation for Specific Elements */
+      .float-anim {
+        animation: float 6s ease-in-out infinite;
+      }
+      @keyframes float {
+        0% { transform: translateY(0px); }
+        50% { transform: translateY(-10px); }
+        100% { transform: translateY(0px); }
+      }
+
+      /* Links section */
+      .links-container {
+        margin-top: 60px;
+        padding: 30px;
+        background: rgba(255, 255, 255, 0.9);
+        border-radius: 15px;
+        border-left: 6px solid var(--gold-accent);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+      }
+      
+      .links-container h3 {
+        color: var(--navy-blue);
+        margin-bottom: 20px;
+        font-family: "Oswald", sans-serif;
+        font-size: 2em;
+        text-transform: uppercase;
+      }
+
+      .tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        justify-content: center;
+      }
+
+      .tags a {
+        padding: 10px 20px;
+        background: white;
+        border-radius: 25px;
+        text-decoration: none;
+        color: var(--navy-blue);
+        border: 2px solid #e0e0e0;
+        font-size: 1em;
+        font-weight: bold;
+        transition: all 0.3s;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+      }
+
+      .tags a:hover {
+        background: var(--navy-blue);
+        color: white;
+        border-color: var(--navy-blue);
+        transform: translateY(-3px);
+        box-shadow: 0 8px 15px rgba(0, 31, 91, 0.2);
+      }
+
+      /* Mobile */
+      @media (max-width: 768px) {
+        body {
+          padding-top: 180px;
+        }
+        .header h1 {
+          font-size: 8vw;
+        }
+        .hero-title {
+          font-size: 2.8em;
+        }
+        .section-title {
+          font-size: 2.5em;
+        }
+        .cards-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <header class="header">
+      <h1>TACTICS BOARD</h1>
+      <nav class="nav-menu" aria-label="Primary navigation">
+        <a href="/index.html">HOME</a>
+        <a href="/possession.html">POSSESSION</a>
+        <a href="/finesse.html">FINESSE</a>
+        <a href="/power-shot.html">POWER SHOT</a>
+        <a href="/whip.html">WHIP CROSS</a>
+        <a href="/defense.html">DEFENDING</a>
+        <a href="/penaltyshooter.html">PENALTY SHOOTER</a>
       </nav>
-    </div>
-  </header>
+    </header>
 
-  <main class="container" id="main-content">
-    <section class="hero" aria-labelledby="hero-title">
-      <span class="eyebrow">Future of Football Intelligence</span>
-      <h1 id="hero-title">Decode Football Tactics with Modern, Readable Analysis</h1>
-      <p>
-        Understand pressing patterns, defensive shape control, transitional triggers, and finishing mechanics through concise tactical explanations.
-        This redesigned experience improves readability, accessibility, and information hierarchy while preserving your original tactical content.
-      </p>
-      <div class="cta-row">
-        <a class="btn btn-primary" href="/predictions.html">Create UCL Prediction Bracket</a>
-        <a class="btn btn-ghost" href="/tactics_console.html">Open Tactics Console</a>
+    <main class="container">
+      <h2 class="hero-title">Master Modern Football <br><span style="color: var(--gold-accent); font-size: 0.6em;">by Jaival Tamboli</span></h2>
+      
+      <div class="seo-content">
+        <p><strong>Welcome to the ultimate Football Tactics Base.</strong> Here you will uncover the most profoundly advanced, cutting-edge, and undeniably effective football strategies designed for both real-world application and FIFA / EA Sports FC dominance. Our comprehensive repository of modern football knowledge offers massive insights into possession play, finesse finishing, whipped crossing, and high-intensity defensive pressing.</p>
+        <p>Mastering football requires an impeccable understanding of space, timing, and precision. Elevate your understanding to the absolute highest echelon of the sport through our dynamic tools, intense games, and deep-dive blogs.</p>
       </div>
-    </section>
 
-    <section aria-labelledby="featured-title">
-      <h2 id="featured-title">Core Tactical Modules</h2>
-      <p>Browse strategy pages with improved spacing, cleaner typography, and better page semantics for both readers and search engines.</p>
-      <div class="grid" style="margin-top: 1rem;">
-        <article class="card">
-          <span class="pill">Defensive Systems</span>
-          <h3>Defensive Structures</h3>
-          <p>Study compactness, cover shadows, pressing height, and coordinated backline behavior.</p>
-          <a class="btn btn-ghost" href="/defense.html">Explore Defense</a>
-        </article>
+      <!-- PARTITION 1: GAMES -->
+      <section>
+        <h3 class="section-title">🎮 Games</h3>
+        <p style="text-align: center; font-size: 1.2em; color: #555; margin-bottom: 30px;">Test your mechanical skills and reaction times in our custom-built football games.</p>
+        
+        <div class="cards-grid">
+          <a href="/game.html" class="card float-anim" style="animation-delay: 0s;">
+            <div class="icon">⚽</div>
+            <h2>2D Soccer Star</h2>
+            <p>Experience a full football match in a retro 2D environment. Perfect your dribbling, passing, and scoring.</p>
+            <ul>
+              <li>Full match simulation</li>
+              <li>Dynamic opponent AI</li>
+              <li>Fluid player movement</li>
+            </ul>
+            <span class="btn-primary">Play Game</span>
+          </a>
 
-        <article class="card">
-          <span class="pill">Ball Retention</span>
-          <h3>Possession Strategy</h3>
-          <p>Learn buildup patterns, overloads, numerical superiority, and tempo manipulation concepts.</p>
-          <a class="btn btn-ghost" href="/possession.html">Explore Possession</a>
-        </article>
+          <a href="/penaltyshooter.html" class="card float-anim" style="animation-delay: 0.2s;">
+            <div class="icon">🎯</div>
+            <h2>Penalty Shooter</h2>
+            <p>Step up to the spot. Test your shooting skills against a reactive goalkeeper under pressure.</p>
+            <ul>
+              <li>Power & accuracy mechanics</li>
+              <li>Progressive difficulty</li>
+              <li>High score tracking</li>
+            </ul>
+            <span class="btn-primary">Take Penalties</span>
+          </a>
+        </div>
+      </section>
 
-        <article class="card">
-          <span class="pill">Final Third</span>
-          <h3>Finishing & Shot Types</h3>
-          <p>Compare finesse, whip, and power-shot mechanics to choose optimal execution under pressure.</p>
-          <div class="cta-row">
-            <a class="btn btn-ghost" href="/finesse.html">Finesse</a>
-            <a class="btn btn-ghost" href="/power-shot.html">Power</a>
-            <a class="btn btn-ghost" href="/whip.html">Whip</a>
-          </div>
-        </article>
+      <div class="section-divider"></div>
+
+      <!-- PARTITION 2: TOOLS -->
+      <section>
+        <h3 class="section-title">⚙️ Tools</h3>
+        <p style="text-align: center; font-size: 1.2em; color: #555; margin-bottom: 30px;">Plan your next move with our interactive tactical simulators.</p>
+
+        <div class="cards-grid">
+          <a href="/tactics_console.html" class="card float-anim" style="animation-delay: 0.4s;">
+            <div class="icon">📋</div>
+            <h2>Tactics Console</h2>
+            <p>Explore FIFA/EA Sports FC-style possession football tactics using an interactive drag-and-drop board.</p>
+            <ul>
+              <li>Customizable formations</li>
+              <li>Simulate pressing traps</li>
+              <li>Draw player movements</li>
+            </ul>
+            <span class="btn-primary">Launch Console</span>
+          </a>
+        </div>
+      </section>
+
+      <div class="section-divider"></div>
+
+      <!-- PARTITION 3: BLOGS -->
+      <section>
+        <h3 class="section-title">📚 Blogs & Training</h3>
+        <p style="text-align: center; font-size: 1.2em; color: #555; margin-bottom: 30px;">Deep dive into advanced modern football concepts and techniques.</p>
+
+        <div class="cards-grid">
+          <a href="/possession.html" class="card">
+            <div class="icon">🧠</div>
+            <h2>Possession</h2>
+            <p>Master tempo control, intelligent spacing, and creating numerical overloads on the pitch.</p>
+          </a>
+          <a href="/finesse.html" class="card">
+            <div class="icon">✨</div>
+            <h2>Finesse Finishing</h2>
+            <p>Learn the art of precision, bending the ball, and finding smart shooting angles against top keepers.</p>
+          </a>
+          <a href="/whip.html" class="card">
+            <div class="icon">🌪️</div>
+            <h2>Whipped Crossing</h2>
+            <p>Deliver driven, curled, and lethal service into the box that defenders hate to deal with.</p>
+          </a>
+          <a href="/power-shot.html" class="card">
+            <div class="icon">💥</div>
+            <h2>Powershot</h2>
+            <p>Generate maximum velocity and striking power to beat keepers from long distance.</p>
+          </a>
+          <a href="/defense.html" class="card">
+            <div class="icon">🛡️</div>
+            <h2>Defending & Pressing</h2>
+            <p>Understand defensive shape, pressing triggers, traps, and dominating 1v1 duels.</p>
+          </a>
+          <a href="/PeripheralVision.html" class="card">
+            <div class="icon">👀</div>
+            <h2>Peripheral Vision</h2>
+            <p>Enhance your scanning, spatial awareness, and split-second decision-making abilities.</p>
+          </a>
+        </div>
+      </section>
+
+      <!-- INTERNAL LINKING BOOST FOR SEO -->
+      <div class="links-container">
+        <h3>🔗 All Football Tactics Resources</h3>
+        <div class="tags">
+          <a href="/PeripheralVision.html">Peripheral Vision</a>
+          <a href="/possession.html">Possession Guide</a>
+          <a href="/finesse.html">Finesse Shooting</a>
+          <a href="/defense.html">Defensive Tactics</a>
+          <a href="/power-shot.html">Power Shots</a>
+          <a href="/whip.html">Whip Crosses</a>
+          <a href="/tactics_console.html">Tactics Console</a>
+          <a href="/game.html">Football Game</a>
+          <a href="/penaltyshooter.html">Penalty Shooter</a>
+          <a href="/possession/positionalplay.html">Positional Play</a>
+        </div>
       </div>
-    </section>
-  </main>
+    </main>
 
-  <footer class="footer">
-    <div class="container">
-      <strong>Football Tactics & Strategies</strong> · Orange/white themed tactical learning platform · SEO and readability optimized.
-    </div>
-  </footer>
-</body>
+    <script>
+      // Add subtle scroll animations for elements
+      document.addEventListener('DOMContentLoaded', () => {
+        const cards = document.querySelectorAll('.card');
+        
+        const observer = new IntersectionObserver((entries) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              entry.target.style.opacity = '1';
+              entry.target.style.transform = 'translateY(0)';
+            }
+          });
+        }, { threshold: 0.1 });
+
+        cards.forEach(card => {
+          card.style.opacity = '0';
+          card.style.transform = 'translateY(30px)';
+          card.style.transition = 'all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+          observer.observe(card);
+        });
+      });
+    </script>
+  </body>
 </html>
