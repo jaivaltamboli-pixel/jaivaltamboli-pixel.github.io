@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Football Tactics & Strategies | Futuristic Tactical Analysis</title>
-  <meta name="description" content="Explore modern football tactics, strategy breakdowns, match simulation concepts, and advanced decision-making insights with a futuristic, readable interface." />
+  <meta name="description" content="Explore modern football tactics, strategy breakdowns, match simulation concepts, and advanced decision-making insights with an orange and white interface." />
   <meta name="keywords" content="football tactics, soccer strategies, pressing systems, possession play, defensive shapes, champions league prediction bracket" />
   <meta name="author" content="Football Tactics and Strategies" />
   <meta name="robots" content="index,follow,max-image-preview:large" />
@@ -18,20 +18,21 @@
   <meta name="twitter:description" content="A futuristic football tactics website with strategy guides and prediction tools." />
   <link rel="canonical" href="https://jaivaltamboli-pixel.github.io/" />
   <link rel="icon" type="image/png" href="/favicon.png" />
+
   <style>
     :root {
-      --bg: #05070f;
-      --surface: #0d1220;
-      --surface-2: #121a2f;
-      --text: #eaf0ff;
-      --muted: #9fb0d2;
-      --accent: #5dd8ff;
-      --accent-2: #8f7bff;
-      --ring: rgba(93, 216, 255, 0.38);
-      --success: #58f2b0;
+      --bg: #fff8f2;
+      --surface: #ffffff;
+      --surface-2: #fff2e5;
+      --text: #2f1a0f;
+      --muted: #7a4b2d;
+      --accent: #ff7a00;
+      --accent-2: #ff9f45;
+      --ring: rgba(255, 122, 0, 0.25);
       --maxw: 1120px;
       --radius: 16px;
-      --shadow: 0 10px 40px rgba(0, 0, 0, 0.35);
+      --shadow: 0 10px 30px rgba(255, 122, 0, 0.12);
+      --line: rgba(255, 122, 0, 0.2);
     }
 
     * { box-sizing: border-box; }
@@ -41,8 +42,8 @@
       padding: 0;
       font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
       background:
-        radial-gradient(circle at 15% 10%, rgba(93, 216, 255, 0.1), transparent 25%),
-        radial-gradient(circle at 80% 0%, rgba(143, 123, 255, 0.12), transparent 32%),
+        radial-gradient(circle at 10% 0%, rgba(255,122,0,0.10), transparent 26%),
+        radial-gradient(circle at 100% 0%, rgba(255,159,69,0.12), transparent 30%),
         var(--bg);
       color: var(--text);
       line-height: 1.65;
@@ -59,8 +60,8 @@
       position: sticky;
       top: 0;
       backdrop-filter: blur(8px);
-      background: rgba(5, 7, 15, 0.72);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(255, 248, 242, 0.9);
+      border-bottom: 1px solid var(--line);
       z-index: 100;
     }
 
@@ -85,7 +86,7 @@
       height: 34px;
       border-radius: 10px;
       background: linear-gradient(135deg, var(--accent), var(--accent-2));
-      box-shadow: 0 0 0 4px rgba(93, 216, 255, 0.12);
+      box-shadow: 0 0 0 4px rgba(255, 122, 0, 0.14);
     }
 
     .nav-links {
@@ -96,17 +97,18 @@
 
     .nav-links a {
       padding: 0.5rem 0.85rem;
-      border: 1px solid rgba(255, 255, 255, 0.12);
+      border: 1px solid var(--line);
       border-radius: 999px;
       color: var(--muted);
       font-size: 0.92rem;
       transition: 0.2s ease;
+      background: #fff;
     }
 
     .nav-links a:hover,
     .nav-links a:focus-visible {
       color: var(--text);
-      border-color: rgba(93, 216, 255, 0.5);
+      border-color: var(--accent);
       box-shadow: 0 0 0 3px var(--ring);
       outline: none;
     }
@@ -116,8 +118,8 @@
     .hero {
       padding: 2.8rem;
       border-radius: 24px;
-      background: linear-gradient(145deg, rgba(255,255,255,0.07), rgba(255,255,255,0.02));
-      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: linear-gradient(145deg, #ffffff, #fff3e9);
+      border: 1px solid var(--line);
       box-shadow: var(--shadow);
       display: grid;
       gap: 1.2rem;
@@ -127,8 +129,8 @@
       display: inline-flex;
       width: fit-content;
       border-radius: 999px;
-      background: rgba(93, 216, 255, 0.16);
-      color: #b9eeff;
+      background: rgba(255, 122, 0, 0.12);
+      color: #a24e00;
       font-size: 0.82rem;
       font-weight: 700;
       letter-spacing: 0.06em;
@@ -136,11 +138,7 @@
       padding: 0.35rem 0.7rem;
     }
 
-    h1, h2, h3 {
-      line-height: 1.2;
-      margin: 0;
-    }
-
+    h1, h2, h3 { line-height: 1.2; margin: 0; }
     h1 { font-size: clamp(1.9rem, 4vw, 3.15rem); }
     h2 { font-size: clamp(1.45rem, 2.4vw, 2rem); }
     h3 { font-size: clamp(1.1rem, 1.8vw, 1.28rem); }
@@ -169,25 +167,25 @@
 
     .btn-primary {
       background: linear-gradient(135deg, var(--accent), var(--accent-2));
-      color: #04121c;
+      color: #fff;
     }
 
     .btn-primary:hover,
     .btn-primary:focus-visible {
       transform: translateY(-1px);
-      box-shadow: 0 10px 26px rgba(93, 216, 255, 0.36);
+      box-shadow: 0 10px 22px rgba(255, 122, 0, 0.25);
       outline: none;
     }
 
     .btn-ghost {
-      border-color: rgba(255, 255, 255, 0.2);
+      border-color: var(--line);
       color: var(--text);
-      background: rgba(255, 255, 255, 0.04);
+      background: #fff;
     }
 
     .btn-ghost:hover,
     .btn-ghost:focus-visible {
-      border-color: rgba(93, 216, 255, 0.6);
+      border-color: var(--accent);
       box-shadow: 0 0 0 3px var(--ring);
       outline: none;
     }
@@ -203,7 +201,7 @@
     .card {
       grid-column: span 4;
       background: linear-gradient(180deg, var(--surface), var(--surface-2));
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      border: 1px solid var(--line);
       border-radius: var(--radius);
       padding: 1.1rem;
       box-shadow: var(--shadow);
@@ -217,23 +215,22 @@
       font-size: 0.75rem;
       letter-spacing: 0.04em;
       text-transform: uppercase;
-      border: 1px solid rgba(93, 216, 255, 0.45);
-      color: #bdefff;
+      border: 1px solid rgba(255, 122, 0, 0.45);
+      color: #a24e00;
       border-radius: 999px;
       padding: 0.25rem 0.52rem;
+      background: #fff7f0;
     }
 
     .footer {
       margin-top: 3rem;
       padding: 1.2rem 0 2.2rem;
-      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      border-top: 1px solid var(--line);
       color: var(--muted);
       font-size: 0.92rem;
     }
 
-    @media (max-width: 980px) {
-      .card { grid-column: span 6; }
-    }
+    @media (max-width: 980px) { .card { grid-column: span 6; } }
 
     @media (max-width: 680px) {
       .nav { align-items: flex-start; padding: 0.9rem 0; }
@@ -321,7 +318,7 @@
 
   <footer class="footer">
     <div class="container">
-      <strong>Football Tactics & Strategies</strong> · Futuristic tactical learning platform · Updated for better SEO and readability.
+      <strong>Football Tactics & Strategies</strong> · Orange/white themed tactical learning platform · SEO and readability optimized.
     </div>
   </footer>
 </body>
